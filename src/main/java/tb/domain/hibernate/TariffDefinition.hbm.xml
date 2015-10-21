@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="tb.domain">
+	<class name="TariffDefinition" table="tariffdefinitions">
+		<id name="idName" length="50"></id>
+		<property name="vehicleClass" not-null="true">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">tb.domain.order.VehicleClass</param>
+			</type>
+		</property>
+		<set name="mapAreas" table="tariffdefinition_partnermapareas" lazy="false">
+			<key column="idname"></key>
+			<many-to-many column="mapareaid" class="tb.domain.maparea.MapArea"></many-to-many>
+		</set>
+		
+		
+		<property name="routingServiceName" length="50"/>
+		<property name="body" length="2000000" not-null="true"/>
+	</class>
+</hibernate-mapping>

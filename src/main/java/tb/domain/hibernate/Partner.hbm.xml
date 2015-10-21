@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="tb.domain">
+	<class name="Partner" table="parners">
+		<id name="id">
+			<generator class="identity" />
+		</id>
+		<property name="uuid" unique-key="partners_uk3" />
+		<property name="apiId" length="20" unique-key="partners_uk1" />
+		<property name="apiKey" length="20" />
+		<property name="name" length="100" />
+		<property name="apiurl" length="100" />
+		<property name="tariffUrl" length="100" />
+		<property name="driverUrl" length="100" />
+		<property name="mapareaUrl" length="100" />
+		<property name="costUrl" length="100" />
+		
+		<set name="mapAreas" table="partnermapareas" lazy="false">
+			<key column="partnerid"></key>
+			<many-to-many column="mapareaid" class="tb.domain.maparea.MapArea"></many-to-many>
+		</set>
+		
+		<property name="tariffType">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">tb.domain.TariffType</param>
+			</type>
+		</property>
+		
+		<property name="timezoneId" length="50"></property>
+	</class>
+</hibernate-mapping>

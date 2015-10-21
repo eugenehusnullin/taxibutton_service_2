@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="tb.domain.order">
+	<class name="Order" table="orders">
+		<id name="id">
+			<generator class="identity" />
+		</id>
+		<many-to-one name="device" column="deviceid" />
+		<many-to-one name="partner" column="partnerid" lazy="false" />
+		<property name="carUuid" length="40" />
+		<property name="uuid" unique-key="order_uk2" />
+		<property name="notlater" />
+		<property name="phone" length="20" />
+		<property name="bookingDate" />
+		<property name="processingFinished" />
+		<set name="requirements" cascade="all">
+			<key>
+				<column name="orderid" />
+			</key>
+			<one-to-many class="tb.domain.order.Requirement" />
+		</set>
+		<set name="destinations" cascade="all" lazy="false" sort="natural">
+			<key column="orderid" />			
+			<one-to-many class="tb.domain.order.AddressPoint" />
+		</set>
+		<set name="statuses" cascade="all" lazy="false" order-by="date desc">
+			<key>
+				<column name="orderid" />
+			</key>
+			<one-to-many class="tb.domain.order.OrderStatus" />
+		</set>
+		<set name="orderCancel" cascade="all">
+			<key>
+				<column name="orderid" />
+			</key>
+			<one-to-many class="tb.domain.order.OrderCancel" />
+		</set>
+		<set name="offerPartners" cascade="delete" table="offerpartners">
+			<key>
+				<column name="orderid" />
+			</key>
+			<many-to-many entity-name="tb.domain.Partner">
+				<column name="partnerid" not-null="true" />
+			</many-to-many>
+		</set>
+		<property name="orderVehicleClass">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">tb.domain.order.VehicleClass</param>
+			</type>
+		</property>
+		<property name="comments" length="128"/>
+		<property name="createdDate" /> 
+	</class>
+</hibernate-mapping>

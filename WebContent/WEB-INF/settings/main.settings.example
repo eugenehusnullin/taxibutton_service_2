@@ -1,0 +1,33 @@
+;;; JDBC
+jdbc.driverClassName=org.postgresql.Driver
+jdbc.url=jdbc:postgresql://localhost:5432/btaxi
+jdbc.username=btaxi
+jdbc.password=btaxi
+hibernate.dialect=org.hibernate.dialect.PostgreSQL82Dialect
+hibernate.show_sql=true
+hibernate.hbm2ddl.auto=update
+
+
+;;; COST SERVICE
+costservice.url=http://localhost:2351/cost
+costservice.routingservicenames=YandexMapsService,GoogleMapsService,DirectDistanceService
+
+
+;;; COMMON
+offerorder.coordcoef=0.1
+offerorder.notlaterminutes=25
+offerorder.speed=40
+offerorder.cars.actual.geo.minutes=5
+createorder.limit=180000
+; run synch cars and tariffs after application start in seconds
+starter.runsynch.seconds=10
+
+
+;;; SMS
+sms.url.old=http://crm.podglonass.ru/engine/ajax/crm/index.php?mod=taxiclub
+sms.url=http://crm.podglonass.ru/smser/index.php?taxiid=TAXIID&act=add
+
+
+;;; ORDER PROCESSING
+processing.offer.expired.timeout = 3
+processing.assign.expired.timeout = 6

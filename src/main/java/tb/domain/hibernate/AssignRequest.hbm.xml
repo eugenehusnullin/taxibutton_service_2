@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="tb.domain.order">
+	<class name="AssignRequest" table="assignrequests">
+		<composite-id>
+			<key-many-to-one name="partner" column="partnerid"></key-many-to-one>
+			<key-many-to-one name="order" column="orderid"></key-many-to-one>
+			<key-property name="uuid" length="40"></key-property>
+		</composite-id>
+		<property name="date" />
+		<property name="fail" />
+		<property name="failHttpCode" />
+	</class>
+</hibernate-mapping>

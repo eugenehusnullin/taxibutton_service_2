@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<mapping resource="tb/domain/hibernate/Partner.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/Tariff.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/AddressPoint.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/Requirement.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/Order.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/AssignRequest.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/OrderStatus.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/OrderCancel.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/Device.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/Offer.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/Feedback.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/MapArea.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/TariffDefinition.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/TariffDefinitionMapArea.hbm.xml" />
+		<mapping resource="tb/car/domain/Car.hbm.xml" />
+ 		<mapping resource="tb/car/domain/CarState.hbm.xml" />
+ 		<mapping resource="tb/car/domain/GeoData.hbm.xml" />
+	</session-factory>
+</hibernate-configuration>

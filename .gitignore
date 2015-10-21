@@ -1,0 +1,11 @@
+.classpath
+.project
+.settings/*
+.gradle/*
+/build
+WebContent/WEB-INF/settings/main.settings
+WebContent/resources/css/root.css
+WebContent/lib/*
+src/main/resources/log4j2.xml
+src/main/resources/tb/apitaxirf/*
+
