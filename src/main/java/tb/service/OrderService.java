@@ -171,6 +171,7 @@ public class OrderService {
 
 		order.setUuid(UUID.randomUUID().toString().replace("-", ""));
 		order.setCreatedDate(new Date());
+		order.setStartProcessing(new Date());
 		orderDao.save(order);
 
 		// create new order status (Created)

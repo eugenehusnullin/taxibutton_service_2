@@ -1,5 +1,6 @@
-package tb.service;
+package tb.orderprocessing;
 
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ public class ExactOrderToOffer {
 		for (Order order : orders) {
 			try {
 				order.setNotlater(true);
+				order.setStartProcessing(new Date());
 				orderDao.save(order);
 
 				logger.info("Set notlater to exact order id=" + order.getId().toString() + ".");

@@ -52,6 +52,7 @@
 			</type>
 		</property>
 		<property name="comments" length="128"/>
-		<property name="createdDate" /> 
+		<property name="createdDate" />
+		<property name="startProcessing"></property> 
 	</class>
 </hibernate-mapping>

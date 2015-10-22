@@ -27,8 +27,8 @@ public class Order {
 	private String comments;
 	private Date createdDate;
 	private Boolean processingFinished;
-	
-	
+	private Date startProcessing;
+
 	public Order() {
 		processingFinished = false;
 	}
@@ -176,5 +176,13 @@ public class Order {
 
 	public void setProcessingFinished(Boolean processingFinished) {
 		this.processingFinished = processingFinished;
+	}
+
+	public Date getStartProcessing() {
+		return startProcessing;
+	}
+
+	public void setStartProcessing(Date startProcessing) {
+		this.startProcessing = startProcessing;
 	}
 }
