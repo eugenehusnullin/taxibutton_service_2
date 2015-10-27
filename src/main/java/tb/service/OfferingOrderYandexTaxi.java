@@ -85,7 +85,7 @@ public class OfferingOrderYandexTaxi {
 			List<Long> partnerIdsList = carStates.stream().map(p -> p.getPartnerId()).distinct()
 					.collect(Collectors.toList());
 
-			carStates = carDao.getCarStatesByRequirements(carStates, order.getRequirements());
+			carStates = carDao.getCarStatesByRequirements(carStates, order.getRequirements(), null);
 			messages4Send = createNotlaterOffer(order, partnerIdsList, carStates);
 		} else {
 			List<Partner> partners = partnerService.getPartnersByMapAreas(order.getSource().getLat(),

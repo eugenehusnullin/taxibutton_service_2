@@ -27,8 +27,8 @@ public class CarDao {
 
 	@Autowired
 	private SessionFactory sessionFactory;
-	
-	//offerorder.cars.actual.geo.minutes
+
+	// offerorder.cars.actual.geo.minutes
 	@Value("#{mainSettings['offerorder.cars.actual.geo.minutes']}")
 	private Integer actualGeoMinutes;
 
@@ -123,7 +123,7 @@ public class CarDao {
 	@Transactional
 	public List<CarState> getNearCarStates(double lat, double lon, double diff) {
 		Session session = sessionFactory.getCurrentSession();
-		Date date = new Date((new Date()).getTime() - (actualGeoMinutes*60*1000));
+		Date date = new Date((new Date()).getTime() - (actualGeoMinutes * 60 * 1000));
 		String q = " from CarState cs "
 				+ " where cs.state=0 "
 				+ " and cs.date>=:date "
@@ -158,7 +158,8 @@ public class CarDao {
 	}
 
 	@Transactional
-	public List<CarState> getCarStatesByRequirements(List<CarState> carStates, Set<Requirement> reqs) {
+	public List<CarState> getCarStatesByRequirements(List<CarState> carStates, Set<Requirement> reqs,
+			String tariffIdName) {
 		if (reqs == null || reqs.size() == 0) {
 			return carStates;
 		}
@@ -171,6 +172,12 @@ public class CarDao {
 					.add(Restrictions.eq("partnerId", carState.getPartnerId()))
 					.add(Restrictions.eq("uuid", carState.getUuid()))
 					.uniqueResult();
+
+			if (tariffIdName != null) {
+				if (!car.getTariffs().contains(tariffIdName)) {
+					continue;
+				}
+			}
 
 			boolean b = reqsKeys.stream().allMatch(p -> car.getCarRequires().containsKey(p)
 					&& !car.getCarRequires().get(p).equals("no"));

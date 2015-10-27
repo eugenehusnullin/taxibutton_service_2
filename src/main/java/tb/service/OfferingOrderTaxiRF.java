@@ -26,6 +26,7 @@ import tb.dao.IOfferDao;
 import tb.dao.IOrderStatusDao;
 import tb.dao.IPartnerDao;
 import tb.domain.Partner;
+import tb.domain.TariffDefinition;
 import tb.domain.order.Offer;
 import tb.domain.order.Order;
 import tb.domain.order.OrderStatus;
@@ -68,12 +69,14 @@ public class OfferingOrderTaxiRF {
 			return null;
 		}
 
-		String tariffIdName = tariffDefinitionHelper.getTariffIdName(order.getSource().getLat(),
+		TariffDefinition tariffDefinition = tariffDefinitionHelper.getTariffDefinition(order.getSource().getLat(),
 				order.getSource().getLon(), order.getOrderVehicleClass());
-		if (tariffIdName == null) {
+		if (tariffDefinition == null) {
 			logger.info("Order - " + order.getUuid() + ", tariff definition not found for order.");
 			return null;
 		}
+
+		String tariffIdName = tariffDefinition.getIdName();
 
 		Map<Long, Document> messages4Send = null;
 		if (order.getNotlater()) {
@@ -103,7 +106,7 @@ public class OfferingOrderTaxiRF {
 			List<Long> partnerIdsList = carStates.stream().map(p -> p.getPartnerId()).distinct()
 					.collect(Collectors.toList());
 
-			carStates = carDao.getCarStatesByRequirements(carStates, order.getRequirements());
+			carStates = carDao.getCarStatesByRequirements(carStates, order.getRequirements(), tariffIdName);
 			if (carStates.size() == 0) {
 				logger.info("Order - " + order.getUuid()
 						+ ", NOT OFFER - not found car with selected additional services.");
