@@ -101,10 +101,10 @@ public class Processing {
 	private boolean checkExpired(Order order, ProcessingState state) {
 		switch (state) {
 		case Offer:
-			return isNowAfter(order.getCreatedDate(), offerExpiredTimeout);
+			return isNowAfter(order.getStartProcessing(), offerExpiredTimeout);
 
 		case Assign:
-			return isNowAfter(order.getCreatedDate(), assignExpiredTimeout);
+			return isNowAfter(order.getStartProcessing(), assignExpiredTimeout);
 
 		default:
 			break;
