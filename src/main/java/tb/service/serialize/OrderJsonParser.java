@@ -26,7 +26,7 @@ public class OrderJsonParser {
 	private static final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
 
 	private static boolean defineNotlater(Date bookingDateUtc, int notlaterMinutes) {
-		Calendar bookingCalendar = DatetimeUtils.utcToLocal(bookingDateUtc);
+		Calendar bookingCalendar = DatetimeUtils.getUtcCalendar(bookingDateUtc);
 		Calendar localCalendar = Calendar.getInstance();
 		localCalendar.add(Calendar.MINUTE, notlaterMinutes);
 
