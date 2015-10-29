@@ -33,20 +33,35 @@ public class DatetimeUtils {
 		return utcCalendar;
 	}
 
-	public static Calendar converToOtherTimeZone(Calendar fromCalendar, String timeZoneId) {
-		TimeZone fromTimeZone = fromCalendar.getTimeZone();
-		TimeZone toTimeZone = TimeZone.getTimeZone(timeZoneId);
+	public static Date offsetTimeZone(Date date, String fromTZ, String toTZ) {
 
-		fromCalendar.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
-		if (fromTimeZone.inDaylightTime(fromCalendar.getTime())) {
-			fromCalendar.add(Calendar.MILLISECOND, fromCalendar.getTimeZone().getDSTSavings() * -1);
+		// Construct FROM and TO TimeZone instances
+		TimeZone fromTimeZone = TimeZone.getTimeZone(fromTZ);
+		TimeZone toTimeZone = TimeZone.getTimeZone(toTZ);
+
+		// Get a Calendar instance using the default time zone and locale.
+		Calendar calendar = Calendar.getInstance();
+
+		// Set the calendar's time with the given date
+		calendar.setTimeZone(fromTimeZone);
+		calendar.setTime(date);
+
+		System.out.println("Input: " + calendar.getTime() + " in " + fromTimeZone.getDisplayName());
+
+		// FROM TimeZone to UTC
+		calendar.add(Calendar.MILLISECOND, fromTimeZone.getRawOffset() * -1);
+
+		if (fromTimeZone.inDaylightTime(calendar.getTime())) {
+			calendar.add(Calendar.MILLISECOND, calendar.getTimeZone().getDSTSavings() * -1);
 		}
 
-		fromCalendar.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
-		if (toTimeZone.inDaylightTime(fromCalendar.getTime())) {
-			fromCalendar.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
+		// UTC to TO TimeZone
+		calendar.add(Calendar.MILLISECOND, toTimeZone.getRawOffset());
+
+		if (toTimeZone.inDaylightTime(calendar.getTime())) {
+			calendar.add(Calendar.MILLISECOND, toTimeZone.getDSTSavings());
 		}
 
-		return fromCalendar;
+		return calendar.getTime();
 	}
 }

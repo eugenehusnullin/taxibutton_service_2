@@ -3,7 +3,6 @@ package tb.service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -541,9 +540,8 @@ public class OrderService {
 		car4Request.setUuid(car.getUuid());
 		car4Request.setTariff(tariffIdName);
 
-		Calendar utcCalendar = DatetimeUtils.getUtcCalendar(order.getBookingDate());
-		Date bookDate = DatetimeUtils.converToOtherTimeZone(utcCalendar, assignRequest.getPartner().getTimezoneId())
-				.getTime();
+		Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC",
+				assignRequest.getPartner().getTimezoneId());
 
 		Document doc = YandexOrderSerializer.orderToSetcarXml(order, bookDate, car4Request, order.getPhone());
 		String url = assignRequest.getPartner().getApiurl() + "/1.x/setcar";

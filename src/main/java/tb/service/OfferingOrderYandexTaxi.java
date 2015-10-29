@@ -2,7 +2,6 @@ package tb.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -152,8 +151,7 @@ public class OfferingOrderYandexTaxi {
 
 	@Transactional
 	public Document createExactOffer(Order order, Partner partner) {
-		Calendar utcCalendar = DatetimeUtils.getUtcCalendar(order.getBookingDate());
-		Date bookDate = DatetimeUtils.converToOtherTimeZone(utcCalendar, partner.getTimezoneId()).getTime();
+		Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC", partner.getTimezoneId());
 
 		List<Tariff> tariffs = tariffDao.get(partner);
 		List<String> tariffIds = tariffs.stream().map(p -> p.getTariffId()).collect(Collectors.toList());
@@ -168,9 +166,7 @@ public class OfferingOrderYandexTaxi {
 		Map<Long, Document> messagesMap = new HashMap<Long, Document>();
 		for (Long partnerId : partnerIdsList) {
 			Partner partner = partnerDao.get(partnerId);
-
-			Calendar utcCalendar = DatetimeUtils.getUtcCalendar(order.getBookingDate());
-			Date bookDate = DatetimeUtils.converToOtherTimeZone(utcCalendar, partner.getTimezoneId()).getTime();
+			Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC", partner.getTimezoneId());
 
 			List<CarState> filteredCarStates = carStates.stream()
 					.filter(p -> p.getPartnerId() == partnerId)
