@@ -18,6 +18,7 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -261,6 +262,20 @@ public class OrderController {
 			IOUtils.write(resultJson.toString(), response.getOutputStream(), "UTF-8");
 		} catch (Exception e) {
 			logger.error("cost", e);
+		}
+	}
+
+	@Value("#{mainSettings['createorder.deltaminutes']}")
+	private Integer createOrderDeltaMinutes = 20;
+
+	@RequestMapping(value = "/getbookmins", method = RequestMethod.POST)
+	public void getBookminsMinimum(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			JSONObject result = new JSONObject();
+			result.put("bookmins", createOrderDeltaMinutes);
+			IOUtils.write(result.toString(), response.getOutputStream(), "UTF-8");
+		} catch (IOException e) {
+			logger.error("getbookmins", e);
 		}
 	}
 

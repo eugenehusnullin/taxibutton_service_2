@@ -82,11 +82,8 @@ public class OrderService {
 	@Autowired
 	private SheduledProcessing processing;
 
-	@Value("#{mainSettings['createorder.limit']}")
-	private Integer createOrderLimit = 60000;
-
-	@Value("#{mainSettings['offerorder.notlaterminutes']}")
-	private int notlaterMinutes;
+	@Value("#{mainSettings['createorder.deltaminutes']}")
+	private Integer createOrderDeltaMinutes = 20;
 
 	@Transactional
 	public void saveFeedback(JSONObject feedbackJson) throws OrderNotFoundException, WrongData {
@@ -156,22 +153,22 @@ public class OrderService {
 		}
 
 		Order order = OrderJsonParser.Json2Order(createOrderObject.getJSONObject("order"), device.getPhone(),
-				partnerDao,
-				notlaterMinutes);
+				partnerDao);
 		order.setDevice(device);
 		return order;
 	}
 
 	@Transactional
 	public void create(Order order) throws ParseOrderException {
+		order.setCreatedDate(new Date());
+
 		// check booking date
-		if (DatetimeUtils.checkTimeout(order.getBookingDate(), createOrderLimit, new Date())) {
+		if (DatetimeUtils.checkTimeout(order.getBookingDate(), createOrderDeltaMinutes * 60 * 1000,
+				order.getCreatedDate())) {
 			throw new ParseOrderException("bookingdate is out");
 		}
 
 		order.setUuid(UUID.randomUUID().toString().replace("-", ""));
-		order.setCreatedDate(new Date());
-		order.setStartProcessing(new Date());
 		orderDao.save(order);
 
 		// create new order status (Created)
@@ -181,9 +178,7 @@ public class OrderService {
 		orderStatus.setStatus(OrderStatusType.Created);
 		orderStatusDao.save(orderStatus);
 
-		if (order.getNotlater()) {
-			processing.processOrderAsync(order);
-		}
+		processing.processOrderAsync(order);
 	}
 
 	@Transactional

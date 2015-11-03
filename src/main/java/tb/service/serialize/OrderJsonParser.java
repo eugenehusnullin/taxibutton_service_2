@@ -1,8 +1,5 @@
 package tb.service.serialize;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,40 +20,24 @@ import tb.service.exceptions.ParseOrderException;
 import tb.utils.DatetimeUtils;
 
 public class OrderJsonParser {
-	private static final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
+	private static final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
 
-	private static boolean defineNotlater(Date bookingDateUtc, int notlaterMinutes) {
-		Calendar bookingCalendar = DatetimeUtils.getUtcCalendar(bookingDateUtc);
-		Calendar localCalendar = Calendar.getInstance();
-		localCalendar.add(Calendar.MINUTE, notlaterMinutes);
-
-		return localCalendar.getTime().after(bookingCalendar.getTime());
-	}
-
-	public static Order Json2Order(JSONObject jsonObject, String phone, IPartnerDao partnerDao, int notlaterMinutes)
+	public static Order Json2Order(JSONObject jsonObject, String phone, IPartnerDao partnerDao)
 			throws ParseOrderException {
 
 		Order order = new Order();
 
 		String recipientPhone = phone != null ? phone : jsonObject.optString("recipientPhone");
 
-		Date bookingDate = null;
-		if (jsonObject.has("bookmins"))
-		{
-			int bookMins = jsonObject.getInt("bookmins");
-			bookingDate = DatetimeUtils.localTimeToUtc(new Date());
-			bookingDate = new Date(bookingDate.getTime() + (bookMins * ONE_MINUTE_IN_MILLIS));
-		} else {
-			try {
-				String bookingDateStr = jsonObject.getString("bookingDate");
-				SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-				bookingDate = dateFormatter.parse(bookingDateStr);
-			} catch (JSONException ex) {
-				throw new ParseOrderException("bookingDate bad. " + ex.toString());
-			} catch (ParseException ex) {
-				throw new ParseOrderException("bookingDate format bad. " + ex.toString());
-			}
+		int bookMins = jsonObject.getInt("bookmins");
+		Date bookingDate = DatetimeUtils.localTimeToUtc(new Date());
+		bookingDate = new Date(bookingDate.getTime() + (bookMins * ONE_MINUTE_IN_MILLIS));
+
+		String bookType = jsonObject.getString("booktype");
+		if (!bookType.equals("notlater") || !bookType.equals("exact")) {
+			throw new ParseOrderException("bookType bad.");
 		}
+		order.setNotlater(bookType.equals("notlater"));
 
 		SortedSet<AddressPoint> addressPoints = new TreeSet<AddressPoint>();
 		try {
@@ -131,7 +112,6 @@ public class OrderJsonParser {
 
 		order.setComments(jsonObject.optString("comments", null));
 
-		order.setNotlater(defineNotlater(bookingDate, notlaterMinutes));
 		order.setPhone(recipientPhone);
 		order.setBookingDate(bookingDate);
 		order.setDestinations(addressPoints);

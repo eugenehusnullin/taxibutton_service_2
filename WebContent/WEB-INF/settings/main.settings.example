@@ -15,10 +15,10 @@ costservice.routingservicenames=YandexMapsService,GoogleMapsService,DirectDistan
 
 ;;; COMMON
 offerorder.coordcoef=0.1
-offerorder.notlaterminutes=25
+offerorder.deltaminutes=30
 offerorder.speed=40
 offerorder.cars.actual.geo.minutes=5
-createorder.limit=180000
+createorder.deltaminutes=20
 ; run synch cars and tariffs after application start in seconds
 starter.runsynch.seconds=10
 

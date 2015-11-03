@@ -61,6 +61,7 @@ public class OfferingOrderTaxiRF {
 	private int SPEED;
 	private final static int MINUTE_IN_HOUR = 60;
 
+	@SuppressWarnings("unused")
 	@Transactional
 	public Boolean offer(Order order) {
 		// common check (order state and e.t.c.)
@@ -79,7 +80,7 @@ public class OfferingOrderTaxiRF {
 		String tariffIdName = tariffDefinition.getIdName();
 
 		Map<Long, Document> messages4Send = null;
-		if (order.getNotlater()) {
+		if (true /* true потому что заказы подаются прямо перед подачей за deltaMinutes param from settings file */) {
 			logger.info("Order - " + order.getUuid() + ", try offer NOT LATER order.");
 
 			List<CarState> carStates = carDao.getNearCarStates(order.getSource().getLat(), order.getSource().getLon(),
