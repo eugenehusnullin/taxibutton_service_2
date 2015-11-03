@@ -261,15 +261,15 @@ public class OrderService {
 	}
 
 	@Transactional
-	public JSONObject getGeodata(JSONObject getGeodataJsonObject)
+	public JSONObject getGeodata(JSONObject jsonRequest)
 			throws DeviceNotFoundException, OrderNotFoundException, ParseException {
-		String apiId = getGeodataJsonObject.optString("apiId");
+		String apiId = jsonRequest.optString("apiId");
 		Device device = deviceDao.get(apiId);
 		if (device == null) {
 			throw new DeviceNotFoundException(apiId);
 		}
 
-		String orderUuid = getGeodataJsonObject.optString("orderId");
+		String orderUuid = jsonRequest.optString("orderId");
 		Order order = orderDao.get(orderUuid);
 		if (order == null) {
 			throw new OrderNotFoundException(orderUuid);
@@ -282,18 +282,22 @@ public class OrderService {
 		List<GeoData> geoDataList = new ArrayList<GeoData>();
 		OrderStatus lastStatus = orderStatusDao.getLast(order);
 		if (OrderStatusType.IsValidForUserGeodata(lastStatus.getStatus())) {
-			String lastDateString = getGeodataJsonObject.optString("lastDate");
+			String lastDateString = jsonRequest.optString("lastDate");
 			Date date = null;
 			if (!lastDateString.isEmpty()) {
 				date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(lastDateString);
+			} else {
+				OrderStatus firstUserGeodataStatus = order.getStatuses().stream()
+						.filter(p -> OrderStatusType.IsValidForUserGeodata(p.getStatus()))
+						.sorted((e1, e2) -> e1.getDate().compareTo(e2.getDate()))
+						.findFirst()
+						.get();
+
+				date = firstUserGeodataStatus.getDate();
+				date = new Date((date.getTime() - 5 * 60 * 1000));
 			}
-			OrderStatus firstUserGeodataStatus = order.getStatuses().stream()
-					.filter(p -> OrderStatusType.IsValidForUserGeodata(p.getStatus()))
-					.sorted((e1, e2) -> e1.getDate().compareTo(e2.getDate()))
-					.findFirst()
-					.get();
-			geoDataList = carDao.getGeoData(order.getPartner().getId(), order.getCarUuid(),
-					date == null ? firstUserGeodataStatus.getDate() : date);
+
+			geoDataList = carDao.getGeoData(order.getPartner().getId(), order.getCarUuid(), date);
 		}
 
 		JSONObject geoDataJson = new JSONObject();
