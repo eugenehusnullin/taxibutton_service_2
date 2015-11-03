@@ -259,6 +259,10 @@ public class OrderController {
 			List<String> adds = createAdds(costJson.optJSONArray("adds"));
 
 			JSONObject resultJson = costRequest.getCost(source, destinations, vehicleClass, bookDate, adds);
+			if (resultJson == null) {
+				response.sendError(404);
+				return;
+			}
 			IOUtils.write(resultJson.toString(), response.getOutputStream(), "UTF-8");
 		} catch (Exception e) {
 			logger.error("cost", e);

@@ -3,6 +3,7 @@ package tb.tariffdefinition;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +47,10 @@ public class CostRequest {
 		requestJson.put("Source", getJsonPoint(source));
 		if (destinations != null) {
 			requestJson.put("Destinations", getJsonPoints(destinations));
+		} else {
+			List<Point> fakeDestinations = new ArrayList<>();
+			fakeDestinations.add(source);
+			requestJson.put("Destinations", fakeDestinations);
 		}
 		if (adds != null) {
 			requestJson.put("AdditionalServices", getAdds(adds));
