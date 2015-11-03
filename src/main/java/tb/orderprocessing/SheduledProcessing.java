@@ -45,19 +45,15 @@ public class SheduledProcessing {
 	}
 
 	public void processOrderAsync(Order order) {
-		executorService.execute(new Runnable() {
-			@Override
-			public void run() {
-				if (checkDelta(order.getBookingDate())) {
-					if (order.getStartProcessing() == null) {
-						order.setStartProcessing(new Date());
-						orderDao.save(order);
-					}
-					
+		if (checkDelta(order.getBookingDate())) {
+			executorService.execute(new Runnable() {
+				@Override
+				public void run() {
 					processing.processOrder(order.getId());
 				}
-			}
-		});
+
+			});
+		}
 	}
 
 	@PreDestroy

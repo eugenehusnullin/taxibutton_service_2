@@ -50,6 +50,12 @@ public class Processing {
 	@Transactional
 	public void processOrder(Long orderId) {
 		Order order = orderDao.get(orderId);
+
+		if (order.getStartProcessing() == null) {
+			order.setStartProcessing(new Date());
+			orderDao.save(order);
+		}
+
 		ProcessingState state = defineProcessingState(order);
 		logger.debug("process order id=" + orderId + " ProcessingState=" + state.toString());
 

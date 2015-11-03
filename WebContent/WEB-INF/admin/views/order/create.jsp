@@ -10,9 +10,7 @@
 		<input type="text" name="apiId" value="815777e3-87e9-47e2-bd82-f70624b74517">
 		<br />
 		<h3>Order</h3>
-		Type:<br />
-		<input type="radio" name="orderType" value="true" checked /> urgent order
-		<input type="radio" name="orderType" value="false" /> non-urgent order
+		
 		<br />
 		Client phone:<br />
 		<input type="text" name="phone" value="00000000000"/><br />
@@ -90,10 +88,12 @@
 		<br />
 		<input type="text" name="dHousing" value="8"/>
 		<br />
-		<h3>Booking</h3>
-		Date (dd-MM-yyyy HH:mm):
+		<h3>Bookmins</h3>
+		<input type="text" name="bookmins" value="${bookmins}">
 		<br />
-		<input type="text" name="bookingDate" value="${now_time}">
+		Booktype:<br />
+		<input type="radio" name="booktype" value="notlater" checked /> notlater
+		<input type="radio" name="booktype" value="exact" /> exact
 		<br />
 		<h3>Requirements</h3>
 		<input type="checkbox" name="requirements" value="isAnimalTransport"> animals<br />

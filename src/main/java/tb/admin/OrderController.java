@@ -7,10 +7,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +31,6 @@ import tb.domain.order.OrderStatus;
 import tb.domain.order.OrderStatusType;
 import tb.service.OrderService;
 import tb.service.PartnerService;
-import tb.utils.DatetimeUtils;
 import tb.utils.HttpUtils;
 
 @RequestMapping("/order")
@@ -325,9 +320,7 @@ public class OrderController {
 
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public String create(Model model) {
-		DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-		long t = Calendar.getInstance().getTime().getTime() + (10 * 60000);
-		model.addAttribute("now_time", df.format(DatetimeUtils.localTimeToUtc(new Date(t))));
+		model.addAttribute("bookmins", 20);
 		model.addAttribute("partners", partnerService.getAll());
 		return "order/create";
 	}
@@ -379,8 +372,8 @@ public class OrderController {
 		}
 
 		orderJson.put("destinations", destinationsJson);
-		orderJson.put("urgent", request.getParameter("orderType"));
-		orderJson.put("bookingDate", request.getParameter("bookingDate"));
+		orderJson.put("booktype", request.getParameter("booktype"));
+		orderJson.put("bookmins", request.getParameter("bookmins"));
 
 		JSONArray requirementsJson = new JSONArray();
 

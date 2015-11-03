@@ -34,7 +34,7 @@ public class OrderJsonParser {
 		bookingDate = new Date(bookingDate.getTime() + (bookMins * ONE_MINUTE_IN_MILLIS));
 
 		String bookType = jsonObject.getString("booktype");
-		if (!bookType.equals("notlater") || !bookType.equals("exact")) {
+		if (!bookType.equals("notlater") && !bookType.equals("exact")) {
 			throw new ParseOrderException("bookType bad.");
 		}
 		order.setNotlater(bookType.equals("notlater"));
