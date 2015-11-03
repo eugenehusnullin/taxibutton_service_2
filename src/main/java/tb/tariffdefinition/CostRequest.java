@@ -50,7 +50,7 @@ public class CostRequest {
 		} else {
 			List<Point> fakeDestinations = new ArrayList<>();
 			fakeDestinations.add(source);
-			requestJson.put("Destinations", fakeDestinations);
+			requestJson.put("Destinations", getJsonPoints(fakeDestinations));
 		}
 		if (adds != null) {
 			requestJson.put("AdditionalServices", getAdds(adds));
