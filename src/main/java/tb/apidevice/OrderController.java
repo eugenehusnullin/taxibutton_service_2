@@ -250,6 +250,9 @@ public class OrderController {
 	public void cost(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String str = getHttpServletRequestBuffer(request);
+			if (logger.isDebugEnabled()) {
+				logger.debug(str);
+			}
 			JSONObject costJson = (JSONObject) new JSONTokener(str).nextValue();
 
 			Point source = createPoint(costJson.getJSONObject("source"));
