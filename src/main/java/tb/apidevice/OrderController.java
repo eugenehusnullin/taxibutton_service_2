@@ -312,7 +312,7 @@ public class OrderController {
 	}
 
 	private List<Point> createPoints(JSONArray pointsJson) {
-		if (pointsJson == null) {
+		if (pointsJson == null || pointsJson.length() == 0) {
 			return null;
 		} else {
 			List<Point> points = new ArrayList<Point>();
