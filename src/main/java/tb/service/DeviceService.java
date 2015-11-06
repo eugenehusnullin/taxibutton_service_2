@@ -52,14 +52,20 @@ public class DeviceService {
 			device.setRegDate(new Date());
 		}
 
-		device.setConfirmDate(new Date());
-		Random random = new Random();
-		int keyInt = random.nextInt(9999 - 1000) + 1000;
-		device.setConfirmKey(Integer.toString(keyInt));
+		boolean hasConfirm = registerJson.has("confirm");
+		if ((hasConfirm && registerJson.getBoolean("confirm")) || !hasConfirm) {
+			int keyInt = (new Random()).nextInt(9999 - 1000) + 1000;
+			device.setConfirmKey(Integer.toString(keyInt));
+			device.setConfirmDate(new Date());
+			boolean smsResult = smsService.send(taxi, phone, "Код: " + Integer.toString(keyInt));
+			resultJson.put("result", smsResult ? "WAITSMS" : "ERROR");
+		} else {
+			resultJson.put("result", "OK");
+			resultJson.put("apiId", device.getApiId());
+		}
+
 		deviceDao.save(device);
 
-		boolean smsResult = smsService.send(taxi, phone, "Код: " + Integer.toString(keyInt));
-		resultJson.put("result", smsResult ? "WAITSMS" : "ERROR");
 		return resultJson;
 	}
 
