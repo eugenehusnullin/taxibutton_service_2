@@ -14,7 +14,7 @@ repositories {
 }
 
 project.ext {
-	springVersion = '4.2.1.RELEASE'
+	springVersion = '4.2.3.RELEASE'
 	jstlVersion = '1.2'
 	log4jVersion = '2.2'
 	hibernateVersion = '4.3.11.Final'
