@@ -58,12 +58,12 @@ public class TariffDefinitionMapAreaController {
 
 	@RequestMapping(value = "/edit", method = RequestMethod.POST)
 	public String edit(HttpServletRequest request) {
-		String oldName = request.getParameter("oldname");
 		String name = request.getParameter("name");
+		String newName = request.getParameter("newname");
 		String body = request.getParameter("body");
 
-		TariffDefinitionMapArea tariffDefinitionMapArea = tariffDefinitionMapAreaDao.get(oldName);
-		tariffDefinitionMapArea.setName(name);
+		TariffDefinitionMapArea tariffDefinitionMapArea = tariffDefinitionMapAreaDao.get(name);
+		tariffDefinitionMapArea.setName(newName);
 		tariffDefinitionMapArea.setBody(body);
 		tariffDefinitionMapArea.setEditedDate(new Date());
 

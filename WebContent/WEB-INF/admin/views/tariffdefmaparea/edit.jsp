@@ -5,9 +5,8 @@
 
 
 	<form method="POST">
-		<input type="hidden" name="oldname" value="${name}">
 		<br /> Name:
-		<input type="text" name="name" value="${name}" />
+		<input type="text" name="newname" value="${name}" />
 		
 		<br />	
 		<br /> Map area json body:
