@@ -47,7 +47,7 @@ public class TariffDefinitionMapAreaDao implements ITariffDefinitionMapAreaDao {
 	public TariffDefinitionMapArea get(String name) {
 		return (TariffDefinitionMapArea) sessionFactory.getCurrentSession()
 				.createCriteria(TariffDefinitionMapArea.class)
-				.add(Restrictions.idEq(name))
+				.add(Restrictions.eq("name", name))
 				.uniqueResult();
 	}
 
