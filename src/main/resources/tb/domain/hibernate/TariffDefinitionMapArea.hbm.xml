@@ -5,7 +5,12 @@
 
 <hibernate-mapping package="tb.domain">
 	<class name="TariffDefinitionMapArea" table="tariffdefinitionmapareas">
-		<id name="name" length="50"></id>		
+		<id name="id">
+			<generator class="identity" />
+		</id>
+		<property name="name" length="50" unique="true"></property>		
 		<property name="body" length="300000" not-null="true"/>
+		<property name="createdDate"></property>
+		<property name="editedDate"></property>
 	</class>
 </hibernate-mapping>

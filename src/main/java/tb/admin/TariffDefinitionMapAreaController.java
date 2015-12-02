@@ -1,5 +1,6 @@
 package tb.admin;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,7 @@ public class TariffDefinitionMapAreaController {
 		TariffDefinitionMapArea tariffDefinitionMapArea = new TariffDefinitionMapArea();
 		tariffDefinitionMapArea.setName(name);
 		tariffDefinitionMapArea.setBody(body);
+		tariffDefinitionMapArea.setCreatedDate(new Date());
 
 		tariffDefinitionMapAreaDao.add(tariffDefinitionMapArea);
 
@@ -63,6 +65,7 @@ public class TariffDefinitionMapAreaController {
 		TariffDefinitionMapArea tariffDefinitionMapArea = tariffDefinitionMapAreaDao.get(oldName);
 		tariffDefinitionMapArea.setName(name);
 		tariffDefinitionMapArea.setBody(body);
+		tariffDefinitionMapArea.setEditedDate(new Date());
 
 		tariffDefinitionMapAreaDao.update(tariffDefinitionMapArea);
 

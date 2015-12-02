@@ -3,6 +3,7 @@ package tb.dao.impl;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -26,7 +27,10 @@ public class TariffDefinitionMapAreaDao implements ITariffDefinitionMapAreaDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<TariffDefinitionMapArea> getAll() {
-		return sessionFactory.getCurrentSession().createCriteria(TariffDefinitionMapArea.class).list();
+		return sessionFactory.getCurrentSession()
+				.createCriteria(TariffDefinitionMapArea.class)
+				.addOrder(Order.asc("name"))
+				.list();
 	}
 
 	@Transactional
@@ -50,6 +54,7 @@ public class TariffDefinitionMapAreaDao implements ITariffDefinitionMapAreaDao {
 	@Transactional
 	@Override
 	public void update(TariffDefinitionMapArea tariffDefinitionMapArea) {
-		sessionFactory.getCurrentSession().update(tariffDefinitionMapArea);
+		sessionFactory.getCurrentSession()
+			.update(tariffDefinitionMapArea);
 	}
 }

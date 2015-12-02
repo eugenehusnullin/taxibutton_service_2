@@ -75,7 +75,8 @@ public class PartnerDao implements IPartnerDao {
 	@Override
 	public List<Partner> getPartnersNeedMapareaSynch() {
 		return sessionFactory.getCurrentSession().createCriteria(Partner.class)
-				.add(Restrictions.neOrIsNotNull("mapareaUrl", ""))
+				.add(Restrictions.isNotNull("mapareaUrl"))
+				.add(Restrictions.isNotEmpty("mapareaUrl"))
 				.list();
 	}
 }
