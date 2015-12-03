@@ -1,5 +1,6 @@
 package tb.service;
 
+import java.net.HttpURLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -551,7 +553,14 @@ public class OrderService {
 			if (order.getDevice().getPhone().startsWith("+++")) {
 				responseCode = 200;
 			} else {
-				responseCode = HttpUtils.postDocumentOverHttp(doc, url, logger).getResponseCode();
+				HttpURLConnection con = HttpUtils.postDocumentOverHttp(doc, url, logger);
+				responseCode = con.getResponseCode();
+				if (responseCode != 200) {
+					try {
+						logger.error(IOUtils.toString(con.getErrorStream()));
+					} catch (Exception e) {
+					}
+				}
 			}
 		} catch (Exception e) {
 			logger.error(e.toString());
