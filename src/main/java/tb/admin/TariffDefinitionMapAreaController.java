@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +33,22 @@ public class TariffDefinitionMapAreaController {
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public String add(HttpServletRequest request) {
+	public String add(HttpServletRequest request, Model model) {
 		String name = request.getParameter("name");
 		String body = request.getParameter("body");
-		TariffDefinitionMapArea tariffDefinitionMapArea = new TariffDefinitionMapArea();
-		tariffDefinitionMapArea.setName(name);
-		tariffDefinitionMapArea.setBody(body);
-		tariffDefinitionMapArea.setCreatedDate(new Date());
 
-		tariffDefinitionMapAreaDao.add(tariffDefinitionMapArea);
+		// validate json in body field
+		JSONTokener tokener = new JSONTokener(body);
+		if (tokener.nextValue() instanceof JSONObject && tokener.more() == false) {
+			TariffDefinitionMapArea tariffDefinitionMapArea = new TariffDefinitionMapArea();
+			tariffDefinitionMapArea.setName(name);
+			tariffDefinitionMapArea.setBody(body);
+			tariffDefinitionMapArea.setCreatedDate(new Date());
+			tariffDefinitionMapAreaDao.add(tariffDefinitionMapArea);
+		} else {
+			model.addAttribute("result", "JSON is not valid.");
+			return "result";
+		}
 
 		return "redirect:list";
 	}
@@ -57,17 +66,23 @@ public class TariffDefinitionMapAreaController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.POST)
-	public String edit(HttpServletRequest request) {
+	public String edit(HttpServletRequest request, Model model) {
 		String name = request.getParameter("name");
 		String newName = request.getParameter("newname");
 		String body = request.getParameter("body");
 
-		TariffDefinitionMapArea tariffDefinitionMapArea = tariffDefinitionMapAreaDao.get(name);
-		tariffDefinitionMapArea.setName(newName);
-		tariffDefinitionMapArea.setBody(body);
-		tariffDefinitionMapArea.setEditedDate(new Date());
-
-		tariffDefinitionMapAreaDao.update(tariffDefinitionMapArea);
+		// validate json in body field
+		JSONTokener tokener = new JSONTokener(body);
+		if (tokener.nextValue() instanceof JSONObject && tokener.more() == false) {
+			TariffDefinitionMapArea tariffDefinitionMapArea = tariffDefinitionMapAreaDao.get(name);
+			tariffDefinitionMapArea.setName(newName);
+			tariffDefinitionMapArea.setBody(body);
+			tariffDefinitionMapArea.setEditedDate(new Date());
+			tariffDefinitionMapAreaDao.update(tariffDefinitionMapArea);
+		} else {
+			model.addAttribute("result", "JSON is not valid.");
+			return "result";
+		}
 
 		return "redirect:list";
 	}

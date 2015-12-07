@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -31,7 +33,7 @@ public class TariffDefinitionController {
 	private IMapAreaDao mapAreaDao;
 	@Autowired
 	private ITariffDefinitionDao tariffDefinitionDao;
-	//@Value("#{'${my.list.of.strings}'.split(',')}")
+	// @Value("#{'${my.list.of.strings}'.split(',')}")
 	@Value("#{mainSettings['costservice.routingservicenames'].split(',')}")
 	private List<String> routingServiceNames;
 
@@ -58,7 +60,7 @@ public class TariffDefinitionController {
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public String add(HttpServletRequest request) {
+	public String add(HttpServletRequest request, Model model) {
 		String idname = request.getParameter("idname");
 		String routingServiceName = request.getParameter("routingservicename");
 		String body = request.getParameter("body");
@@ -72,14 +74,21 @@ public class TariffDefinitionController {
 			mapAreasSet.add(mapArea);
 		}
 
-		TariffDefinition tariffDefinition = new TariffDefinition();
-		tariffDefinition.setIdName(idname);
-		tariffDefinition.setRoutingServiceName(routingServiceName);
-		tariffDefinition.setBody(body);
-		tariffDefinition.setVehicleClass(vc);
-		tariffDefinition.setMapAreas(mapAreasSet);
+		// validate json in body field
+		JSONTokener tokener = new JSONTokener(body);
+		if (tokener.nextValue() instanceof JSONObject && tokener.more() == false) {
+			TariffDefinition tariffDefinition = new TariffDefinition();
+			tariffDefinition.setIdName(idname);
+			tariffDefinition.setRoutingServiceName(routingServiceName);
+			tariffDefinition.setBody(body);
+			tariffDefinition.setVehicleClass(vc);
+			tariffDefinition.setMapAreas(mapAreasSet);
 
-		tariffDefinitionDao.add(tariffDefinition);
+			tariffDefinitionDao.add(tariffDefinition);
+		} else {
+			model.addAttribute("result", "JSON is not valid.");
+			return "result";
+		}
 
 		return "redirect:list";
 	}
@@ -107,7 +116,7 @@ public class TariffDefinitionController {
 			mapAreaModels.add(mapAreaModel);
 		}
 		model.addAttribute("mapareas", mapAreaModels);
-		
+
 		List<Long> mapAreasIds = new ArrayList<Long>();
 		tariffDefinition.getMapAreas().stream().forEach(a -> mapAreasIds.add(a.getId()));
 		model.addAttribute("mapareasids", mapAreasIds);
@@ -118,10 +127,10 @@ public class TariffDefinitionController {
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.POST)
-	public String edit(HttpServletRequest request) {
+	public String edit(HttpServletRequest request, Model model) {
 		String oldIdname = request.getParameter("oldidname");
 		TariffDefinition tariffDefinition = tariffDefinitionDao.get(oldIdname);
-		
+
 		String idname = request.getParameter("idname");
 		String routingServiceName = request.getParameter("routingservicename");
 		String body = request.getParameter("body");
@@ -135,13 +144,20 @@ public class TariffDefinitionController {
 			mapAreasSet.add(mapArea);
 		}
 
-		tariffDefinition.setIdName(idname);
-		tariffDefinition.setRoutingServiceName(routingServiceName);
-		tariffDefinition.setBody(body);
-		tariffDefinition.setVehicleClass(vc);
-		tariffDefinition.setMapAreas(mapAreasSet);
+		// validate json in body field
+		JSONTokener tokener = new JSONTokener(body);
+		if (tokener.nextValue() instanceof JSONObject && tokener.more() == false) {
+			tariffDefinition.setIdName(idname);
+			tariffDefinition.setRoutingServiceName(routingServiceName);
+			tariffDefinition.setBody(body);
+			tariffDefinition.setVehicleClass(vc);
+			tariffDefinition.setMapAreas(mapAreasSet);
 
-		tariffDefinitionDao.update(tariffDefinition);
+			tariffDefinitionDao.update(tariffDefinition);
+		} else {
+			model.addAttribute("result", "JSON is not valid.");
+			return "result";
+		}
 
 		return "redirect:list";
 	}
