@@ -74,7 +74,7 @@ public class TariffDefinitionController {
 			mapAreasSet.add(mapArea);
 		}
 
-		if (idname.length() <= 32) {
+		if (idname.length() > 32) {
 			model.addAttribute("result", "Lenghth of idname must be 32 or less chars.");
 			return "result";
 		}
@@ -149,7 +149,7 @@ public class TariffDefinitionController {
 			mapAreasSet.add(mapArea);
 		}
 		
-		if (idname.length() <= 32) {
+		if (idname.length() > 32) {
 			model.addAttribute("result", "Lenghth of idname must be 32 or less chars.");
 			return "result";
 		}
