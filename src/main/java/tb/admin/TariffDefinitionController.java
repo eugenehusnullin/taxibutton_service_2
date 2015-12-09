@@ -74,6 +74,11 @@ public class TariffDefinitionController {
 			mapAreasSet.add(mapArea);
 		}
 
+		if (idname.length() <= 32) {
+			model.addAttribute("result", "Lenghth of idname must be 32 or less chars.");
+			return "result";
+		}
+
 		// validate json in body field
 		JSONTokener tokener = new JSONTokener(body);
 		if (tokener.nextValue() instanceof JSONObject && tokener.more() == false) {
@@ -142,6 +147,11 @@ public class TariffDefinitionController {
 			MapArea mapArea = new MapArea();
 			mapArea.setId(Long.parseLong(mapAreaId));
 			mapAreasSet.add(mapArea);
+		}
+		
+		if (idname.length() <= 32) {
+			model.addAttribute("result", "Lenghth of idname must be 32 or less chars.");
+			return "result";
 		}
 
 		// validate json in body field
