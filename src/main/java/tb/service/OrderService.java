@@ -41,6 +41,7 @@ import tb.domain.order.Offer;
 import tb.domain.order.Order;
 import tb.domain.order.OrderCancel;
 import tb.domain.order.OrderCancelType;
+import tb.domain.order.OrderProcessing;
 import tb.domain.order.OrderStatus;
 import tb.domain.order.OrderStatusType;
 import tb.orderprocessing.SheduledProcessing;
@@ -180,6 +181,9 @@ public class OrderService {
 		orderStatus.setStatus(OrderStatusType.Created);
 		orderStatusDao.save(orderStatus);
 
+		// create order processing info
+		orderDao.addOrderProcessing(order.getId(), "Создан заказ.");
+
 		processing.processOrderAsync(order);
 	}
 
@@ -204,6 +208,9 @@ public class OrderService {
 		if (!order.getDevice().getApiId().equals(apiId)) {
 			throw new OrderNotFoundException(orderUuid);
 		}
+
+		// create order processing info
+		orderDao.addOrderProcessing(order.getId(), "Заказ отменен пользователем.");
 
 		cancelAction(order, reason, device);
 	}
@@ -350,6 +357,8 @@ public class OrderService {
 		alacrity.setUuid(uuid);
 		alacrity.setDate(new Date());
 		assignRequestDao.save(alacrity);
+		
+		orderDao.addOrderProcessing(order.getId(), "Партнер " + partner.getName() + " желает выполнить заказ. Водитель " + uuid);
 	}
 
 	@Transactional
@@ -375,6 +384,8 @@ public class OrderService {
 
 		order.setCarUuid(newcar);
 		orderDao.saveOrUpdate(order);
+		
+		orderDao.addOrderProcessing(order.getId(), "Партнер " + partner.getName() + " сменил водителя. Новый водитель " + newcar);
 	}
 
 	@Transactional
@@ -404,6 +415,8 @@ public class OrderService {
 		status.setStatus(defineOrderStatusType(newStatus));
 		status.setStatusDescription(statusParams);
 		orderStatusDao.save(status);
+		
+		orderDao.addOrderProcessing(order.getId(), "Партнер " + partner.getName() + " обновил статус заказа. " + newStatus + " " + statusParams);
 	}
 
 	private OrderStatusType defineOrderStatusType(String status) {
@@ -610,15 +623,28 @@ public class OrderService {
 				orderStatusDao.save(orderStatus);
 
 				cancelOrder(order, OrderCancelType.Assigned);
+				
+				 orderDao.addOrderProcessing(order.getId(), "Заказ успешно отдан на исполнение партнеру " + assignRequest.getPartner().getName());
 			} else {
 				if (responseCode != 0) {
 					logger.info("assign for order id=" + order.getId() + ", fail give to partner.");
 					assignRequest.setFail(true);
 					assignRequest.setFailHttpCode(responseCode);
 					assignRequestDao.save(assignRequest);
+					
+					orderDao.addOrderProcessing(order.getId(), "Заказ не смог быть отданым на исполнение партнеру " + assignRequest.getPartner().getName()
+							+ " ошибка " + responseCode);
+				} else {
+					orderDao.addOrderProcessing(order.getId(), "Заказ не смог быть отданым на исполнение партнеру " + assignRequest.getPartner().getName()
+							+ " ошибка соединения с партнером.");
 				}
 			}
 		}
+	}
+
+	@Transactional
+	public List<OrderProcessing> getOrderProcessing(Long orderId) {
+		return orderDao.getOrderProcessing(orderId);
 	}
 
 }

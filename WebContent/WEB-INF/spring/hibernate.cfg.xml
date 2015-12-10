@@ -10,6 +10,7 @@
 		<mapping resource="tb/domain/hibernate/AddressPoint.hbm.xml" />
 		<mapping resource="tb/domain/hibernate/Requirement.hbm.xml" />
 		<mapping resource="tb/domain/hibernate/Order.hbm.xml" />
+		<mapping resource="tb/domain/hibernate/OrderProcessing.hbm.xml" />
 		<mapping resource="tb/domain/hibernate/AssignRequest.hbm.xml" />
 		<mapping resource="tb/domain/hibernate/OrderStatus.hbm.xml" />
 		<mapping resource="tb/domain/hibernate/OrderCancel.hbm.xml" />

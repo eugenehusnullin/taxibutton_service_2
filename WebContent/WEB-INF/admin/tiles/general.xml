@@ -56,6 +56,12 @@
 			value="/WEB-INF/admin/views/order/statusList.jsp" />
 	</definition>
 	
+	<definition name="order/info" extends="default">
+		<put-attribute name="title" value="Info" />
+		<put-attribute name="body"
+			value="/WEB-INF/admin/views/order/info.jsp" />
+	</definition>
+	
 	
 	<definition name="partner/list" extends="default">
 		<put-attribute name="title" value="Partners" />

@@ -23,6 +23,7 @@ import tb.car.dao.CarDao;
 import tb.car.domain.Car4Request;
 import tb.car.domain.CarState;
 import tb.dao.IOfferDao;
+import tb.dao.IOrderDao;
 import tb.dao.IOrderStatusDao;
 import tb.dao.IPartnerDao;
 import tb.domain.Partner;
@@ -61,6 +62,9 @@ public class OfferingOrderTaxiRF {
 	private int SPEED;
 	private final static int MINUTE_IN_HOUR = 60;
 
+	@Autowired
+	private IOrderDao orderDao;
+
 	@SuppressWarnings("unused")
 	@Transactional
 	public Boolean offer(Order order) {
@@ -73,6 +77,8 @@ public class OfferingOrderTaxiRF {
 		TariffDefinition tariffDefinition = tariffDefinitionHelper.getTariffDefinition(order.getSource().getLat(),
 				order.getSource().getLon(), order.getOrderVehicleClass());
 		if (tariffDefinition == null) {
+			orderDao.addOrderProcessing(order.getId(),
+					"Не найден тариф. Нет подходящего тарифа в геозоне действия заказа, смотреть на тип заказа эконом, бизнес, и т.д., или просто не попал заказ в геозону. ");
 			logger.info("Order - " + order.getUuid() + ", tariff definition not found for order.");
 			return null;
 		}
@@ -87,6 +93,8 @@ public class OfferingOrderTaxiRF {
 					COORDINATES_COEF);
 
 			if (carStates.size() == 0) {
+				orderDao.addOrderProcessing(order.getId(),
+						"Не найдено ни одной машины такси вблизи заказа, с допустимым состоянием.");
 				logger.info("Order - " + order.getUuid()
 						+ ", NOT OFFER - not found car normal state or(and) nornmal distance.");
 				return false;
@@ -100,15 +108,26 @@ public class OfferingOrderTaxiRF {
 						.collect(Collectors.toList());
 
 				if (carStates.size() == 0) {
+					orderDao.addOrderProcessing(order.getId(),
+							"Не найдено ни одной машины такси вблизи заказа, с допустимым состоянием.");
 					logger.info("Order - " + order.getUuid()
 							+ ", NOT OFFER - not found car normal state or(and) nornmal distance of choosed partner.");
+					return false;
 				}
 			}
+
+			String scars = carStates
+					.stream()
+					.map(p -> p.getPartnerId().toString() + "->" + p.getUuid())
+					.collect(Collectors.joining(", "));
+			orderDao.addOrderProcessing(order.getId(), "Подходящие машины такси: " + carStates);
+
 			List<Long> partnerIdsList = carStates.stream().map(p -> p.getPartnerId()).distinct()
 					.collect(Collectors.toList());
 
 			carStates = carDao.getCarStatesByRequirements(carStates, order.getRequirements(), tariffIdName);
 			if (carStates.size() == 0) {
+				orderDao.addOrderProcessing(order.getId(), "Не найдено ни одной машины такси с выбраными опциями.");
 				logger.info("Order - " + order.getUuid()
 						+ ", NOT OFFER - not found car with selected additional services.");
 			}
@@ -162,7 +181,8 @@ public class OfferingOrderTaxiRF {
 			Partner partner = partnerDao.get(partnerId);
 			String url = partner.getApiurl() + "/1.x/requestcar";
 			try {
-				boolean posted = HttpUtils.postDocumentOverHttp(doc, url, logger).getResponseCode() == 200;
+				int response = HttpUtils.postDocumentOverHttp(doc, url, logger).getResponseCode();
+				boolean posted = response == 200;
 				result |= posted;
 				if (posted) {
 					Offer offeredOrderPartner = new Offer();
@@ -170,9 +190,18 @@ public class OfferingOrderTaxiRF {
 					offeredOrderPartner.setPartner(partner);
 					offeredOrderPartner.setTimestamp(new Date());
 					offerDao.save(offeredOrderPartner);
+					orderDao.addOrderProcessing(order.getId(), "Заказ успешно предложен партнеру " + partner.getName());
+
+				} else {
+					orderDao.addOrderProcessing(order.getId(),
+							"Заказ не смог быть предложенным партнеру " + partner.getName()
+									+ ", код ошибки - " + response);
 				}
 			} catch (IOException | TransformerException | TransformerFactoryConfigurationError e) {
 				logger.error("MAKE OFFER ORDER - " + order.getUuid() + ".", e);
+				orderDao.addOrderProcessing(order.getId(),
+						"Заказ не смог быть предложенным партнеру " + partner.getName()
+								+ ", ошибка - " + e.getMessage());
 			}
 		}
 		return result;

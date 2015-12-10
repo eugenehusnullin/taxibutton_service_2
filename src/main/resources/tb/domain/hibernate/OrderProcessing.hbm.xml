@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="tb.domain.order">
+	<class name="OrderProcessing" table="orderprocessing">
+		<id name="id">
+			<generator class="identity" />
+		</id>		
+		<property name="orderId"/>
+		<property name="noteDate" />
+		<property name="note" length="1024" />
+	</class>
+</hibernate-mapping>

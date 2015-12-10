@@ -27,6 +27,7 @@ import tb.admin.model.OrderModel;
 import tb.admin.model.OrderStatusModel;
 import tb.domain.Partner;
 import tb.domain.order.Order;
+import tb.domain.order.OrderProcessing;
 import tb.domain.order.OrderStatus;
 import tb.domain.order.OrderStatusType;
 import tb.service.OrderService;
@@ -41,6 +42,13 @@ public class OrderController {
 	private OrderService orderService;
 	@Autowired
 	private PartnerService partnerService;
+	
+	@RequestMapping(value = "/info", method = RequestMethod.GET)
+	public String info(@RequestParam("id") Long orderId, Model model) {
+		List<OrderProcessing> pr = orderService.getOrderProcessing(orderId);
+		model.addAttribute("infos", pr);
+		return "order/info";
+	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public String list(HttpServletRequest request, Model model) {
@@ -453,4 +461,6 @@ public class OrderController {
 
 		return "result";
 	}
+	
+	
 }

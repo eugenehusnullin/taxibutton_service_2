@@ -19,7 +19,7 @@
 		<tbody>
 			<c:forEach items="${orders}" var="order">
 				<tr>
-					<td>${order.getId()}</td>
+					<td><a href="info?id=${order.getId()}">${order.getId()}</a></td>
 					<td>${order.getBookingDate()}</td>
 					<td>${order.getSourceShortAddress()}</td>
 					<td>${order.getLastStatus()}</td>

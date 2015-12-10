@@ -61,6 +61,21 @@ public class Processing {
 
 		boolean expired = checkExpired(order, state);
 		if (expired) {
+			switch (state) {
+			case Offer:
+				orderDao.addOrderProcessing(order.getId(),
+						"Заказ отменен сервером. Т.к. в течении " + offerExpiredTimeout
+								+ " минут, он не мог быть предложен ни одному партнеру.");
+				break;
+			case Assign:
+				orderDao.addOrderProcessing(order.getId(),
+						"Заказ отменен сервером. Т.к. в течении " + assignExpiredTimeout
+								+ " минут, его не взяли ни один партнер.");
+				break;
+			default:
+				break;
+			}
+
 			logger.debug("process order id=" + orderId + " is expired.");
 			makeExpiredWork(order);
 			return;

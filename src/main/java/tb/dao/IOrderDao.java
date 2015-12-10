@@ -4,6 +4,7 @@ import java.util.List;
 
 import tb.domain.order.Feedback;
 import tb.domain.order.Order;
+import tb.domain.order.OrderProcessing;
 
 public interface IOrderDao {
 
@@ -19,7 +20,11 @@ public interface IOrderDao {
 
 	Long getAllOrdersCount();
 
-	void saveFeedback(Feedback feedback);	
-	
+	void saveFeedback(Feedback feedback);
+
 	List<Order> getUnfinishedOrders();
+
+	void addOrderProcessing(Long orderId, String note);
+
+	List<OrderProcessing> getOrderProcessing(Long orderId);
 }

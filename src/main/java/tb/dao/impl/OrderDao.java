@@ -1,5 +1,6 @@
 package tb.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import tb.dao.IOrderDao;
 import tb.domain.order.Feedback;
 import tb.domain.order.Order;
+import tb.domain.order.OrderProcessing;
 
 @Repository("OrderDao")
 public class OrderDao implements IOrderDao {
@@ -73,6 +75,26 @@ public class OrderDao implements IOrderDao {
 	public List<Order> getUnfinishedOrders() {
 		return sessionFactory.getCurrentSession().createCriteria(Order.class)
 				.add(Restrictions.eq("processingFinished", false))
+				.list();
+	}
+
+	@Override
+	public void addOrderProcessing(Long orderId, String note) {
+		OrderProcessing pr = new OrderProcessing();
+		pr.setOrderId(orderId);
+		pr.setNoteDate(new Date());
+		pr.setNote(note);
+		
+		sessionFactory.getCurrentSession().save(pr);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<OrderProcessing> getOrderProcessing(Long orderId) {
+		return sessionFactory.getCurrentSession()
+				.createCriteria(OrderProcessing.class)
+				.add(Restrictions.eq("orderId", orderId))
+				.addOrder(org.hibernate.criterion.Order.asc("noteDate"))				
 				.list();
 	}
 }
