@@ -120,7 +120,7 @@ public class OfferingOrderTaxiRF {
 					.stream()
 					.map(p -> p.getPartnerId().toString() + "->" + p.getUuid())
 					.collect(Collectors.joining(", "));
-			orderDao.addOrderProcessing(order.getId(), "Подходящие машины такси: " + carStates);
+			orderDao.addOrderProcessing(order.getId(), "Подходящие машины такси: " + scars);
 
 			List<Long> partnerIdsList = carStates.stream().map(p -> p.getPartnerId()).distinct()
 					.collect(Collectors.toList());
