@@ -11,14 +11,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import tb.car.CarSynch;
-import tb.tariff.TariffSynch;
 
 @Service
 public class Starter {
 	@Autowired
 	private CarSynch carSynch;
-	@Autowired
-	private TariffSynch tariffSynch;
+	// @Autowired
+	// private TariffSynch tariffSynch;
 
 	private ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
@@ -30,7 +29,7 @@ public class Starter {
 		taskScheduler.initialize();
 		Date d = new Date(new Date().getTime() + (runsynchSeconds * 1000));
 		taskScheduler.schedule(carSynch::synch, d);
-		taskScheduler.schedule(tariffSynch::synch, d);		
+		// taskScheduler.schedule(tariffSynch::synch, d);
 	}
 
 	@PreDestroy
