@@ -37,7 +37,7 @@ public class CarSynch {
 		execService.shutdownNow();
 	}
 
-	@Scheduled(cron = "0 01 * * * *")
+	@Scheduled(cron = "* */10 * * * *")
 	public void synch() {
 		logger.info("Start car synch.");
 		List<Partner> partners = partnerDao.getActive();
