@@ -66,6 +66,7 @@ public class PartnerDao implements IPartnerDao {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Transactional
 	@Override
 	public List<Partner> getActive() {
 		return sessionFactory.getCurrentSession().createCriteria(Partner.class).list();

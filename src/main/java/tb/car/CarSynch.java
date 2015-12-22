@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import tb.dao.IPartnerDao;
 import tb.domain.Partner;
@@ -38,7 +37,6 @@ public class CarSynch {
 		execService.shutdownNow();
 	}
 
-	@Transactional
 	@Scheduled(cron = "0 01 * * * *")
 	public void synch() {
 		logger.info("Start car synch.");

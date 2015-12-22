@@ -27,7 +27,7 @@ import tb.utils.XmlUtils;
 @Controller("apiyandexCarGeoController")
 @RequestMapping("/cargeo")
 public class CarGeoController {
-	private static final Logger log = LoggerFactory.getLogger(CarGeoController.class);
+	private static final Logger logger = LoggerFactory.getLogger(CarGeoController.class);
 
 	@Autowired
 	private CarStateGeoBuilder carStateGeoBuilder;
@@ -37,10 +37,12 @@ public class CarGeoController {
 	private CarDao carDao;
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
-	public void index(HttpServletRequest request, HttpServletResponse response) {
+	public void index(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		try {
 			try {
-				Document document = XmlUtils.buildDomDocument(request.getParameter("data"));
+				String paramData = request.getParameter("data");
+				logger.info(paramData);
+				Document document = XmlUtils.buildDomDocument(paramData);
 				String partnerClid = carStateGeoBuilder.defineCarStateGeosPartnerClid(document);
 				Partner partner = partnerDao.getByApiId(partnerClid);
 				if (partner != null) {
@@ -52,10 +54,12 @@ public class CarGeoController {
 				}
 			} catch (ParserConfigurationException | SAXException | IOException e) {
 				response.setStatus(400);
+				response.sendError(400, e.toString());
+				logger.error("cargeo error.", e);
 			}
 		} catch (Exception e) {
-			log.error("cargeo:", e);
-			throw e;
+			logger.error("cargeo:", e);
+			response.sendError(500, e.toString());
 		}
 	}
 }
