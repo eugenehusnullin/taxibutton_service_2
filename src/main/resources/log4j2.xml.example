@@ -1,18 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
 	<Appenders>
-		<Console name="Console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
-		</Console>
-		<RollingFile name="RollingFile" fileName="logs/tb.log"
-			filePattern="logs/tb-%d{yyyy-MM-dd}-%i.log.gz">
+		<RollingFile name="RollingFile" append="false" fileName="logs/tb2/tb.log"
+			filePattern="logs/tb2/tb-%d{yyyy-MM-dd}-%i.log.gz">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
 			</Policies>
 		</RollingFile>
-		<RollingFile name="RollingFileErrors" fileName="logs/tb-errors.log"
-			filePattern="logs/tb-errors-%d{yyyy-MM-dd}-%i.log.gz">
+		<RollingFile name="RollingFileErrors" append="false" fileName="logs/tb2/tb-errors.log"
+			filePattern="logs/tb2/tb-errors-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="RollingFileOfferingOrderTaxiRF" append="false" fileName="logs/tb2/OfferingOrderTaxiRF.log"
+			filePattern="logs/tb2/OfferingOrderTaxiRF-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="RollingFileCarSynch" append="false" fileName="logs/tb2/carsynch.log"
+			filePattern="logs/tb2/carsynch-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="RollingFileTariffSynch" append="false" fileName="logs/tb2/tariffsynch.log"
+			filePattern="logs/tb2/tariffsynch-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="RollingFileCarStatus" append="false" fileName="logs/tb2/carstatus.log"
+			filePattern="logs/tb2/carstatus-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="RollingFileSmsService" append="false" fileName="logs/tb2/smsservice.log"
+			filePattern="logs/tb2/smsservice-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="RollingFileDeviceOrder" append="false" fileName="logs/tb2/tb-deviceorder.log"
+			filePattern="logs/tb2/tb-deviceorderr-%d{yyyy-MM-dd}-%i.log.gz">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
@@ -20,9 +59,27 @@
 		</RollingFile>
 	</Appenders>
 	<Loggers>
+		<Logger name="tb.service.OfferingOrderTaxiRF" level="info">
+      		<AppenderRef ref="RollingFileOfferingOrderTaxiRF" level="info"/>
+    	</Logger>
+    	<Logger name="tb.car.CarSynch" level="info">
+      		<AppenderRef ref="RollingFileCarSynch" level="info"/>
+    	</Logger>
+    	<Logger name="tb.tariff.TariffSynch" level="info">
+      		<AppenderRef ref="RollingFileTariffSynch" level="info"/>
+    	</Logger>
+    	<Logger name="tb.apiyandex.CarStatusController" level="error">
+      		<AppenderRef ref="RollingFileCarStatus" level="info"/>
+    	</Logger>
+	<Logger name="tb.apidevice.OrderController" level="trace">
+      		<AppenderRef ref="RollingFileDeviceOrder" level="trace"/>
+    	</Logger>
+    	<Logger name="tb.service.SmsService" level="debug">
+      		<AppenderRef ref="RollingFileSmsService" level="debug"/>
+    	</Logger>
 		<Root level="info">
-			<AppenderRef ref="Console" level="info" />
 			<AppenderRef ref="RollingFile" level="info" />
+			<AppenderRef ref="RollingFileErrors" level="error" />
 		</Root>
 	</Loggers>
 </Configuration>
