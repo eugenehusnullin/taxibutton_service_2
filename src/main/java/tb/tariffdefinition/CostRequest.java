@@ -84,7 +84,7 @@ public class CostRequest {
 			costJson.put("sum", cr.getPrice());
 			costJson.put("km", cr.getKm());
 			costJson.put("min", cr.getMin());
-			costJson.put("min", cr.getPartnerName());
+			costJson.put("partner", cr.getPartnerName());
 
 			if (costResponses.size() > 1) {
 				// TODO: add all items
