@@ -14,12 +14,12 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import tb.domain.TariffDefinition;
+import tb.domain.Partner;
 import tb.domain.maparea.Point;
 import tb.domain.order.VehicleClass;
+import tb.service.PartnerService;
 import tb.service.serialize.YandexOrderSerializer;
 import tb.utils.HttpUtils;
 
@@ -28,22 +28,16 @@ public class CostRequest {
 	private static final Logger logger = LoggerFactory.getLogger(CostRequest.class);
 
 	@Autowired
-	private TariffDefinitionHelper tariffDefinitionHelper;
-
-	@Value("#{mainSettings['costservice.url']}")
-	private String costServiceUrl;
+	private PartnerService partnerService;
 
 	public JSONObject getCost(Point source, List<Point> destinations, VehicleClass vehicleClass, Date bookDate,
 			List<String> adds) {
-		TariffDefinition tariffDefinition = getTariffDefinition(source, vehicleClass);
 
 		JSONObject requestJson = new JSONObject();
-
-		requestJson.put("RoutingServiceName", tariffDefinition.getRoutingServiceName() == null ? "YandexMapsService"
-				: tariffDefinition.getRoutingServiceName());
+		requestJson.put("RoutingServiceName", "YandexMapsService");
 		requestJson.put("TaxiServiceId", "taxirf");
 		requestJson.put("BookingTime", getBookDate(bookDate));
-		requestJson.put("TariffName", tariffDefinition.getIdName());
+		requestJson.put("CarClass", vehicleClassConverter(vehicleClass));
 		requestJson.put("Source", getJsonPoint(source));
 		if (destinations != null) {
 			requestJson.put("Destinations", getJsonPoints(destinations));
@@ -55,30 +49,51 @@ public class CostRequest {
 		if (adds != null) {
 			requestJson.put("AdditionalServices", getAdds(adds));
 		}
+		String requestStr = requestJson.toString();
+		logger.debug("COST JSON: " + requestStr);
 
-		logger.info("COST JSON: " + requestJson.toString());
+		// cost http requests
+		List<CostResponse> costResponses = new ArrayList<>();
+		List<Partner> partners = partnerService.getPartnersByMapAreas(source.getLatitude(), source.getLongitude());
+		for (Partner partner : partners) {
+			try {
+				String url = partner.getApiurl() + "/1.x/cost";
+				HttpURLConnection connection = HttpUtils.postRawData(requestStr, url, "UTF-8");
+				if (connection.getResponseCode() == 200) {
+					String responseString = IOUtils.toString(connection.getInputStream());
+					logger.info("COST SUCCESS: " + responseString);
+					JSONObject responseJson = (JSONObject) new JSONTokener(responseString).nextValue();
 
-		try {
-			HttpURLConnection connection = HttpUtils.postRawData(requestJson.toString(), costServiceUrl, "UTF-8");
-			if (connection.getResponseCode() == 200) {
-				String responseString = IOUtils.toString(connection.getInputStream());
-				logger.info("COST SUCCESS: " + responseString);
-				JSONObject responseJson = (JSONObject) new JSONTokener(responseString).nextValue();
-
-				JSONObject costJson = new JSONObject();
-				costJson.put("sum", responseJson.get("Price"));
-				JSONObject responseNestedJson = responseJson.getJSONObject("Calculated");
-				costJson.put("km", responseNestedJson.getDouble("Km"));
-				costJson.put("min", responseNestedJson.getDouble("Min"));
-
-				return costJson;
-			} else {
-				logger.warn("COST FAILURE: ResponseCode=" + connection.getResponseCode());
+					CostResponse cr = convertCostResponse(responseJson, partner.getName());
+					costResponses.add(cr);
+				} else {
+					logger.warn("COST FAILURE: ResponseCode=" + connection.getResponseCode() + " Partnername="
+							+ partner.getName());
+				}
+			} catch (IOException e) {
+				logger.warn("COST FAILURE.", e);
 			}
-		} catch (IOException e) {
-			logger.error("getCost", e);
 		}
-		return null;
+
+		if (costResponses.size() > 0) {
+			CostResponse cr = costResponses.stream()
+					.max((c1, c2) -> Double.compare(c1.getPrice(), c2.getPrice()))
+					.get();
+
+			JSONObject costJson = new JSONObject();
+			costJson.put("sum", cr.getPrice());
+			costJson.put("km", cr.getKm());
+			costJson.put("min", cr.getMin());
+			costJson.put("min", cr.getPartnerName());
+
+			if (costResponses.size() > 1) {
+				// TODO: add all items
+			}
+			return costJson;
+
+		} else {
+			return null;
+		}
 	}
 
 	private JSONArray getAdds(List<String> adds) {
@@ -111,8 +126,30 @@ public class CostRequest {
 		return dateFormat.format(bookDate);
 	}
 
-	private TariffDefinition getTariffDefinition(Point source, VehicleClass vehicleClass) {
-		return tariffDefinitionHelper.getTariffDefinition(source.getLatitude(),
-				source.getLongitude(), vehicleClass);
+	private CostResponse convertCostResponse(JSONObject responseJson, String parnetName) {
+		CostResponse cr = new CostResponse();
+		cr.setPrice(responseJson.getDouble("Price"));
+		JSONObject responseNestedJson = responseJson.getJSONObject("Calculated");
+		cr.setKm(responseNestedJson.getDouble("Km"));
+		cr.setMin(responseNestedJson.getDouble("Min"));
+		cr.setPartnerName(parnetName);
+
+		return cr;
+	}
+
+	private int vehicleClassConverter(VehicleClass vehicleClass) {
+		switch (vehicleClass) {
+		case Ecomon:
+			return 0;
+		case Comfort:
+			return 1;
+		case Business:
+			return 2;
+		case VIP:
+			return 3;
+
+		default:
+			return 0;
+		}
 	}
 }

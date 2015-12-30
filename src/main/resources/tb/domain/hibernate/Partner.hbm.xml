@@ -15,20 +15,10 @@
 		<property name="apiurl" length="100" />
 		<property name="tariffUrl" length="100" />
 		<property name="driverUrl" length="100" />
-		<property name="mapareaUrl" length="100" />
-		<property name="costUrl" length="100" />
-		
 		<set name="mapAreas" table="partnermapareas" lazy="false">
 			<key column="partnerid"></key>
 			<many-to-many column="mapareaid" class="tb.domain.maparea.MapArea"></many-to-many>
 		</set>
-		
-		<property name="tariffType">
-			<type name="org.hibernate.type.EnumType">
-				<param name="enumClass">tb.domain.TariffType</param>
-			</type>
-		</property>
-		
 		<property name="timezoneId" length="50"></property>
 	</class>
 </hibernate-mapping>

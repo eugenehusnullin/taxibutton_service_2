@@ -14,10 +14,7 @@ public class Partner {
 	private String apiurl;
 	private String tariffUrl;
 	private String driverUrl;
-	private String mapareaUrl;
-	private String costUrl;
 	private Set<MapArea> mapAreas;
-	private TariffType tariffType;
 	private String timezoneId;
 
 	public Long getId() {
@@ -90,30 +87,6 @@ public class Partner {
 
 	public void setDriverUrl(String driverUrl) {
 		this.driverUrl = driverUrl;
-	}
-
-	public TariffType getTariffType() {
-		return tariffType;
-	}
-
-	public void setTariffType(TariffType tariffType) {
-		this.tariffType = tariffType;
-	}
-
-	public String getMapareaUrl() {
-		return mapareaUrl;
-	}
-
-	public void setMapareaUrl(String mapareaUrl) {
-		this.mapareaUrl = mapareaUrl;
-	}
-
-	public String getCostUrl() {
-		return costUrl;
-	}
-
-	public void setCostUrl(String costUrl) {
-		this.costUrl = costUrl;
 	}
 
 	public String getTimezoneId() {

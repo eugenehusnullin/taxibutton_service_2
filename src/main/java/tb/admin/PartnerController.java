@@ -18,7 +18,6 @@ import tb.car.CarSynch;
 import tb.car.dao.CarDao;
 import tb.dao.IMapAreaDao;
 import tb.domain.Partner;
-import tb.domain.TariffType;
 import tb.domain.maparea.MapArea;
 import tb.service.PartnerService;
 import tb.service.Starter;
@@ -93,16 +92,11 @@ public class PartnerController {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String create(@RequestParam("name") String name, @RequestParam("apiurl") String apiurl,
 			@RequestParam("apiId") String apiId, @RequestParam("apiKey") String apiKey,
-			@RequestParam("tarifftype") String tariffTypeParam,
 			@RequestParam("tariffurl") String tariffUrl,
 			@RequestParam("driverurl") String driverUrl,
-			@RequestParam("mapareaurl") String mapareaUrl,
-			@RequestParam("costurl") String costUrl,
 			@RequestParam("timezoneId") String timezoneId,
 			@RequestParam("mapareas") String[] mapAreaIds,
 			Model model) {
-
-		TariffType tariffType = TariffType.values()[Integer.parseInt(tariffTypeParam)];
 
 		Set<MapArea> mapAreasSet = new HashSet<MapArea>();
 		for (String mapAreaId : mapAreaIds) {
@@ -118,9 +112,6 @@ public class PartnerController {
 		partner.setApiKey(apiKey);
 		partner.setTariffUrl(tariffUrl);
 		partner.setDriverUrl(driverUrl);
-		partner.setMapareaUrl(mapareaUrl);
-		partner.setCostUrl(costUrl);
-		partner.setTariffType(tariffType);
 		partner.setTimezoneId(timezoneId);
 		partner.setMapAreas(mapAreasSet);
 		partnerService.add(partner);
@@ -144,11 +135,8 @@ public class PartnerController {
 		model.addAttribute("apiKey", partner.getApiKey());
 		model.addAttribute("name", partner.getName());
 		model.addAttribute("apiUrl", partner.getApiurl());
-		model.addAttribute("tarifftype", partner.getTariffType() == null ? -1 : partner.getTariffType().ordinal());
 		model.addAttribute("driverUrl", partner.getDriverUrl());
 		model.addAttribute("tariffUrl", partner.getTariffUrl());
-		model.addAttribute("mapareaUrl", partner.getMapareaUrl());
-		model.addAttribute("costUrl", partner.getCostUrl());
 		model.addAttribute("timezoneId", partner.getTimezoneId());
 
 		List<MapAreaModel> mapAreaModels = new ArrayList<MapAreaModel>();
@@ -174,14 +162,10 @@ public class PartnerController {
 			@RequestParam("apiKey") String apiKey,
 			@RequestParam("name") String name,
 			@RequestParam("apiUrl") String apiUrl,
-			@RequestParam("tarifftype") String tariffTypeParam,
 			@RequestParam("tariffUrl") String tariffUrl,
 			@RequestParam("driverUrl") String driverUrl,
-			@RequestParam("mapareaUrl") String mapareaUrl,
-			@RequestParam("costUrl") String costUrl,
 			@RequestParam("timezoneId") String timezoneId,
 			@RequestParam("mapareas") String[] mapAreaIds) {
-		TariffType tariffType = TariffType.values()[Integer.parseInt(tariffTypeParam)];
 
 		Set<MapArea> mapAreasSet = new HashSet<MapArea>();
 		for (String mapAreaId : mapAreaIds) {
@@ -190,8 +174,7 @@ public class PartnerController {
 			mapAreasSet.add(mapArea);
 		}
 
-		partnerService.update(partnerId, apiId, apiKey, name, apiUrl, tariffType, tariffUrl, driverUrl,
-				timezoneId, mapareaUrl, costUrl, mapAreasSet);
+		partnerService.update(partnerId, apiId, apiKey, name, apiUrl, tariffUrl, driverUrl, timezoneId, mapAreasSet);
 		return "redirect:list";
 	}
 }

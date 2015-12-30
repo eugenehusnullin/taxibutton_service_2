@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tb.dao.ITariffDao;
 import tb.domain.Partner;
 import tb.domain.Tariff;
-import tb.domain.TariffType;
 import tb.utils.HttpUtils;
 
 @Service
@@ -35,17 +34,11 @@ public class TariffSynchProcessing {
 		}
 
 		try {
-			InputStream inputStream = HttpUtils.makeGetRequest(partner.getTariffUrl(),
-					partner.getTariffType() == TariffType.XML ? "application/xml" : "application/json");
+			InputStream inputStream = HttpUtils.makeGetRequest(partner.getTariffUrl(), "application/json");
 			if (inputStream != null) {
 				Date loadDate = new Date();
-				List<Tariff> tariffs;
+				List<Tariff> tariffs = tariffBuilder.createTariffsFromJson(inputStream, partner, loadDate);
 
-				if (partner.getTariffType() == TariffType.XML) {
-					tariffs = tariffBuilder.createTariffsFromXml(inputStream, partner, loadDate);
-				} else {
-					tariffs = tariffBuilder.createTariffsFromJson(inputStream, partner, loadDate);
-				}
 				logger.info(tariffs.size() + " tariffs - pulled from partner.");
 				updateTariffs(tariffs, partner, loadDate);
 				logger.info("Tariffs saved to db.");
