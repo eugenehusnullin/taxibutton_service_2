@@ -127,9 +127,10 @@ public class CostRequest {
 	}
 
 	private CostResponse convertCostResponse(JSONObject responseJson, String parnetName) {
-		CostResponse cr = new CostResponse();
-		cr.setPrice(responseJson.getDouble("Price"));
 		JSONObject responseNestedJson = responseJson.getJSONObject("Calculated");
+		
+		CostResponse cr = new CostResponse();
+		cr.setPrice(responseNestedJson.getDouble("Price"));		
 		cr.setKm(responseNestedJson.getDouble("Km"));
 		cr.setMin(responseNestedJson.getDouble("Min"));
 		cr.setPartnerName(parnetName);
