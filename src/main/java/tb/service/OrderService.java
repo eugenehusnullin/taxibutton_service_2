@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -476,6 +477,11 @@ public class OrderService {
 			if (order.getPartner() != null) {
 				model.setPartnerName(order.getPartner().getName());
 			}
+
+			model.setRequirements(
+					order.getRequirements().stream()
+							.map(p -> p.getType() + " = " + p.getOptions())
+							.collect(Collectors.joining(", ")));
 		}
 
 		return models;

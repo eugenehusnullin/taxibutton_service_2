@@ -14,6 +14,7 @@
 				<th>partnerId</th>
 				<th>phone</th>
 				<th>orderid</th>
+				<th>requiremets</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -27,6 +28,7 @@
 					<td>${order.getPartnerName()}</td>
 					<td>${order.getPhone()}</td>
 					<td>${order.getUuid()}</td>
+					<td>${order.getRequirements()}</td>
 				</tr>
 				<tr>
 					<td>client actions:</td>

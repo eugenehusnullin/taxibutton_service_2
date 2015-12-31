@@ -11,6 +11,7 @@ public class OrderModel {
 	private String lastStatus;
 	private String uuid;
 	private String partnerName;
+	private String requirements;
 
 	public Long getId() {
 		return id;
@@ -74,5 +75,13 @@ public class OrderModel {
 
 	public void setPartnerName(String partnerName) {
 		this.partnerName = partnerName;
+	}
+
+	public String getRequirements() {
+		return requirements;
+	}
+
+	public void setRequirements(String requirements) {
+		this.requirements = requirements;
 	}
 }
