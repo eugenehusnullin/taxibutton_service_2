@@ -30,7 +30,7 @@ public class CarSynchProcessing {
 	public void makeCarSynch(Partner partner) {
 		logger.info("partner - " + partner.getName() + "(" + partner.getApiId() + ")");
 		try {
-			InputStream carsInputStream = HttpUtils.makeGetRequest(partner.getDriverUrl(), "application/xml");
+			InputStream carsInputStream = HttpUtils.makeGetRequest(partner.getApiurl() + "/drivers", "application/xml");
 			Document doc = XmlUtils.buildDomDocument(carsInputStream);
 			Date loadDate = new Date();
 			List<Car> cars = carBuilder.createCars(doc, partner, loadDate);

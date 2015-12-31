@@ -12,8 +12,6 @@ public class Partner {
 	private String apiKey;
 	private String name;
 	private String apiurl;
-	private String tariffUrl;
-	private String driverUrl;
 	private Set<MapArea> mapAreas;
 	private String timezoneId;
 
@@ -71,22 +69,6 @@ public class Partner {
 
 	public void setMapAreas(Set<MapArea> mapAreas) {
 		this.mapAreas = mapAreas;
-	}
-
-	public String getTariffUrl() {
-		return tariffUrl;
-	}
-
-	public void setTariffUrl(String tariffUrl) {
-		this.tariffUrl = tariffUrl;
-	}
-
-	public String getDriverUrl() {
-		return driverUrl;
-	}
-
-	public void setDriverUrl(String driverUrl) {
-		this.driverUrl = driverUrl;
 	}
 
 	public String getTimezoneId() {

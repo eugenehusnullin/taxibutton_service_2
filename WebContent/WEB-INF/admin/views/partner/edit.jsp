@@ -8,8 +8,6 @@
 		<br /> clid<input type="text" name="apiId" value="${apiId}" />
 		<br /> apikey <input type="text" name="apiKey" value="${apiKey}" />
 		<br /> url <input type="text" name="apiUrl" value="${apiUrl}" />
-		<br/>tariff url <input type="text" name="tariffUrl" value="${tariffUrl}"/>
-		<br/>driver url <input type="text" name="driverUrl" value="${driverUrl}"/>
 		<br/>TimeZone ID <input type="text" name="timezoneId" value="${timezoneId}"/>
 		
 		<br />

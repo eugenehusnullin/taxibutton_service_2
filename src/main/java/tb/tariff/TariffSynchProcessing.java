@@ -28,13 +28,9 @@ public class TariffSynchProcessing {
 	@Transactional
 	public void makeTariffSynch(Partner partner) {
 		logger.info("partner - " + partner.getName() + "(" + partner.getApiId() + ")");
-		if (partner.getTariffUrl() == null || partner.getTariffUrl().isEmpty()) {
-			logger.warn("tariff url is empty.");
-			return;
-		}
 
 		try {
-			InputStream inputStream = HttpUtils.makeGetRequest(partner.getTariffUrl(), "application/json");
+			InputStream inputStream = HttpUtils.makeGetRequest(partner.getApiurl() + "/tariffs", "application/json");
 			if (inputStream != null) {
 				Date loadDate = new Date();
 				List<Tariff> tariffs = tariffBuilder.createTariffsFromJson(inputStream, partner, loadDate);

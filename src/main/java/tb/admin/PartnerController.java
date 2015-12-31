@@ -90,10 +90,10 @@ public class PartnerController {
 	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String create(@RequestParam("name") String name, @RequestParam("apiurl") String apiurl,
-			@RequestParam("apiId") String apiId, @RequestParam("apiKey") String apiKey,
-			@RequestParam("tariffurl") String tariffUrl,
-			@RequestParam("driverurl") String driverUrl,
+	public String create(@RequestParam("name") String name,
+			@RequestParam("apiurl") String apiurl,
+			@RequestParam("apiId") String apiId,
+			@RequestParam("apiKey") String apiKey,
 			@RequestParam("timezoneId") String timezoneId,
 			@RequestParam("mapareas") String[] mapAreaIds,
 			Model model) {
@@ -110,8 +110,6 @@ public class PartnerController {
 		partner.setApiurl(apiurl);
 		partner.setApiId(apiId);
 		partner.setApiKey(apiKey);
-		partner.setTariffUrl(tariffUrl);
-		partner.setDriverUrl(driverUrl);
 		partner.setTimezoneId(timezoneId);
 		partner.setMapAreas(mapAreasSet);
 		partnerService.add(partner);
@@ -135,8 +133,6 @@ public class PartnerController {
 		model.addAttribute("apiKey", partner.getApiKey());
 		model.addAttribute("name", partner.getName());
 		model.addAttribute("apiUrl", partner.getApiurl());
-		model.addAttribute("driverUrl", partner.getDriverUrl());
-		model.addAttribute("tariffUrl", partner.getTariffUrl());
 		model.addAttribute("timezoneId", partner.getTimezoneId());
 
 		List<MapAreaModel> mapAreaModels = new ArrayList<MapAreaModel>();
@@ -162,8 +158,6 @@ public class PartnerController {
 			@RequestParam("apiKey") String apiKey,
 			@RequestParam("name") String name,
 			@RequestParam("apiUrl") String apiUrl,
-			@RequestParam("tariffUrl") String tariffUrl,
-			@RequestParam("driverUrl") String driverUrl,
 			@RequestParam("timezoneId") String timezoneId,
 			@RequestParam("mapareas") String[] mapAreaIds) {
 
@@ -174,7 +168,7 @@ public class PartnerController {
 			mapAreasSet.add(mapArea);
 		}
 
-		partnerService.update(partnerId, apiId, apiKey, name, apiUrl, tariffUrl, driverUrl, timezoneId, mapAreasSet);
+		partnerService.update(partnerId, apiId, apiKey, name, apiUrl, timezoneId, mapAreasSet);
 		return "redirect:list";
 	}
 }

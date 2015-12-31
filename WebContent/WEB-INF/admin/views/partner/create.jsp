@@ -9,8 +9,6 @@
 		<br/>clid <input type="text" name="apiId" value="1"/>
 		<br/>apikey <input type="text" name="apiKey" value="1"/>
 		<br/>url <input type="text" name="apiurl" value="http://" />
-		<br/>tariff url <input type="text" name="tariffurl" value="http://"/>
-		<br/>driver url <input type="text" name="driverurl" value="http://"/>
 		<br/>TimeZone ID <input type="text" name="timezoneId" value="UTC"/>
 		
 		<br />
