@@ -14,6 +14,7 @@
 			<th>date</th>
 			<th>lat</th>
 			<th>lon</th>
+			<th>requirmets</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -23,9 +24,14 @@
 				<td>${car[1].getUuid()}</td>
 				<td>${car[1].getDriverDisplayName()}</td>
 				<td>${car[0].getState()}</td>
-				<td> ${car[0].getDate()}</td>
+				<td>${car[0].getDate()}</td>
 				<td>${car[0].getLatitude()}</td>
 				<td>${car[0].getLongitude()}</td>
+				<td>
+					<c:forEach items="${car[1].getCarRequires().entrySet()}" var="req">
+						${req.getKey()}=${req.getValue()},
+					</c:forEach>
+				</td>
 			</tr>
 		</c:forEach>
 	</tbody>
