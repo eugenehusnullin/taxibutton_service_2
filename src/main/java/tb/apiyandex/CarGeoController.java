@@ -41,7 +41,7 @@ public class CarGeoController {
 		try {
 			try {
 				String paramData = request.getParameter("data");
-				logger.info(paramData);
+				logger.debug(paramData);
 				Document document = XmlUtils.buildDomDocument(paramData);
 				String partnerClid = carStateGeoBuilder.defineCarStateGeosPartnerClid(document);
 				Partner partner = partnerDao.getByApiId(partnerClid);
