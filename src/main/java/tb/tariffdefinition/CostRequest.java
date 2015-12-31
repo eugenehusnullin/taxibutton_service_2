@@ -28,7 +28,7 @@ import tb.utils.HttpUtils;
 @Service
 public class CostRequest {
 	private static final Logger logger = LoggerFactory.getLogger(CostRequest.class);
-	
+
 	@Autowired
 	private TariffDefinitionHelper tariffDefinitionHelper;
 	@Value("#{mainSettings['costservice.url']}")
@@ -69,8 +69,9 @@ public class CostRequest {
 
 				requestJson = new JSONObject();
 
-				requestJson.put("RoutingServiceName", tariffDefinition.getRoutingServiceName() == null ? "YandexMapsService"
-						: tariffDefinition.getRoutingServiceName());
+				requestJson.put("RoutingServiceName",
+						tariffDefinition.getRoutingServiceName() == null ? "YandexMapsService"
+								: tariffDefinition.getRoutingServiceName());
 				requestJson.put("TaxiServiceId", "taxirf");
 				requestJson.put("BookingTime", getBookDate(bookDate));
 				requestJson.put("TariffName", tariffDefinition.getIdName());
@@ -89,7 +90,8 @@ public class CostRequest {
 				logger.info("COST JSON: " + requestJson.toString());
 
 				try {
-					HttpURLConnection connection = HttpUtils.postRawData(requestJson.toString(), costServiceUrl, "UTF-8");
+					HttpURLConnection connection = HttpUtils.postRawData(requestJson.toString(), costServiceUrl,
+							"UTF-8");
 					if (connection.getResponseCode() == 200) {
 						String responseString = IOUtils.toString(connection.getInputStream());
 						logger.info("COST SUCCESS: " + responseString);
@@ -182,10 +184,11 @@ public class CostRequest {
 	}
 
 	private CostResponse convertCostResponse(JSONObject responseJson, String parnetName) {
-		JSONObject responseNestedJson = responseJson.getJSONObject("Calculated");
 
 		CostResponse cr = new CostResponse();
-		cr.setPrice(responseNestedJson.getDouble("Price"));
+		cr.setPrice(responseJson.getDouble("TotalPrice"));
+
+		JSONObject responseNestedJson = responseJson.getJSONObject("Calculated");
 		cr.setKm(responseNestedJson.getDouble("Km"));
 		cr.setMin(responseNestedJson.getDouble("Min"));
 		cr.setPartnerName(parnetName);
@@ -208,7 +211,7 @@ public class CostRequest {
 			return 0;
 		}
 	}
-	
+
 	private TariffDefinition getTariffDefinition(Point source, VehicleClass vehicleClass) {
 		return tariffDefinitionHelper.getTariffDefinition(source.getLatitude(),
 				source.getLongitude(), vehicleClass);
