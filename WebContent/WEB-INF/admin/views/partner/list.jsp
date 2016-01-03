@@ -24,15 +24,9 @@
 			</tr>
 			<tr class="actionTr">
 				<td class="actionTd" colspan="5">
-					<a href="../tariff/tariff?id=${partner.getId()}">Tariff</a>
-					---
-					<a href="../phone/blackList?id=${partner.getId()}">Black list</a>
-					---
-					<a href="qiwi?id=${partner.getId()}">QIWI</a>
+					<a href="edit?id=${partner.getId()}">Edit</a>
 					---
 					<a href="delete?id=${partner.getId()}">Delete</a>
-					---
-					<a href="edit?id=${partner.getId()}">Edit</a>
 					---
 					<a href="cars?id=${partner.getId()}">Cars</a>
 				</td>
@@ -44,8 +38,6 @@
 <a href="create">Create</a>
 <br />
 <a href="carsynch">Car synch (pull cars from dispatchers)</a>
-<br />
-<a href="tariffsynch">Tariff synch (pull tariffs from dispatchers)</a>
 <br />
 <br />
 <br />

@@ -21,6 +21,7 @@ import tb.car.domain.CarStateEnum;
 import tb.car.domain.GeoData;
 import tb.domain.Partner;
 import tb.domain.order.Requirement;
+import tb.domain.order.VehicleClass;
 
 @Service
 public class CarDao {
@@ -121,17 +122,19 @@ public class CarDao {
 	}
 
 	@Transactional
-	public List<CarState> getNearCarStates(double lat, double lon, double diff) {
+	public List<CarState> getNearCarStates(List<Partner> partners, double lat, double lon, double diff) {
 		Session session = sessionFactory.getCurrentSession();
 		Date date = new Date((new Date()).getTime() - (actualGeoMinutes * 60 * 1000));
 		String q = " from CarState cs "
 				+ " where cs.state=0 "
+				+ " and cs.partnerId in (:partners) "
 				+ " and cs.date>=:date "
 				+ " and (abs(:lat-cs.latitude) + abs(:lon-cs.longitude)) <= :diff "
 				+ " order by abs(:lat-cs.latitude) + abs(:lon-cs.longitude) ";
 
 		@SuppressWarnings("unchecked")
 		List<CarState> list = (List<CarState>) session.createQuery(q)
+				.setParameterList("partners", partners.stream().map(p -> p.getId()).collect(Collectors.toList()))
 				.setTimestamp("date", date)
 				.setDouble("lat", lat)
 				.setDouble("lon", lon)
@@ -159,7 +162,7 @@ public class CarDao {
 
 	@Transactional
 	public List<CarState> getCarStatesByRequirements(List<CarState> carStates, Set<Requirement> reqs,
-			String tariffIdName) {
+			VehicleClass vehicleClass) {
 		if (reqs == null || reqs.size() == 0) {
 			return carStates;
 		}
@@ -173,8 +176,8 @@ public class CarDao {
 					.add(Restrictions.eq("uuid", carState.getUuid()))
 					.uniqueResult();
 
-			if (tariffIdName != null) {
-				if (!car.getTariffs().contains(tariffIdName)) {
+			if (vehicleClass != null) {
+				if (!car.getVehicleClasses().contains(vehicleClass)) {
 					continue;
 				}
 			}
@@ -186,22 +189,6 @@ public class CarDao {
 			}
 		}
 		return filteredCarStates;
-	}
-
-	@Transactional
-	public String getFirstTariff(Long partnerId, String uuid) {
-		Session session = sessionFactory.getCurrentSession();
-
-		Car car = (Car) session.createCriteria(Car.class)
-				.add(Restrictions.eq("partnerId", partnerId))
-				.add(Restrictions.eq("uuid", uuid))
-				.uniqueResult();
-
-		if (car != null) {
-			return car.getTariffs().get(0);
-		} else {
-			return null;
-		}
 	}
 
 	@Transactional

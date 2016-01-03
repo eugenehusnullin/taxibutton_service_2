@@ -24,16 +24,11 @@ import tb.car.domain.Car4Request;
 import tb.car.domain.CarState;
 import tb.dao.IOfferDao;
 import tb.dao.IOrderDao;
-import tb.dao.IOrderStatusDao;
 import tb.dao.IPartnerDao;
 import tb.domain.Partner;
-import tb.domain.TariffDefinition;
 import tb.domain.order.Offer;
 import tb.domain.order.Order;
-import tb.domain.order.OrderStatus;
-import tb.domain.order.OrderStatusType;
 import tb.service.serialize.YandexOrderSerializer;
-import tb.tariffdefinition.TariffDefinitionHelper;
 import tb.utils.DatetimeUtils;
 import tb.utils.HttpUtils;
 
@@ -42,19 +37,15 @@ public class OfferingOrderTaxiRF {
 	private static final Logger logger = LoggerFactory.getLogger(OfferingOrderTaxiRF.class);
 
 	@Autowired
-	private IOrderStatusDao orderStatusDao;
-	@Autowired
 	private CarDao carDao;
 	@Autowired
 	private IPartnerDao partnerDao;
-	// @Autowired
-	// private ITariffDao tariffDao;
 	@Autowired
 	private IOfferDao offerDao;
 	@Autowired
-	private PartnerService partnerService;
+	private IOrderDao orderDao;
 	@Autowired
-	private TariffDefinitionHelper tariffDefinitionHelper;
+	private PartnerService partnerService;
 
 	@Value("#{mainSettings['offerorder.coordcoef']}")
 	private double COORDINATES_COEF;
@@ -62,104 +53,95 @@ public class OfferingOrderTaxiRF {
 	private int SPEED;
 	private final static int MINUTE_IN_HOUR = 60;
 
-	@Autowired
-	private IOrderDao orderDao;
-
-	@SuppressWarnings("unused")
 	@Transactional
 	public Boolean offer(Order order) {
-		// common check (order state and e.t.c.)
-		if (!checkOrderValid4Offer(order)) {
-			logger.info("Order - " + order.getUuid() + ", has bad state for offering.");
+		List<Partner> partners = partnerService.getPartnersByMapAreas(order.getSource().getLat(),
+				order.getSource().getLon());
+
+		if (partners == null || partners.size() == 0) {
+			orderDao.addOrderProcessing(order.getId(), "Не найдены партнеры в геозоне действия заказа.");
+			logger.info("Order - " + order.getUuid() + ", partners not found.");
 			return null;
 		}
 
-		TariffDefinition tariffDefinition = tariffDefinitionHelper.getTariffDefinition(order.getSource().getLat(),
-				order.getSource().getLon(), order.getOrderVehicleClass());
-		if (tariffDefinition == null) {
+		List<CarState> carStates = carDao.getNearCarStates(partners, order.getSource().getLat(),
+				order.getSource().getLon(),
+				COORDINATES_COEF);
+
+		if (carStates.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(),
-					"Не найден тариф. Нет подходящего тарифа в геозоне действия заказа, смотреть на тип заказа эконом, бизнес, и т.д., или просто не попал заказ в геозону. ");
-			logger.info("Order - " + order.getUuid() + ", tariff definition not found for order.");
-			return null;
+					"Не найдено ни одной машины такси вблизи заказа, с допустимым состоянием.");
+			logger.info("Order - " + order.getUuid()
+					+ ", NOT OFFER - not found car normal state or(and) nornmal distance.");
+			return false;
 		}
 
-		String tariffIdName = tariffDefinition.getIdName();
-
-		Map<Long, Document> messages4Send = null;
-		if (true /* true потому что заказы подаются прямо перед подачей за deltaMinutes param from settings file */) {
-			logger.info("Order - " + order.getUuid() + ", try offer NOT LATER order.");
-
-			List<CarState> carStates = carDao.getNearCarStates(order.getSource().getLat(), order.getSource().getLon(),
-					COORDINATES_COEF);
+		if (order.getOfferPartners() != null && order.getOfferPartners().size() > 0) {
+			final List<Long> limitPartnerIds = order.getOfferPartners().stream().map(m -> m.getId())
+					.collect(Collectors.toList());
+			carStates = carStates.stream()
+					.filter(p -> limitPartnerIds.contains(p.getPartnerId()))
+					.collect(Collectors.toList());
 
 			if (carStates.size() == 0) {
 				orderDao.addOrderProcessing(order.getId(),
-						"Не найдено ни одной машины такси вблизи заказа, с допустимым состоянием.");
+						"Не найдено ни одной машины такси вблизи заказа, для указаного в заказе партнера.");
 				logger.info("Order - " + order.getUuid()
-						+ ", NOT OFFER - not found car normal state or(and) nornmal distance.");
+						+ ", NOT OFFER - not found car normal state or(and) nornmal distance of choosed partner.");
 				return false;
 			}
-
-			if (order.getOfferPartners() != null && order.getOfferPartners().size() > 0) {
-				final List<Long> limitPartnerIds = order.getOfferPartners().stream().map(m -> m.getId())
-						.collect(Collectors.toList());
-				carStates = carStates.stream()
-						.filter(p -> limitPartnerIds.contains(p.getPartnerId()))
-						.collect(Collectors.toList());
-
-				if (carStates.size() == 0) {
-					orderDao.addOrderProcessing(order.getId(),
-							"Не найдено ни одной машины такси вблизи заказа, с допустимым состоянием.");
-					logger.info("Order - " + order.getUuid()
-							+ ", NOT OFFER - not found car normal state or(and) nornmal distance of choosed partner.");
-					return false;
-				}
-			}
-
-			String scars = carStates
-					.stream()
-					.map(p -> p.getPartnerId().toString() + "->" + p.getUuid())
-					.collect(Collectors.joining(", "));
-			orderDao.addOrderProcessing(order.getId(), "Подходящие машины такси: " + scars);
-
-			List<Long> partnerIdsList = carStates.stream().map(p -> p.getPartnerId()).distinct()
-					.collect(Collectors.toList());
-
-			carStates = carDao.getCarStatesByRequirements(carStates, order.getRequirements(), tariffIdName);
-			if (carStates.size() == 0) {
-				orderDao.addOrderProcessing(order.getId(), "Не найдено ни одной машины такси с выбраными опциями.");
-				logger.info("Order - " + order.getUuid()
-						+ ", NOT OFFER - not found car with selected additional services.");
-			}
-			messages4Send = createNotlaterOffer(order, partnerIdsList, carStates, tariffIdName);
-		} else {
-			logger.info("Order - " + order.getUuid() + ", try offer EXACT order.");
-
-			List<Partner> partners = partnerService.getPartnersByMapAreas(order.getSource().getLat(),
-					order.getSource().getLon());
-
-			if (partners.size() == 0) {
-				logger.info("Order - " + order.getUuid()
-						+ ", NOT OFFER - not found partners with needed mapareas.");
-			}
-
-			if (order.getOfferPartners() != null && order.getOfferPartners().size() > 0) {
-				final List<Long> limitPartnerIds = order.getOfferPartners().stream().map(m -> m.getId())
-						.collect(Collectors.toList());
-				partners = partners.stream()
-						.filter(p -> limitPartnerIds.contains(p.getId()))
-						.collect(Collectors.toList());
-
-				if (partners.size() == 0) {
-					logger.info("Order - " + order.getUuid()
-							+ ", NOT OFFER - not found choosed partner in mapareas.");
-				}
-			}
-			messages4Send = createExactOffers(order, partners.stream().map(p -> p.getId()).collect(Collectors.toList()),
-					tariffIdName);
 		}
 
+		String scars = carStates
+				.stream()
+				.map(p -> p.getPartnerId().toString() + "->" + p.getUuid())
+				.collect(Collectors.joining(", "));
+		orderDao.addOrderProcessing(order.getId(), "Подходящие машины такси: " + scars);
+
+		List<Long> partnerIdsList = carStates.stream()
+				.map(p -> p.getPartnerId())
+				.distinct()
+				.collect(Collectors.toList());
+
+		carStates = carDao.getCarStatesByRequirements(carStates, order.getRequirements(), order.getOrderVehicleClass());
+		if (carStates.size() == 0) {
+			orderDao.addOrderProcessing(order.getId(), "Не найдено ни одной машины такси с выбраными опциями.");
+			logger.info("Order - " + order.getUuid()
+					+ ", NOT OFFER - not found car with selected additional services.");
+		}
+		Map<Long, Document> messages4Send = createNotlaterOffer(order, partnerIdsList, carStates);
 		return makeOffer(messages4Send, order);
+	}
+
+	private Map<Long, Document> createNotlaterOffer(Order order, List<Long> partnerIdsList, List<CarState> carStates) {
+		double lat = order.getSource().getLat();
+		double lon = order.getSource().getLon();
+		Map<Long, Document> messagesMap = new HashMap<Long, Document>();
+		for (Long partnerId : partnerIdsList) {
+			Partner partner = partnerDao.get(partnerId);
+			Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC", partner.getTimezoneId());
+
+			List<CarState> filteredCarStates = carStates.stream()
+					.filter(p -> p.getPartnerId() == partnerId)
+					.collect(Collectors.toList());
+
+			List<Car4Request> car4RequestList = new ArrayList<Car4Request>();
+			for (CarState carState : filteredCarStates) {
+				Car4Request car4Request = new Car4Request();
+				car4Request.setUuid(carState.getUuid());
+				int dist = (int) calcDistance(lat, lon, carState.getLatitude(), carState.getLongitude());
+				car4Request.setDist(dist);
+				car4Request.setTime((dist * MINUTE_IN_HOUR) / SPEED);
+				car4Request.setVehicleClass(order.getOrderVehicleClass());
+
+				car4RequestList.add(car4Request);
+			}
+
+			Document doc = YandexOrderSerializer.orderToRequestXml(order, bookDate, car4RequestList);
+			messagesMap.put(partnerId, doc);
+		}
+
+		return messagesMap;
 	}
 
 	private boolean makeOffer(Map<Long, Document> messages4Send, Order order) {
@@ -207,74 +189,10 @@ public class OfferingOrderTaxiRF {
 		return result;
 	}
 
-	private Map<Long, Document> createExactOffers(Order order, List<Long> partnerIdsList, String tariffIdName) {
-		Map<Long, Document> messagesMap = new HashMap<Long, Document>();
-		for (Long partnerId : partnerIdsList) {
-			Partner partner = partnerDao.get(partnerId);
-			Document doc = createExactOffer(order, partner, tariffIdName);
-			messagesMap.put(partnerId, doc);
-		}
-		return messagesMap;
-	}
-
-	@Transactional
-	public Document createExactOffer(Order order, Partner partner, String tariffIdName) {
-		Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC", partner.getTimezoneId());
-
-		List<String> tariffIds = new ArrayList<String>();
-		tariffIds.add(tariffIdName);
-		Document doc = YandexOrderSerializer.orderToRequestXml(order, bookDate, tariffIds, null);
-
-		return doc;
-	}
-
-	private Map<Long, Document> createNotlaterOffer(Order order, List<Long> partnerIdsList, List<CarState> carStates,
-			String tariffIdName) {
-		double lat = order.getSource().getLat();
-		double lon = order.getSource().getLon();
-		Map<Long, Document> messagesMap = new HashMap<Long, Document>();
-		for (Long partnerId : partnerIdsList) {
-			Partner partner = partnerDao.get(partnerId);
-			Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC", partner.getTimezoneId());
-
-			List<CarState> filteredCarStates = carStates.stream()
-					.filter(p -> p.getPartnerId() == partnerId)
-					.collect(Collectors.toList());
-
-			List<Car4Request> car4RequestList = new ArrayList<Car4Request>();
-			for (CarState carState : filteredCarStates) {
-				Car4Request car4Request = new Car4Request();
-				car4Request.setUuid(carState.getUuid());
-				int dist = (int) calcDistance(lat, lon, carState.getLatitude(), carState.getLongitude());
-				car4Request.setDist(dist);
-				car4Request.setTime((dist * MINUTE_IN_HOUR) / SPEED);
-				car4Request.setTariff(tariffIdName);
-
-				car4RequestList.add(car4Request);
-			}
-
-			List<String> tariffsList = car4RequestList.stream()
-					.map(p -> p.getTariff())
-					.distinct()
-					.collect(Collectors.toList());
-
-			Document doc = YandexOrderSerializer.orderToRequestXml(order, bookDate, tariffsList,
-					car4RequestList);
-			messagesMap.put(partnerId, doc);
-		}
-
-		return messagesMap;
-	}
-
 	private long calcDistance(double lat1, double lon1, double lat2, double lon2) {
 		return Math.round(
 				Math.sqrt(
 						Math.pow(lat1 - lat2, 2) + Math.pow(lon1 - lon2, 2)) * 111);
 		// 111 - km in one degree
-	}
-
-	private boolean checkOrderValid4Offer(Order order) {
-		OrderStatus orderStatus = orderStatusDao.getLast(order);
-		return OrderStatusType.IsValidForOffer(orderStatus.getStatus());
 	}
 }

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tb.domain.order.VehicleClass;
+
 public class Car implements Serializable {
 	private static final long serialVersionUID = -1972220629253322094L;
 	
@@ -16,7 +18,7 @@ public class Car implements Serializable {
 	private String realName;
 	private String realWeb;
 	private String realScid;
-	private List<String> tariffs;
+	private List<VehicleClass> vehicleClasses;
 
 	private String driverDisplayName;
 	private String driverPhone;
@@ -32,7 +34,7 @@ public class Car implements Serializable {
 	private Map<String, String> carRequires;
 
 	public Car() {
-		tariffs = new ArrayList<String>();
+		setVehicleClasses(new ArrayList<VehicleClass>());
 		carRequires = new HashMap<String, String>();
 	}
 
@@ -140,14 +142,6 @@ public class Car implements Serializable {
 		this.uuid = uuid;
 	}
 
-	public List<String> getTariffs() {
-		return tariffs;
-	}
-
-	public void setTariffs(List<String> tariffList) {
-		this.tariffs = tariffList;
-	}
-
 	public String getDriverDisplayName() {
 		return driverDisplayName;
 	}
@@ -178,5 +172,13 @@ public class Car implements Serializable {
 
 	public void setPartnerId(Long partnerId) {
 		this.partnerId = partnerId;
+	}
+
+	public List<VehicleClass> getVehicleClasses() {
+		return vehicleClasses;
+	}
+
+	public void setVehicleClasses(List<VehicleClass> vehicleClasses) {
+		this.vehicleClasses = vehicleClasses;
 	}
 }

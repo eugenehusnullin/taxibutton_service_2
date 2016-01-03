@@ -1,4 +1,4 @@
-package tb.tariffdefinition;
+package tb.cost;
 
 public class CostResponse {
 	private String partnerName;

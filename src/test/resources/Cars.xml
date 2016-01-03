@@ -6,9 +6,9 @@
     <RealName>Старое Черное Такси</RealName>
     <RealWeb>http://oldblacktaxi.ru</RealWeb>
     <RealScid>450</RealScid>
-    <Tariff>t1</Tariff>
-    <Tariff>t2</Tariff>
-    <Tariff>t3</Tariff>
+    <CarClass>0</CarClass>
+    <CarClass>1</CarClass>
+    <CarClass>2</CarClass>
     <DriverDetails>
       <DisplayName>Иванов Иван Иванович</DisplayName>
       <Phone>+79022617513</Phone>
@@ -36,9 +36,9 @@
     <RealName>Старое Черное Такси</RealName>
     <RealWeb>http://oldblacktaxi.ru</RealWeb>
     <RealScid>450</RealScid>
-    <Tariff>t1</Tariff>
-    <Tariff>t2</Tariff>
-    <Tariff>t3</Tariff>
+    <CarClass>0</CarClass>
+    <CarClass>1</CarClass>
+    <CarClass>2</CarClass>
     <DriverDetails>
       <DisplayName>Иванов Иван Иванович</DisplayName>
       <Phone>+79022617513</Phone>
@@ -66,8 +66,8 @@
     <RealName>Старое Черное Такси</RealName>
     <RealWeb>http://oldblacktaxi.ru</RealWeb>
     <RealScid>450</RealScid>
-    <Tariff>t1</Tariff>
-    <Tariff>t2</Tariff>
+    <CarClass>0</CarClass>
+    <CarClass>1</CarClass>
     <DriverDetails>
       <DisplayName>Иванов Иван Иванович</DisplayName>
       <Phone>+79022617513</Phone>
@@ -90,7 +90,7 @@
     <RealName>Старое Черное Такси</RealName>
     <RealWeb>http://oldblacktaxi.ru</RealWeb>
     <RealScid>450</RealScid>
-    <Tariff>t1</Tariff>
+    <CarClass>0</CarClass>
     <DriverDetails>
       <DisplayName>Иванов Иван Иванович</DisplayName>
       <Phone>+79022617513</Phone>

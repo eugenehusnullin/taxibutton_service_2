@@ -21,7 +21,6 @@ import tb.domain.Partner;
 import tb.domain.maparea.MapArea;
 import tb.service.PartnerService;
 import tb.service.Starter;
-import tb.tariff.TariffSynch;
 
 @RequestMapping("/partner")
 @Controller
@@ -36,8 +35,6 @@ public class PartnerController {
 	@Autowired
 	private CarSynch carSynch;
 	@Autowired
-	private TariffSynch tariffSynch;
-	@Autowired
 	private IMapAreaDao mapAreaDao;
 	@Autowired
 	private CarDao carDao;
@@ -48,15 +45,6 @@ public class PartnerController {
 		starter.schedule(carSynch::synch, d);
 
 		model.addAttribute("result", "Car synch started, wait some seconds. And you can see result in log files.");
-		return "result";
-	}
-
-	@RequestMapping(value = "/tariffsynch", method = RequestMethod.GET)
-	public String tariffSynch(Model model) {
-		Date d = new Date(new Date().getTime() + 3000);
-		starter.schedule(tariffSynch::synch, d);
-
-		model.addAttribute("result", "Tariff synch started, wait some seconds. And you can see result in log files.");
 		return "result";
 	}
 

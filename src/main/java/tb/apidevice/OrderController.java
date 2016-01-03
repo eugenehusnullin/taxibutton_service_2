@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import tb.cost.CostRequest;
 import tb.domain.Partner;
 import tb.domain.maparea.Point;
 import tb.domain.order.Order;
@@ -35,7 +36,6 @@ import tb.service.exceptions.NotValidOrderStatusException;
 import tb.service.exceptions.OrderNotFoundException;
 import tb.service.exceptions.ParseOrderException;
 import tb.service.exceptions.WrongData;
-import tb.tariffdefinition.CostRequest;
 
 @RequestMapping("/order")
 @Controller("apiDeviceOrderController")

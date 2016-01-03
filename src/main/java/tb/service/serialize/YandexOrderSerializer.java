@@ -20,6 +20,7 @@ import tb.car.domain.Car4Request;
 import tb.domain.order.AddressPoint;
 import tb.domain.order.Order;
 import tb.domain.order.Requirement;
+import tb.domain.order.VehicleClass;
 
 public class YandexOrderSerializer {
 
@@ -50,16 +51,14 @@ public class YandexOrderSerializer {
 		}
 	}
 
-	public static Document orderToRequestXml(Order order, Date bookingdate, List<String> tariffs,
-			List<Car4Request> cars) {
+	public static Document orderToRequestXml(Order order, Date bookingdate, List<Car4Request> cars) {
 		try {
 			Document doc = createDoc();
 			Element requestElement = doc.createElement("Request");
 			doc.appendChild(requestElement);
 			requestElement.appendChild(createOrderId(doc, order.getUuid()));
-			if (tariffs != null && tariffs.size() > 0) {
-				requestElement.appendChild(createTariffs(doc, tariffs));
-			}
+			requestElement.appendChild(createCarClass(doc, order.getOrderVehicleClass()));
+
 			if (cars != null && cars.size() > 0) {
 				requestElement.appendChild(createRequestCars(doc, cars));
 			}
@@ -107,14 +106,10 @@ public class YandexOrderSerializer {
 		return recipient;
 	}
 
-	private static Element createTariffs(Document doc, List<String> tariffs) {
-		Element tariffsElement = doc.createElement("Tariffs");
-		for (String tariff : tariffs) {
-			Element tariffElement = doc.createElement("Tariff");
-			tariffElement.appendChild(doc.createTextNode(tariff));
-			tariffsElement.appendChild(tariffElement);
-		}
-		return tariffsElement;
+	private static Element createCarClass(Document doc, VehicleClass vehicleClass) {
+		Element element = doc.createElement("CarClass");
+		element.appendChild(doc.createTextNode(String.valueOf(VehicleClass.convert2Partner(vehicleClass))));
+		return element;
 	}
 
 	private static Element createContactInfo(Document doc, String clientPhone) {
@@ -211,9 +206,10 @@ public class YandexOrderSerializer {
 		uuidElement.appendChild(doc.createTextNode(car.getUuid()));
 		carElement.appendChild(uuidElement);
 
-		Element tariffElement = doc.createElement("Tariff");
-		tariffElement.appendChild(doc.createTextNode(car.getTariff()));
-		carElement.appendChild(tariffElement);
+		Element carClassElement = doc.createElement("CarClass");
+		carClassElement
+				.appendChild(doc.createTextNode(String.valueOf(VehicleClass.convert2Partner(car.getVehicleClass()))));
+		carElement.appendChild(carClassElement);
 
 		Element maphrefElement = doc.createElement("MapHref");
 		maphrefElement.appendChild(doc.createTextNode(""));
@@ -240,9 +236,10 @@ public class YandexOrderSerializer {
 			timeElement.appendChild(doc.createTextNode(Integer.toString(car.getTime())));
 			carElement.appendChild(timeElement);
 
-			Element tariffElement = doc.createElement("Tariff");
-			tariffElement.appendChild(doc.createTextNode(car.getTariff()));
-			carElement.appendChild(tariffElement);
+			Element carClassElement = doc.createElement("CarClass");
+			carClassElement.appendChild(
+					doc.createTextNode(String.valueOf(VehicleClass.convert2Partner(car.getVehicleClass()))));
+			carElement.appendChild(carClassElement);
 
 			Element maphrefElement = doc.createElement("MapHref");
 			maphrefElement.appendChild(doc.createTextNode(""));

@@ -98,11 +98,6 @@
 		<put-attribute name="body" value="/WEB-INF/admin/views/result.jsp" />
 	</definition>
 	
-	<definition name="tariff/tariff" extends="default">
-		<put-attribute name="title" value="Add tariff" />
-		<put-attribute name="body" value="/WEB-INF/admin/views/tariff/tariff.jsp" />
-	</definition>
-	
 	
 	
 	<definition name="maparea/add" extends="default">
@@ -118,53 +113,5 @@
 	<definition name="maparea/edit" extends="default">
 		<put-attribute name="title" value="Edit map area" />
 		<put-attribute name="body" value="/WEB-INF/admin/views/maparea/edit.jsp" />
-	</definition>
-	
-	
-	
-	<definition name="tariffdef/add" extends="default">
-		<put-attribute name="title" value="Add tariff definition" />
-		<put-attribute name="body"
-			value="/WEB-INF/admin/views/tariffdef/add.jsp" />
-	</definition>
-	
-	<definition name="tariffdef/list" extends="default">
-		<put-attribute name="title" value="List of tariffs definitions" />
-		<put-attribute name="body"
-			value="/WEB-INF/admin/views/tariffdef/list.jsp" />
-	</definition>
-	
-	<definition name="tariffdef/edit" extends="default">
-		<put-attribute name="title" value="Edit tariff definition" />
-		<put-attribute name="body"
-			value="/WEB-INF/admin/views/tariffdef/edit.jsp" />
-	</definition>
-	
-	
-	
-	<definition name="tariffdefmaparea/add" extends="default">
-		<put-attribute name="title" value="Add map area for tariff definition" />
-		<put-attribute name="body"
-			value="/WEB-INF/admin/views/tariffdefmaparea/add.jsp" />
-	</definition>
-	
-	<definition name="tariffdefmaparea/list" extends="default">
-		<put-attribute name="title" value="List of map areas of tariff definitions" />
-		<put-attribute name="body"
-			value="/WEB-INF/admin/views/tariffdefmaparea/list.jsp" />
-	</definition>
-	
-	<definition name="tariffdefmaparea/edit" extends="default">
-		<put-attribute name="title" value="Edit map area for tariff definition" />
-		<put-attribute name="body"
-			value="/WEB-INF/admin/views/tariffdefmaparea/edit.jsp" />
-	</definition>
-	
-	
-	
-	<definition name="info/tariff" extends="default">
-		<put-attribute name="title" value="readme (tariff definition)" />
-		<put-attribute name="body"
-			value="/WEB-INF/admin/views/info/tariff.jsp" />
 	</definition>
 </tiles-definitions>

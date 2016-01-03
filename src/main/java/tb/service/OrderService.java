@@ -54,7 +54,6 @@ import tb.service.exceptions.PartnerNotFoundException;
 import tb.service.exceptions.WrongData;
 import tb.service.serialize.OrderJsonParser;
 import tb.service.serialize.YandexOrderSerializer;
-import tb.tariffdefinition.TariffDefinitionHelper;
 import tb.utils.DatetimeUtils;
 import tb.utils.HttpUtils;
 
@@ -81,8 +80,6 @@ public class OrderService {
 	private IOrderAssignRequestDao orderAlacrityDao;
 	@Autowired
 	private CarDao carDao;
-	@Autowired
-	private TariffDefinitionHelper tariffDefinitionHelper;
 	@Autowired
 	private SheduledProcessing processing;
 
@@ -555,13 +552,10 @@ public class OrderService {
 	}
 
 	private int giveOrder(Order order, AssignRequest assignRequest) {
-		String tariffIdName = tariffDefinitionHelper.getTariffIdName(order.getSource().getLat(),
-				order.getSource().getLon(), order.getOrderVehicleClass());
-
 		Car car = carDao.getCar(assignRequest.getPartner().getId(), assignRequest.getUuid());
 		Car4Request car4Request = new Car4Request();
 		car4Request.setUuid(car.getUuid());
-		car4Request.setTariff(tariffIdName);
+		car4Request.setVehicleClass(order.getOrderVehicleClass());
 
 		Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC",
 				assignRequest.getPartner().getTimezoneId());

@@ -13,13 +13,17 @@
 		<property name="realName" length="100"></property>
 		<property name="realWeb" length="100"></property>
 		<property name="realScid" length="50"></property>
-		<list name="tariffs" table="carTariffs">
+		<list name="vehicleClasses" table="carVehicleClasses">
 			<key>
 				<column name="partnerid"></column>
 				<column name="uuid"></column>
 			</key>
 			<index column="idx"></index>
-			<element column="tariff" type="string" length="32"></element>
+			<element column="vehicleclass">
+				<type name="org.hibernate.type.EnumType">
+					<param name="enumClass">tb.domain.order.VehicleClass</param>
+				</type>
+			</element>
 		</list>
 
 		<property name="driverDisplayName" length="100"></property>

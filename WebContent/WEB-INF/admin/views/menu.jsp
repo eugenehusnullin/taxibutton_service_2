@@ -6,7 +6,4 @@
 	<a href="<c:url value="/admin/partner/list"/>">3. Диспетчерские</a>	<br />
 	<a href="<c:url value="/admin/device/list"/>">4. Устройства</a> <br />
 	<a href="<c:url value="/admin/maparea/list"/>">5. Геозоны Кнопки</a> <br />
-	<a href="<c:url value="/admin/info/tariff"/>">6(a). readme (Тарифы общие)</a> <br />
-	<a href="<c:url value="/admin/tariffdef/list"/>">6. Тарифы общие</a> <br />
-	<a href="<c:url value="/admin/tariffdefmaparea/list"/>">7. Геозоны Тарифов</a> <br />
 </div>
