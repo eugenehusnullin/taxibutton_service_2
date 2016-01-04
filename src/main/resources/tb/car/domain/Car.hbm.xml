@@ -13,7 +13,7 @@
 		<property name="realName" length="100"></property>
 		<property name="realWeb" length="100"></property>
 		<property name="realScid" length="50"></property>
-		<list name="vehicleClasses" table="carVehicleClasses">
+		<list name="vehicleClasses" table="carVehicleClasses" lazy="false">
 			<key>
 				<column name="partnerid"></column>
 				<column name="uuid"></column>

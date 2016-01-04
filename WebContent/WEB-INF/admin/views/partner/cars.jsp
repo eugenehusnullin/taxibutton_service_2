@@ -15,6 +15,7 @@
 			<th>lat</th>
 			<th>lon</th>
 			<th>requirmets</th>
+			<th>carclass</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -31,6 +32,9 @@
 					<c:forEach items="${car[1].getCarRequires().entrySet()}" var="req">
 						${req.getKey()}=${req.getValue()},
 					</c:forEach>
+				</td>
+				<td>
+					<c:forEach items="${car[1].getVehicleClasses()}" var="cls">${cls.name()},</c:forEach>
 				</td>
 			</tr>
 		</c:forEach>
