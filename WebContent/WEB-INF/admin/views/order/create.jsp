@@ -5,6 +5,7 @@
 
 
 	<form method="POST">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		<h3>Device</h3>
 		Api id<br />
 		<input type="text" name="apiId" value="815777e3-87e9-47e2-bd82-f70624b74517">

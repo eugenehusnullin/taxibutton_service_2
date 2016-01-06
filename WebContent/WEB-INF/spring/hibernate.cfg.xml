@@ -20,5 +20,7 @@
 		<mapping resource="tb/car/domain/Car.hbm.xml" />
  		<mapping resource="tb/car/domain/CarState.hbm.xml" />
  		<mapping resource="tb/car/domain/GeoData.hbm.xml" />
+ 		<mapping resource="tb/admin/security/User.hbm.xml"/>
+ 		<mapping resource="tb/admin/security/Authority.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>

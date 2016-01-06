@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 	<form method="post">
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		<input type="hidden" name="partnerId" value="${partnerId}">
 		<br /> name <input type="text" name="name" value="${name}" />
 		<br /> clid<input type="text" name="apiId" value="${apiId}" />

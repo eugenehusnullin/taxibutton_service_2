@@ -61,6 +61,7 @@ function showModal(serverUrl) {
 			'name' : $('#newMapzoneName').val(),
 			'points' : compilePoint(vertices)
 		};
+		newMapzone[$('#csrf').attr("alt")] = $('#csrf').val();
 
 		addMapZone(serverUrl, newMapzone);
 		$('#newMapzone').modal('hide');

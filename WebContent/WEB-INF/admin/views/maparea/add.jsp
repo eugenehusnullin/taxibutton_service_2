@@ -12,7 +12,6 @@
 	initialize(serverUrl);
 </script>
 
-
 <div class="modal fade" id="newMapzone">
 	<div class="modal-dialog">
 		<div class="modal-content ">
@@ -22,8 +21,9 @@
 			</div>
 			<div class="modal-body form-horizontal">
 				<input type="hidden" id="MapzoneI">
+				<input type="hidden" id="csrf" alt="${_csrf.parameterName}" value="${_csrf.token}"/>
 				<div class="form-group">
-					<div class="col-lg-12">
+					<div class="col-lg-12">						
 						<input type="text" class="form-control" placeholder="Название геозоны" name="" id="newMapzoneName">
 					</div>
 				</div>

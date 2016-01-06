@@ -23,6 +23,7 @@ project.ext {
 	commonsioVersion = '1.3.2'
 	tilesjspVersion = '3.0.4'
 	servletapiVersion = '3.1.0'
+	springSecurityVersion = '4.0.3.RELEASE'
 }
 
 webAppDirName = 'WebContent'
@@ -38,6 +39,8 @@ dependencies {
     compile group: 'org.postgresql', name: 'postgresql', version: project.postgresqlVersion
     compile group: 'org.apache.commons', name: 'commons-io', version: project.commonsioVersion
     compile group: 'org.apache.tiles', name: 'tiles-jsp', version: project.tilesjspVersion
+    compile group: 'org.springframework.security', name: 'spring-security-web', version: project.springSecurityVersion
+    compile group: 'org.springframework.security', name: 'spring-security-config', version: project.springSecurityVersion
     
     providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: project.servletapiVersion
     
