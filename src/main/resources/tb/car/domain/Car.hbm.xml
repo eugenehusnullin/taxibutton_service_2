@@ -34,9 +34,9 @@
 		
 		<property name="carModel" length="100"></property>
 		<property name="carAge"></property>
-		<property name="carColor" length="12"></property>
-		<property name="carNumber" length="12"></property>
-		<property name="carPermit" length="12"></property>
+		<property name="carColor" length="100"></property>
+		<property name="carNumber" length="100"></property>
+		<property name="carPermit" length="100"></property>
 
 		<map name="carRequires" table="carRequires" lazy="false">
 			<key>
