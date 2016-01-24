@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import tb.domain.Partner;
 
@@ -24,6 +25,9 @@ public class PartnersApiKeeper {
 							.baseUrl(partner.getApiurl())
 							.addConverterFactory(ScalarsConverterFactory.create())
 							.build();
+					
+					((OkHttpClient)retrofit.callFactory()).dispatcher().setMaxRequests(1000);
+					((OkHttpClient)retrofit.callFactory()).dispatcher().setMaxRequestsPerHost(1000);
 
 					api = retrofit.create(PartnerApi.class);
 					partners.put(partner.getId(), api);
