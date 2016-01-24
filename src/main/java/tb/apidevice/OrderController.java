@@ -23,6 +23,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import tb.cost.CostRequest;
 import tb.domain.Partner;
@@ -269,6 +271,30 @@ public class OrderController {
 			IOUtils.write(resultJson.toString(), response.getOutputStream(), "UTF-8");
 		} catch (Exception e) {
 			logger.error("cost", e);
+		}
+	}
+
+	@RequestMapping(value = "/costasync", method = RequestMethod.POST)
+	@ResponseBody
+	public DeferredResult<String> costasync(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		try {
+
+			String str = getHttpServletRequestBuffer(request);
+			if (logger.isDebugEnabled()) {
+				logger.debug(str);
+			}
+			JSONObject costJson = (JSONObject) new JSONTokener(str).nextValue();
+
+			Point source = createPoint(costJson.getJSONObject("source"));
+			List<Point> destinations = createPoints(costJson.optJSONArray("destinations"));
+			Date bookDate = createBookDate(costJson.getString("bookingDate"));
+			VehicleClass vehicleClass = createVehicleClass(costJson.getInt("class"));
+			List<String> adds = createAdds(costJson.optJSONArray("adds"));
+
+			return costRequest.getCostAsync(source, destinations, vehicleClass, bookDate, adds);
+		} catch (Exception e) {
+			logger.error("cost", e);
+			throw e;
 		}
 	}
 

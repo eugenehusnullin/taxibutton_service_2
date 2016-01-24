@@ -16,7 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.DeferredResult;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import tb.domain.Partner;
 import tb.domain.maparea.Point;
 import tb.domain.order.VehicleClass;
@@ -33,6 +37,8 @@ public class CostRequest {
 
 	@Autowired
 	private PartnerService partnerService;
+	@Autowired
+	private PartnersApiKeeper partnersApiKeeper;
 
 	public JSONObject getCost(Point source, List<Point> destinations, VehicleClass vehicleClass, Date bookDate,
 			List<String> adds) {
@@ -98,6 +104,65 @@ public class CostRequest {
 		} else {
 			return null;
 		}
+	}
+
+	public DeferredResult<String> getCostAsync(Point source, List<Point> destinations, VehicleClass vehicleClass,
+			Date bookDate,
+			List<String> adds) {
+
+		JSONObject requestJson = new JSONObject();
+		requestJson.put("RoutingServiceName", "YandexMapsService");
+		requestJson.put("TaxiServiceId", "taxirf");
+		requestJson.put("BookingTime", getBookDate(bookDate));
+		requestJson.put("CarClass", VehicleClass.convert2Partner(vehicleClass));
+		requestJson.put("Source", getJsonPoint(source));
+		if (destinations != null) {
+			requestJson.put("Destinations", getJsonPoints(destinations));
+		} else {
+			List<Point> fakeDestinations = new ArrayList<>();
+			fakeDestinations.add(source);
+			requestJson.put("Destinations", getJsonPoints(fakeDestinations));
+		}
+		if (adds != null) {
+			requestJson.put("AdditionalServices", getAdds(adds));
+		}
+		String requestStr = requestJson.toString();
+		logger.debug("COST JSON: " + requestStr);
+
+		// cost http requests
+		DeferredResult<String> dr = new DeferredResult<>();
+		List<Partner> partners = partnerService.getPartnersByMapAreas(source.getLatitude(), source.getLongitude());
+		if (partners != null && partners.size() > 0) {
+			Partner partner = partners.get(0);
+			PartnerApi api = partnersApiKeeper.getPartnerApi(partner);
+
+			Call<String> call = api.cost(requestStr);
+			call.enqueue(new Callback<String>() {
+				@Override
+				public void onResponse(Response<String> response) {
+					String responseString = response.body();
+					logger.info("COST SUCCESS: " + responseString);
+					JSONObject responseJson = (JSONObject) new JSONTokener(responseString).nextValue();
+					CostResponse cr = convertCostResponse(responseJson, partner.getName());
+					JSONObject costJson = new JSONObject();
+					costJson.put("sum", cr.getPrice());
+					costJson.put("km", cr.getKm());
+					costJson.put("min", cr.getMin());
+					costJson.put("partner", cr.getPartnerName());
+
+					dr.setResult(costJson.toString());
+				}
+
+				@Override
+				public void onFailure(Throwable t) {
+					logger.warn("COST FAILURE: ResponseCode=" + t.getMessage() + " Partnername="
+							+ partner.getName());
+					dr.setErrorResult(t);
+				}
+			});
+		}
+
+		return dr;
 	}
 
 	private JSONArray getAdds(List<String> adds) {
