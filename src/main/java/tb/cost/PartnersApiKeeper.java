@@ -25,9 +25,10 @@ public class PartnersApiKeeper {
 							.baseUrl(partner.getApiurl())
 							.addConverterFactory(ScalarsConverterFactory.create())
 							.build();
-					
-					((OkHttpClient)retrofit.callFactory()).dispatcher().setMaxRequests(1000);
-					((OkHttpClient)retrofit.callFactory()).dispatcher().setMaxRequestsPerHost(1000);
+
+					((OkHttpClient) retrofit.callFactory()).dispatcher().setMaxRequests(1000);
+					((OkHttpClient) retrofit.callFactory()).dispatcher().setMaxRequestsPerHost(50);
+					// int readTimeOut = ((OkHttpClient)retrofit.callFactory()).readTimeoutMillis();
 
 					api = retrofit.create(PartnerApi.class);
 					partners.put(partner.getId(), api);

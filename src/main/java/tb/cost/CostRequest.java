@@ -43,23 +43,7 @@ public class CostRequest {
 	public JSONObject getCost(Point source, List<Point> destinations, VehicleClass vehicleClass, Date bookDate,
 			List<String> adds) {
 
-		JSONObject requestJson = new JSONObject();
-		requestJson.put("RoutingServiceName", "YandexMapsService");
-		requestJson.put("TaxiServiceId", "taxirf");
-		requestJson.put("BookingTime", getBookDate(bookDate));
-		requestJson.put("CarClass", VehicleClass.convert2Partner(vehicleClass));
-		requestJson.put("Source", getJsonPoint(source));
-		if (destinations != null) {
-			requestJson.put("Destinations", getJsonPoints(destinations));
-		} else {
-			List<Point> fakeDestinations = new ArrayList<>();
-			fakeDestinations.add(source);
-			requestJson.put("Destinations", getJsonPoints(fakeDestinations));
-		}
-		if (adds != null) {
-			requestJson.put("AdditionalServices", getAdds(adds));
-		}
-		String requestStr = requestJson.toString();
+		String requestStr = createRequestBody(source, destinations, vehicleClass, bookDate, adds);
 		logger.debug("COST JSON: " + requestStr);
 
 		// cost http requests
@@ -107,26 +91,8 @@ public class CostRequest {
 	}
 
 	public DeferredResult<String> getCostAsync(Point source, List<Point> destinations, VehicleClass vehicleClass,
-			Date bookDate,
-			List<String> adds) {
-
-		JSONObject requestJson = new JSONObject();
-		requestJson.put("RoutingServiceName", "YandexMapsService");
-		requestJson.put("TaxiServiceId", "taxirf");
-		requestJson.put("BookingTime", getBookDate(bookDate));
-		requestJson.put("CarClass", VehicleClass.convert2Partner(vehicleClass));
-		requestJson.put("Source", getJsonPoint(source));
-		if (destinations != null) {
-			requestJson.put("Destinations", getJsonPoints(destinations));
-		} else {
-			List<Point> fakeDestinations = new ArrayList<>();
-			fakeDestinations.add(source);
-			requestJson.put("Destinations", getJsonPoints(fakeDestinations));
-		}
-		if (adds != null) {
-			requestJson.put("AdditionalServices", getAdds(adds));
-		}
-		String requestStr = requestJson.toString();
+			Date bookDate, List<String> adds) {
+		String requestStr = createRequestBody(source, destinations, vehicleClass, bookDate, adds);
 		logger.debug("COST JSON: " + requestStr);
 
 		// cost http requests
@@ -138,6 +104,7 @@ public class CostRequest {
 
 			Call<String> call = api.cost(requestStr);
 			call.enqueue(new Callback<String>() {
+
 				@Override
 				public void onResponse(Response<String> response) {
 					String responseString = response.body();
@@ -158,11 +125,33 @@ public class CostRequest {
 					logger.warn("COST FAILURE: ResponseCode=" + t.getMessage() + " Partnername="
 							+ partner.getName());
 					dr.setErrorResult(t);
+
 				}
 			});
 		}
 
 		return dr;
+	}
+
+	private String createRequestBody(Point source, List<Point> destinations, VehicleClass vehicleClass,
+			Date bookDate, List<String> adds) {
+		JSONObject requestJson = new JSONObject();
+		requestJson.put("RoutingServiceName", "YandexMapsService");
+		requestJson.put("TaxiServiceId", "taxirf");
+		requestJson.put("BookingTime", getBookDate(bookDate));
+		requestJson.put("CarClass", VehicleClass.convert2Partner(vehicleClass));
+		requestJson.put("Source", getJsonPoint(source));
+		if (destinations != null) {
+			requestJson.put("Destinations", getJsonPoints(destinations));
+		} else {
+			List<Point> fakeDestinations = new ArrayList<>();
+			fakeDestinations.add(source);
+			requestJson.put("Destinations", getJsonPoints(fakeDestinations));
+		}
+		if (adds != null) {
+			requestJson.put("AdditionalServices", getAdds(adds));
+		}
+		return requestJson.toString();
 	}
 
 	private JSONArray getAdds(List<String> adds) {

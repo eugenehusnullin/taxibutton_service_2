@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -249,37 +250,9 @@ public class OrderController {
 	private CostRequest costRequest;
 
 	@RequestMapping(value = "/cost", method = RequestMethod.POST)
-	public void cost(HttpServletRequest request, HttpServletResponse response) {
-		try {
-			String str = getHttpServletRequestBuffer(request);
-			if (logger.isDebugEnabled()) {
-				logger.debug(str);
-			}
-			JSONObject costJson = (JSONObject) new JSONTokener(str).nextValue();
-
-			Point source = createPoint(costJson.getJSONObject("source"));
-			List<Point> destinations = createPoints(costJson.optJSONArray("destinations"));
-			Date bookDate = createBookDate(costJson.getString("bookingDate"));
-			VehicleClass vehicleClass = createVehicleClass(costJson.getInt("class"));
-			List<String> adds = createAdds(costJson.optJSONArray("adds"));
-
-			JSONObject resultJson = costRequest.getCost(source, destinations, vehicleClass, bookDate, adds);
-			if (resultJson == null) {
-				response.sendError(404);
-				return;
-			}
-			IOUtils.write(resultJson.toString(), response.getOutputStream(), "UTF-8");
-		} catch (Exception e) {
-			logger.error("cost", e);
-		}
-	}
-
-	@RequestMapping(value = "/costasync", method = RequestMethod.POST)
 	@ResponseBody
-	public DeferredResult<String> costasync(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public DeferredResult<String> cost(@RequestBody String str) {
 		try {
-
-			String str = getHttpServletRequestBuffer(request);
 			if (logger.isDebugEnabled()) {
 				logger.debug(str);
 			}
@@ -294,7 +267,9 @@ public class OrderController {
 			return costRequest.getCostAsync(source, destinations, vehicleClass, bookDate, adds);
 		} catch (Exception e) {
 			logger.error("cost", e);
-			throw e;
+			DeferredResult<String> dr = new DeferredResult<>();
+			dr.setErrorResult(e);
+			return dr;
 		}
 	}
 
