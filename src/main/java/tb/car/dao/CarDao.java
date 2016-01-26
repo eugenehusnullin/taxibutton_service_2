@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
@@ -62,11 +63,13 @@ public class CarDao {
 	@Transactional
 	public void updateCarStateGeos(Partner partner, List<CarState> carStates) {
 		Session session = sessionFactory.getCurrentSession();
+		String update = "update CarState c set c.latitude = :latitude, c.longitude = :longitude"
+				+ ", c.date = :date "
+				+ "where c.partnerId = :partnerId and c.uuid = :uuid";
+		Query query = session.createQuery(update);
 		for (CarState carState : carStates) {
-			String update = "update CarState c set c.latitude = :latitude, c.longitude = :longitude"
-					+ ", c.date = :date "
-					+ "where c.partnerId = :partnerId and c.uuid = :uuid";
-			session.createQuery(update)
+
+			query
 					.setDouble("latitude", carState.getLatitude())
 					.setDouble("longitude", carState.getLongitude())
 					.setTimestamp("date", carState.getDate())
