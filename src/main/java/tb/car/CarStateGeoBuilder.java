@@ -1,8 +1,8 @@
 package tb.car;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -16,11 +16,11 @@ import tb.utils.XmlUtils;
 @Service
 public class CarStateGeoBuilder {
 
-	public List<CarState> createCarStateGeos(Document doc, Date loadDate) {
-		List<CarState> list = new ArrayList<CarState>();
+	public Map<String, CarState> createCarStateGeos(Document doc, Date loadDate) {
 
 		doc.getDocumentElement().normalize();
 		NodeList trackNodeList = doc.getElementsByTagName("track");
+		Map<String, CarState> map = new HashMap<>(trackNodeList.getLength());
 		for (int i = 0; i < trackNodeList.getLength(); i++) {
 			CarState carState = new CarState();
 			carState.setDate(loadDate);
@@ -34,9 +34,9 @@ public class CarStateGeoBuilder {
 			carState.setLatitude(Double.parseDouble(pointElement.getAttribute("latitude")));
 			carState.setLongitude(Double.parseDouble(pointElement.getAttribute("longitude")));
 
-			list.add(carState);
+			map.put(carState.getUuid(), carState);
 		}
-		return list;
+		return map;
 	}
 
 	public String defineCarStateGeosPartnerClid(Document doc) {

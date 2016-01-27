@@ -3,6 +3,7 @@ package tb.car.dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -61,13 +62,14 @@ public class CarDao {
 	}
 
 	@Transactional
-	public void updateCarStateGeos(Partner partner, List<CarState> carStates) {
+	public void updateCarStateGeos(Partner partner, Map<String, CarState> carStates) {
 		Session session = sessionFactory.getCurrentSession();
 		String update = "update CarState c set c.latitude = :latitude, c.longitude = :longitude"
 				+ ", c.date = :date "
 				+ "where c.partnerId = :partnerId and c.uuid = :uuid";
 		Query query = session.createQuery(update);
-		for (CarState carState : carStates) {
+		for (Map.Entry<String, CarState> entry : carStates.entrySet()) {
+			CarState carState = entry.getValue();
 
 			query
 					.setDouble("latitude", carState.getLatitude())

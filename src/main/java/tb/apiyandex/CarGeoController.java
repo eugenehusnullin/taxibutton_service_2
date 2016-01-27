@@ -3,6 +3,7 @@ package tb.apiyandex;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,7 +47,7 @@ public class CarGeoController {
 				String partnerClid = carStateGeoBuilder.defineCarStateGeosPartnerClid(document);
 				Partner partner = partnerDao.getByApiId(partnerClid);
 				if (partner != null) {
-					List<CarState> carStates = carStateGeoBuilder.createCarStateGeos(document, new Date());
+					Map<String, CarState> carStates = carStateGeoBuilder.createCarStateGeos(document, new Date());
 					carDao.updateCarStateGeos(partner, carStates);
 					response.setStatus(200);
 				} else {
