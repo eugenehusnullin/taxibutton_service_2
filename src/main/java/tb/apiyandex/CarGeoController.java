@@ -3,7 +3,6 @@ package tb.apiyandex;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import tb.car.CarStateGeoBuilder;
+import tb.car.CarGeoBuilder;
 import tb.car.dao.CarDao;
-import tb.car.domain.CarState;
+import tb.car.domain.GeoData;
 import tb.dao.IPartnerDao;
 import tb.domain.Partner;
 import tb.utils.XmlUtils;
@@ -31,7 +30,7 @@ public class CarGeoController {
 	private static final Logger logger = LoggerFactory.getLogger(CarGeoController.class);
 
 	@Autowired
-	private CarStateGeoBuilder carStateGeoBuilder;
+	private CarGeoBuilder carGeoBuilder;
 	@Autowired
 	private IPartnerDao partnerDao;
 	@Autowired
@@ -44,11 +43,11 @@ public class CarGeoController {
 				String paramData = request.getParameter("data");
 				logger.debug(paramData);
 				Document document = XmlUtils.buildDomDocument(paramData);
-				String partnerClid = carStateGeoBuilder.defineCarStateGeosPartnerClid(document);
+				String partnerClid = carGeoBuilder.defineCarStateGeosPartnerClid(document);
 				Partner partner = partnerDao.getByApiId(partnerClid);
 				if (partner != null) {
-					Map<String, CarState> carStates = carStateGeoBuilder.createCarStateGeos(document, new Date());
-					carDao.updateCarStateGeos(partner, carStates);
+					List<GeoData> geoDatas = carGeoBuilder.createCarGeos(document, new Date());
+					carDao.updateCarGeos(partner, geoDatas);
 					response.setStatus(200);
 				} else {
 					response.setStatus(403);

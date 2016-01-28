@@ -3,11 +3,9 @@ package tb.car.dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
@@ -21,6 +19,7 @@ import tb.car.domain.Car;
 import tb.car.domain.CarState;
 import tb.car.domain.CarStateEnum;
 import tb.car.domain.GeoData;
+import tb.car.domain.LastGeoData;
 import tb.domain.Partner;
 import tb.domain.order.Requirement;
 import tb.domain.order.VehicleClass;
@@ -52,71 +51,31 @@ public class CarDao {
 				carState.setPartnerId(partner.getId());
 				carState.setUuid(car.getUuid());
 				carState.setState(CarStateEnum.Undefined);
-				carState.setLatitude(0);
-				carState.setLongitude(0);
-				carState.setDate(loadDate);
-
 				session.save(carState);
 			}
 		}
 	}
 
 	@Transactional
-	public void updateCarStateGeos(Partner partner, Map<String, CarState> carStates) {
+	public void updateCarGeos(Partner partner, List<GeoData> geoDatas) {
 		Session session = sessionFactory.getCurrentSession();
-		String update = "update CarState c set c.latitude = :latitude, c.longitude = :longitude"
-				+ ", c.date = :date "
-				+ "where c.partnerId = :partnerId and c.uuid = :uuid";
-		Query query = session.createQuery(update);
-		for (Map.Entry<String, CarState> entry : carStates.entrySet()) {
-			CarState carState = entry.getValue();
-
-			query
-					.setDouble("latitude", carState.getLatitude())
-					.setDouble("longitude", carState.getLongitude())
-					.setTimestamp("date", carState.getDate())
-					.setLong("partnerId", partner.getId())
-					.setString("uuid", carState.getUuid())
-					.executeUpdate();
-
-			GeoData geoData = createGeoData(partner, carState);
+		for (GeoData geoData : geoDatas) {
 			session.save(geoData);
 		}
-	}
-
-	private GeoData createGeoData(Partner partner, CarState carState) {
-		GeoData geoData = new GeoData();
-		geoData.setPartnerId(partner.getId());
-		geoData.setUuid(carState.getUuid());
-		geoData.setDate(carState.getDate());
-		geoData.setLat(carState.getLatitude());
-		geoData.setLon(carState.getLongitude());
-
-		return geoData;
 	}
 
 	@Transactional
 	public boolean updateCarStateStatus(Partner partner, String uuid, CarStateEnum carStateEnum) {
 		Session session = sessionFactory.getCurrentSession();
+		String update = "update CarState c set c.state = :state "
+				+ " where c.partnerId = :partnerId and c.uuid = :uuid";
+		session.createQuery(update)
+				.setParameter("state", carStateEnum)
+				.setLong("partnerId", partner.getId())
+				.setString("uuid", uuid)
+				.executeUpdate();
 
-		CarState carState = (CarState) session.createCriteria(CarState.class)
-				.add(Restrictions.eq("partnerId", partner.getId()))
-				.add(Restrictions.eq("uuid", uuid))
-				.uniqueResult();
-
-		if (carState == null) {
-			return false;
-		} else {
-			String update = "update CarState c set c.state = :state "
-					+ " where c.partnerId = :partnerId and c.uuid = :uuid";
-			session.createQuery(update)
-					.setParameter("state", carStateEnum)
-					.setLong("partnerId", carState.getPartnerId())
-					.setString("uuid", carState.getUuid())
-					.executeUpdate();
-
-			return true;
-		}
+		return true;
 	}
 
 	@Transactional
@@ -127,18 +86,20 @@ public class CarDao {
 	}
 
 	@Transactional
-	public List<CarState> getNearCarStates(List<Partner> partners, double lat, double lon, double diff) {
+	public List<Object[]> getNearCarStates(List<Partner> partners, double lat, double lon, double diff) {
 		Session session = sessionFactory.getCurrentSession();
 		Date date = new Date((new Date()).getTime() - (actualGeoMinutes * 60 * 1000));
-		String q = " from CarState cs "
+		String q = " from CarState cs, LastGeoData geo "
 				+ " where cs.state=0 "
 				+ " and cs.partnerId in (:partners) "
-				+ " and cs.date>=:date "
-				+ " and (abs(:lat-cs.latitude) + abs(:lon-cs.longitude)) <= :diff "
-				+ " order by abs(:lat-cs.latitude) + abs(:lon-cs.longitude) ";
+				+ " and cs.partnerId = geo.partnerId "
+				+ " and cs.uuid = geo.uuid "
+				+ " and geo.date>=:date "
+				+ " and (abs(:lat-geo.lat) + abs(:lon-geo.lon)) <= :diff "
+				+ " order by abs(:lat-geo.lat) + abs(:lon-geo.lon) ";
 
 		@SuppressWarnings("unchecked")
-		List<CarState> list = (List<CarState>) session.createQuery(q)
+		List<Object[]> list = session.createQuery(q)
 				.setParameterList("partners", partners.stream().map(p -> p.getId()).collect(Collectors.toList()))
 				.setTimestamp("date", date)
 				.setDouble("lat", lat)
@@ -152,11 +113,13 @@ public class CarDao {
 	@Transactional
 	public List<?> getCarsWithCarStates(Long partnerId) {
 		Session session = sessionFactory.getCurrentSession();
-		String q = " from CarState a, Car b"
-				+ " where a.partnerId = b.partnerId "
-				+ " and a.partnerId = :partnerId "
+		String q = " from CarState a, Car b, LastGeoData c "
+				+ " where a.partnerId = :partnerId "
+				+ " and b.partnerId = a.partnerId "
+				+ " and c.partnerId = a.partnerId "
 				+ " and a.uuid = b.uuid "
-				+ " order by a.date desc ";
+				+ " and a.uuid = c.uuid "
+				+ " order by c.date desc ";
 
 		List<?> list = session.createQuery(q)
 				.setLong("partnerId", partnerId)
@@ -166,19 +129,19 @@ public class CarDao {
 	}
 
 	@Transactional
-	public List<CarState> getCarStatesByRequirements(List<CarState> carStates, Set<Requirement> reqs,
+	public List<LastGeoData> getCarStatesByRequirements(List<LastGeoData> lastGeoDatas, Set<Requirement> reqs,
 			VehicleClass vehicleClass) {
 		if (reqs == null || reqs.size() == 0) {
-			return carStates;
+			return lastGeoDatas;
 		}
 
 		List<String> reqsKeys = reqs.stream().map(p -> p.getType()).collect(Collectors.toList());
 		Session session = sessionFactory.getCurrentSession();
-		List<CarState> filteredCarStates = new ArrayList<CarState>();
-		for (CarState carState : carStates) {
+		List<LastGeoData> filteredCarStates = new ArrayList<LastGeoData>();
+		for (LastGeoData lastGeoData : lastGeoDatas) {
 			Car car = (Car) session.createCriteria(Car.class)
-					.add(Restrictions.eq("partnerId", carState.getPartnerId()))
-					.add(Restrictions.eq("uuid", carState.getUuid()))
+					.add(Restrictions.eq("partnerId", lastGeoData.getPartnerId()))
+					.add(Restrictions.eq("uuid", lastGeoData.getUuid()))
 					.uniqueResult();
 
 			if (vehicleClass != null) {
@@ -190,7 +153,7 @@ public class CarDao {
 			boolean b = reqsKeys.stream().allMatch(p -> car.getCarRequires().containsKey(p)
 					&& !car.getCarRequires().get(p).equals("no"));
 			if (b) {
-				filteredCarStates.add(carState);
+				filteredCarStates.add(lastGeoData);
 			}
 		}
 		return filteredCarStates;

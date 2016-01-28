@@ -21,7 +21,7 @@ import org.w3c.dom.Document;
 
 import tb.car.dao.CarDao;
 import tb.car.domain.Car4Request;
-import tb.car.domain.CarState;
+import tb.car.domain.LastGeoData;
 import tb.dao.IOfferDao;
 import tb.dao.IOrderDao;
 import tb.dao.IPartnerDao;
@@ -64,11 +64,18 @@ public class OfferingOrderTaxiRF {
 			return null;
 		}
 
-		List<CarState> carStates = carDao.getNearCarStates(partners, order.getSource().getLat(),
+		List<Object[]> comb = carDao.getNearCarStates(partners, order.getSource().getLat(),
 				order.getSource().getLon(),
 				COORDINATES_COEF);
 
-		if (carStates.size() == 0) {
+		// List<CarState> carStates = comb.stream()
+		// .map(p -> (CarState) p[0])
+		// .collect(Collectors.toList());
+		List<LastGeoData> lastGeoDatas = comb.stream()
+				.map(p -> (LastGeoData) p[1])
+				.collect(Collectors.toList());
+
+		if (lastGeoDatas.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(),
 					"Не найдено ни одной машины такси вблизи заказа, с допустимым состоянием.");
 			logger.info("Order - " + order.getUuid()
@@ -79,11 +86,11 @@ public class OfferingOrderTaxiRF {
 		if (order.getOfferPartners() != null && order.getOfferPartners().size() > 0) {
 			final List<Long> limitPartnerIds = order.getOfferPartners().stream().map(m -> m.getId())
 					.collect(Collectors.toList());
-			carStates = carStates.stream()
+			lastGeoDatas = lastGeoDatas.stream()
 					.filter(p -> limitPartnerIds.contains(p.getPartnerId()))
 					.collect(Collectors.toList());
 
-			if (carStates.size() == 0) {
+			if (lastGeoDatas.size() == 0) {
 				orderDao.addOrderProcessing(order.getId(),
 						"Не найдено ни одной машины такси вблизи заказа, для указаного в заказе партнера.");
 				logger.info("Order - " + order.getUuid()
@@ -92,28 +99,30 @@ public class OfferingOrderTaxiRF {
 			}
 		}
 
-		String scars = carStates
+		String scars = lastGeoDatas
 				.stream()
 				.map(p -> p.getPartnerId().toString() + "->" + p.getUuid())
 				.collect(Collectors.joining(", "));
 		orderDao.addOrderProcessing(order.getId(), "Подходящие машины такси: " + scars);
 
-		List<Long> partnerIdsList = carStates.stream()
+		List<Long> partnerIdsList = lastGeoDatas.stream()
 				.map(p -> p.getPartnerId())
 				.distinct()
 				.collect(Collectors.toList());
 
-		carStates = carDao.getCarStatesByRequirements(carStates, order.getRequirements(), order.getOrderVehicleClass());
-		if (carStates.size() == 0) {
+		lastGeoDatas = carDao.getCarStatesByRequirements(lastGeoDatas, order.getRequirements(),
+				order.getOrderVehicleClass());
+		if (lastGeoDatas.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(), "Не найдено ни одной машины такси с выбраными опциями.");
 			logger.info("Order - " + order.getUuid()
 					+ ", NOT OFFER - not found car with selected additional services.");
 		}
-		Map<Long, Document> messages4Send = createNotlaterOffer(order, partnerIdsList, carStates);
+		Map<Long, Document> messages4Send = createNotlaterOffer(order, partnerIdsList, lastGeoDatas);
 		return makeOffer(messages4Send, order);
 	}
 
-	private Map<Long, Document> createNotlaterOffer(Order order, List<Long> partnerIdsList, List<CarState> carStates) {
+	private Map<Long, Document> createNotlaterOffer(Order order, List<Long> partnerIdsList,
+			List<LastGeoData> lastGeoDatas) {
 		double lat = order.getSource().getLat();
 		double lon = order.getSource().getLon();
 		Map<Long, Document> messagesMap = new HashMap<Long, Document>();
@@ -121,15 +130,15 @@ public class OfferingOrderTaxiRF {
 			Partner partner = partnerDao.get(partnerId);
 			Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC", partner.getTimezoneId());
 
-			List<CarState> filteredCarStates = carStates.stream()
+			List<LastGeoData> filteredLastGeoDatas = lastGeoDatas.stream()
 					.filter(p -> p.getPartnerId() == partnerId)
 					.collect(Collectors.toList());
 
 			List<Car4Request> car4RequestList = new ArrayList<Car4Request>();
-			for (CarState carState : filteredCarStates) {
+			for (LastGeoData lastGeoData : filteredLastGeoDatas) {
 				Car4Request car4Request = new Car4Request();
-				car4Request.setUuid(carState.getUuid());
-				int dist = (int) calcDistance(lat, lon, carState.getLatitude(), carState.getLongitude());
+				car4Request.setUuid(lastGeoData.getUuid());
+				int dist = (int) calcDistance(lat, lon, lastGeoData.getLat(), lastGeoData.getLon());
 				car4Request.setDist(dist);
 				car4Request.setTime((dist * MINUTE_IN_HOUR) / SPEED);
 				car4Request.setVehicleClass(order.getOrderVehicleClass());

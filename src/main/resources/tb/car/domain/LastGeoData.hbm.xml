@@ -4,15 +4,16 @@
 		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping package="tb.car.domain">
-	<class name="CarState" table="carstates">
+	<class name="LastGeoData" table="lastgeodatas">
 		<composite-id>
 			<key-property name="partnerId"></key-property>
 			<key-property name="uuid" length="32"></key-property>
 		</composite-id>
-		<property name="state">
-			<type name="org.hibernate.type.EnumType">
-				<param name="enumClass">tb.car.domain.CarStateEnum</param>
-			</type>
-		</property>
+		<property name="lat" />
+		<property name="lon" />
+		<property name="direction" />
+		<property name="speed" />
+		<property name="category" />
+		<property name="date" />
 	</class>
 </hibernate-mapping>

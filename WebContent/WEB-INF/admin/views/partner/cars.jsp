@@ -25,9 +25,9 @@
 				<td>${car[1].getUuid()}</td>
 				<td>${car[1].getDriverDisplayName()}</td>
 				<td>${car[0].getState()}</td>
-				<td>${car[0].getDate()}</td>
-				<td>${car[0].getLatitude()}</td>
-				<td>${car[0].getLongitude()}</td>
+				<td>${car[2].getDate()}</td>
+				<td>${car[2].getLat()}</td>
+				<td>${car[2].getLon()}</td>
 				<td>
 					<c:forEach items="${car[1].getCarRequires().entrySet()}" var="req">
 						${req.getKey()}=${req.getValue()},
