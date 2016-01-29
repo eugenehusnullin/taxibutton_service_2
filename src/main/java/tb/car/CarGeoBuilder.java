@@ -11,12 +11,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import tb.car.domain.GeoData;
+import tb.domain.Partner;
 import tb.utils.XmlUtils;
 
 @Service
 public class CarGeoBuilder {
 
-	public List<GeoData> createCarGeos(Document doc, Date loadDate) {
+	public List<GeoData> createCarGeos(Document doc, Date loadDate, Partner partner) {
 
 		doc.getDocumentElement().normalize();
 		NodeList trackNodeList = doc.getElementsByTagName("track");
@@ -28,6 +29,7 @@ public class CarGeoBuilder {
 			Node trackNode = trackNodeList.item(i);
 			Element trackElement = (Element) trackNode;
 
+			geoData.setPartnerId(partner.getId());
 			geoData.setUuid(trackElement.getAttribute("uuid"));
 			Element pointElement = XmlUtils.getOneElement(trackElement, "point");
 

@@ -46,7 +46,7 @@ public class CarGeoController {
 				String partnerClid = carGeoBuilder.defineCarStateGeosPartnerClid(document);
 				Partner partner = partnerDao.getByApiId(partnerClid);
 				if (partner != null) {
-					List<GeoData> geoDatas = carGeoBuilder.createCarGeos(document, new Date());
+					List<GeoData> geoDatas = carGeoBuilder.createCarGeos(document, new Date(), partner);
 					carDao.updateCarGeos(partner, geoDatas);
 					response.setStatus(200);
 				} else {
