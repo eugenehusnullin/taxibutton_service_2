@@ -21,5 +21,7 @@
 		<property name="street" />
 		<property name="housing" />
 		<property name="indexNumber" />
+		<property name="entrance" length="10"></property>
+		<property name="description" length="256"></property>
 	</class>
 </hibernate-mapping>

@@ -334,5 +334,12 @@ public class YandexOrderSerializer {
 		Element premiseNumber = doc.createElement("PremiseNumber");
 		premiseNumber.appendChild(doc.createTextNode(address.getHousing()));
 		premise.appendChild(premiseNumber);
+		
+		if(address.getEntrance() != null && address.getEntrance() != "" && address.getEntrance() != " ") {
+			Element porchNumber = doc.createElement("PorchNumber");
+			porchNumber.appendChild(doc.createTextNode(address.getHousing()));
+			premise.appendChild(porchNumber);
+		}
+		//PorchNumber
 	}
 }

@@ -14,6 +14,8 @@ public class AddressPoint implements Comparable<AddressPoint> {
 	private String locality;
 	private String street;
 	private String housing;
+	private String entrance;
+	private String description;
 
 	public Long getId() {
 		return id;
@@ -120,5 +122,21 @@ public class AddressPoint implements Comparable<AddressPoint> {
 		} else {
 			return 1;
 		}
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getEntrance() {
+		return entrance;
+	}
+
+	public void setEntrance(String entrance) {
+		this.entrance = entrance;
 	}
 }

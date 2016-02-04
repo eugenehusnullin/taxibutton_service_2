@@ -132,6 +132,8 @@ public class OrderJsonParser {
 		String locality = null;
 		String street = null;
 		String housing = null;
+		String entrance = null;
+		String description = null;
 
 		lon = pointJson.optDouble("lon", 0.0);
 		lat = pointJson.optDouble("lat", 0.0);
@@ -142,6 +144,8 @@ public class OrderJsonParser {
 		locality = pointJson.optString("locality", "");
 		street = pointJson.optString("street", "");
 		housing = pointJson.optString("housing", "");
+		entrance = pointJson.optString("entrance", "");
+		description = pointJson.optString("description", "");
 
 		result.setLon(lon);
 		result.setLat(lat);
@@ -154,6 +158,8 @@ public class OrderJsonParser {
 		result.setHousing(housing);
 		result.setOrder(order);
 		result.setIndexNumber(index);
+		result.setEntrance(entrance);
+		result.setDescription(description);
 
 		return result;
 	}
