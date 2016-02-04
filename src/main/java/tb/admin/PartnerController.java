@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import tb.admin.model.CarModel;
 import tb.admin.model.MapAreaModel;
 import tb.car.CarSynch;
 import tb.car.dao.CarDao;
+import tb.car.domain.Car;
+import tb.car.domain.CarState;
+import tb.car.domain.LastGeoData;
 import tb.dao.IMapAreaDao;
 import tb.domain.Partner;
 import tb.domain.maparea.MapArea;
+import tb.domain.order.VehicleClass;
 import tb.service.PartnerService;
 import tb.service.Starter;
 
@@ -57,8 +63,45 @@ public class PartnerController {
 
 	@RequestMapping(value = "/cars", method = RequestMethod.GET)
 	public String cars(@RequestParam("id") Long partnerId, Model model) {
-		List<?> list = carDao.getCarsWithCarStates(partnerId);
-		model.addAttribute("cars", list);
+		Date d = new Date();
+		d = new Date(d.getTime() - (5*60*1000));
+		
+		List<Object[]> list = carDao.getCarsWithCarStates(partnerId);
+		List<CarModel> carModels = new ArrayList<>(list.size());
+		for (Object[] objects : list) {
+			CarState a = (CarState) objects[0];
+			Car b = (Car) objects[1];
+			LastGeoData c = (LastGeoData) objects[2];
+
+			CarModel car = new CarModel();
+			car.setDisp(b.getRealName());
+			car.setUuid(b.getUuid());
+			car.setName(b.getDriverDisplayName());
+			car.setState(a.getState().toString());
+			car.setDate(c.getDate().toString());
+			car.setLat(c.getLat());
+			car.setLon(c.getLon());
+
+			StringBuilder req = new StringBuilder();
+			for (Entry<String, String> entry : b.getCarRequires().entrySet()) {
+				req.append(entry.getKey() + "=" + entry.getValue() + ", ");
+			}
+			car.setRequirmets(req.toString());
+			
+			StringBuilder carClass = new StringBuilder();
+			for (VehicleClass vehicleClass : b.getVehicleClasses()) {
+				carClass.append(vehicleClass.name() + ", ");
+			}
+			car.setCarclass(carClass.toString());
+			
+			if (c.getDate().before(d)) {
+				car.setGeoObsolete(true);
+			}
+			
+			carModels.add(car);
+		}
+
+		model.addAttribute("cars", carModels);
 		return "partner/cars";
 	}
 

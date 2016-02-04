@@ -20,22 +20,20 @@
 	</thead>
 	<tbody>
 		<c:forEach items="${cars}" var="car">
-			<tr>
-				<td>${car[1].getRealName()}</td>
-				<td>${car[1].getUuid()}</td>
-				<td>${car[1].getDriverDisplayName()}</td>
-				<td>${car[0].getState()}</td>
-				<td>${car[2].getDate()}</td>
-				<td>${car[2].getLat()}</td>
-				<td>${car[2].getLon()}</td>
-				<td>
-					<c:forEach items="${car[1].getCarRequires().entrySet()}" var="req">
-						${req.getKey()}=${req.getValue()},
-					</c:forEach>
-				</td>
-				<td>
-					<c:forEach items="${car[1].getVehicleClasses()}" var="cls">${cls.name()},</c:forEach>
-				</td>
+			<tr
+				<c:if test="${car.isGeoObsolete()}">
+					bordercolor="red"
+				</c:if>
+			>
+				<td>${car.getDisp()}</td>
+				<td>${car.getUuid()}</td>
+				<td>${car.getName()}</td>
+				<td>${car.getState()}</td>
+				<td>${car.getDate()}</td>
+				<td>${car.getLat()}</td>
+				<td>${car.getLon()}</td>
+				<td>${car.getRequirmets()}</td>
+				<td>${car.getCarclass()}</td>
 			</tr>
 		</c:forEach>
 	</tbody>

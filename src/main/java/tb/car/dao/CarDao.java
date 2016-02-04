@@ -111,7 +111,7 @@ public class CarDao {
 	}
 
 	@Transactional
-	public List<?> getCarsWithCarStates(Long partnerId) {
+	public List<Object[]> getCarsWithCarStates(Long partnerId) {
 		Session session = sessionFactory.getCurrentSession();
 		String q = " from CarState a, Car b, LastGeoData c "
 				+ " where a.partnerId = :partnerId "
@@ -121,7 +121,8 @@ public class CarDao {
 				+ " and a.uuid = c.uuid "
 				+ " order by c.date desc ";
 
-		List<?> list = session.createQuery(q)
+		@SuppressWarnings("unchecked")
+		List<Object[]> list = session.createQuery(q)
 				.setLong("partnerId", partnerId)
 				.list();
 
