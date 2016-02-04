@@ -22,7 +22,7 @@
 		<c:forEach items="${cars}" var="car">
 			<tr
 				<c:if test="${car.isGeoObsolete()}">
-					bordercolor="red"
+					bgcolor="#ffcc00"
 				</c:if>
 			>
 				<td>${car.getDisp()}</td>
