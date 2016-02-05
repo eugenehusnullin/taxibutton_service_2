@@ -340,6 +340,9 @@ public class YandexOrderSerializer {
 			porchNumber.appendChild(doc.createTextNode(address.getEntrance()));
 			premise.appendChild(porchNumber);
 		}
-		//PorchNumber
+		
+		if (address.getDescription() != null && !address.getDescription().isEmpty()) {
+			node.appendChild(createComments(doc, address.getDescription()));
+		}
 	}
 }
