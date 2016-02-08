@@ -417,7 +417,8 @@ public class OrderService {
 		orderStatusDao.save(status);
 
 		orderDao.addOrderProcessing(order.getId(),
-				"Партнер " + partner.getName() + " обновил статус заказа. " + newStatus + " " + statusParams);
+				"Партнер " + partner.getName() + " обновил статус заказа. " + newStatus
+						+ " " + (statusParams == null ? "" : statusParams));
 	}
 
 	private OrderStatusType defineOrderStatusType(String status) {

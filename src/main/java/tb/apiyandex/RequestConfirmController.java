@@ -34,9 +34,10 @@ public class RequestConfirmController {
 
 		try {
 			if (newcar != null) {
+				logger.info("Change the car: OrderId-"+ orderId+", Newcar-"+newcar+".");
 				orderService.setNewcar(clid, apikey, orderId, newcar);
 			} else {
-				logger.info("OrderId-"+ orderId+", Status-"+status+".");
+				logger.info("Set status: OrderId-"+ orderId+", Status-"+status+".");
 				orderService.setStatus(clid, apikey, orderId, status, extra);
 			}
 		} catch (PartnerNotFoundException e) {
