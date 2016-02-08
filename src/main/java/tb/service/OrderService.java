@@ -120,10 +120,10 @@ public class OrderService {
 			throw new OrderNotFoundException(orderUuid);
 		}
 
-		OrderStatusType lastStatusType = orderStatusDao.getLast(order).getStatus();
-		if (lastStatusType != OrderStatusType.Driving && lastStatusType != OrderStatusType.Waiting) {
-			throw new WrongData();
-		}
+//		OrderStatusType lastStatusType = orderStatusDao.getLast(order).getStatus();
+//		if (lastStatusType != OrderStatusType.Driving && lastStatusType != OrderStatusType.Waiting) {
+//			throw new WrongData();
+//		}
 
 		Partner partner = order.getPartner();
 		String url = partner.getApiurl() + "/1.x/inform";
