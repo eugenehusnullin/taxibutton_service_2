@@ -1,7 +1,6 @@
 package tb.apiyandex;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +45,7 @@ public class CarGeoController {
 				String partnerClid = carGeoBuilder.defineCarStateGeosPartnerClid(document);
 				Partner partner = partnerDao.getByApiId(partnerClid);
 				if (partner != null) {
-					List<GeoData> geoDatas = carGeoBuilder.createCarGeos(document, new Date(), partner);
+					List<GeoData> geoDatas = carGeoBuilder.createCarGeos(document, partner);
 					carDao.updateCarGeos(partner, geoDatas);
 					response.setStatus(200);
 				} else {

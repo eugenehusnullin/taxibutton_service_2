@@ -1,5 +1,7 @@
 package tb.car;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,14 +19,13 @@ import tb.utils.XmlUtils;
 @Service
 public class CarGeoBuilder {
 
-	public List<GeoData> createCarGeos(Document doc, Date loadDate, Partner partner) {
+	public List<GeoData> createCarGeos(Document doc, Partner partner) {
 
 		doc.getDocumentElement().normalize();
 		NodeList trackNodeList = doc.getElementsByTagName("track");
 		List<GeoData> list = new ArrayList<>(trackNodeList.getLength());
 		for (int i = 0; i < trackNodeList.getLength(); i++) {
 			GeoData geoData = new GeoData();
-			geoData.setDate(loadDate);
 
 			Node trackNode = trackNodeList.item(i);
 			Element trackElement = (Element) trackNode;
@@ -36,6 +37,8 @@ public class CarGeoBuilder {
 			geoData.setLat(Double.parseDouble(pointElement.getAttribute("latitude")));
 			geoData.setLon(Double.parseDouble(pointElement.getAttribute("longitude")));
 
+			geoData.setDate(parseDate(pointElement.getAttribute("time") + "Z"));
+
 			list.add(geoData);
 		}
 		return list;
@@ -46,5 +49,11 @@ public class CarGeoBuilder {
 		Node tracksNode = doc.getElementsByTagName("tracks").item(0);
 		Element tracksElement = (Element) tracksNode;
 		return tracksElement.getAttribute("clid");
+	}
+
+	protected Date parseDate(String value) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy:HHmmssX");
+		ZonedDateTime zd = ZonedDateTime.parse(value, formatter);
+		return Date.from(zd.toInstant());
 	}
 }

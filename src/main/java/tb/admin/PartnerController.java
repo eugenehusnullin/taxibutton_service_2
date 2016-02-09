@@ -5,10 +5,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -61,17 +63,32 @@ public class PartnerController {
 		return "partner/list";
 	}
 
+	@Transactional
 	@RequestMapping(value = "/cars", method = RequestMethod.GET)
 	public String cars(@RequestParam("id") Long partnerId, Model model) {
 		Date d = new Date();
-		d = new Date(d.getTime() - (5*60*1000));
-		
+		d = new Date(d.getTime() - (5 * 60 * 1000));
+
 		List<Object[]> list = carDao.getCarsWithCarStates(partnerId);
+		List<LastGeoData> lastGeoDatas = carDao.getLastGeoDatas(partnerId);
 		List<CarModel> carModels = new ArrayList<>(list.size());
+		LastGeoData lastGeoDataClear = new LastGeoData();
 		for (Object[] objects : list) {
 			CarState a = (CarState) objects[0];
 			Car b = (Car) objects[1];
-			LastGeoData c = (LastGeoData) objects[2];
+
+			LastGeoData c;
+			Optional<LastGeoData> olgd = lastGeoDatas.stream()
+					.filter(p -> p.getUuid().equals(a.getUuid()))
+					.findFirst();
+			if (olgd.isPresent()) {
+				c = olgd.get();
+			} else {
+				c = lastGeoDataClear;
+				c.setDate(new Date(0));
+				c.setLon(0D);
+				c.setLat(0D);
+			}
 
 			CarModel car = new CarModel();
 			car.setDisp(b.getRealName());
@@ -87,17 +104,17 @@ public class PartnerController {
 				req.append(entry.getKey() + "=" + entry.getValue() + ", ");
 			}
 			car.setRequirmets(req.toString());
-			
+
 			StringBuilder carClass = new StringBuilder();
 			for (VehicleClass vehicleClass : b.getVehicleClasses()) {
 				carClass.append(vehicleClass.name() + ", ");
 			}
 			car.setCarclass(carClass.toString());
-			
+
 			if (c.getDate().before(d)) {
 				car.setGeoObsolete(true);
 			}
-			
+
 			carModels.add(car);
 		}
 

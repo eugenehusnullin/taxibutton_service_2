@@ -113,13 +113,11 @@ public class CarDao {
 	@Transactional
 	public List<Object[]> getCarsWithCarStates(Long partnerId) {
 		Session session = sessionFactory.getCurrentSession();
-		String q = " from CarState a, Car b, LastGeoData c "
+		String q = " from CarState a, Car b "
 				+ " where a.partnerId = :partnerId "
 				+ " and b.partnerId = a.partnerId "
-				+ " and c.partnerId = a.partnerId "
 				+ " and a.uuid = b.uuid "
-				+ " and a.uuid = c.uuid "
-				+ " order by c.date desc ";
+				+ " order by b.uuid desc ";
 
 		@SuppressWarnings("unchecked")
 		List<Object[]> list = session.createQuery(q)
@@ -127,6 +125,13 @@ public class CarDao {
 				.list();
 
 		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public List<LastGeoData> getLastGeoDatas(Long partnerId) {
+		Session session = sessionFactory.getCurrentSession();
+		return session.createCriteria(LastGeoData.class).list();
 	}
 
 	@Transactional
