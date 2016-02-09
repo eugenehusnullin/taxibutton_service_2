@@ -46,6 +46,7 @@ import tb.domain.order.OrderProcessing;
 import tb.domain.order.OrderStatus;
 import tb.domain.order.OrderStatusType;
 import tb.orderprocessing.SheduledProcessing;
+import tb.service.exceptions.CarNotFoundException;
 import tb.service.exceptions.DeviceNotFoundException;
 import tb.service.exceptions.NotValidOrderStatusException;
 import tb.service.exceptions.OrderNotFoundException;
@@ -120,10 +121,10 @@ public class OrderService {
 			throw new OrderNotFoundException(orderUuid);
 		}
 
-//		OrderStatusType lastStatusType = orderStatusDao.getLast(order).getStatus();
-//		if (lastStatusType != OrderStatusType.Driving && lastStatusType != OrderStatusType.Waiting) {
-//			throw new WrongData();
-//		}
+		// OrderStatusType lastStatusType = orderStatusDao.getLast(order).getStatus();
+		// if (lastStatusType != OrderStatusType.Driving && lastStatusType != OrderStatusType.Waiting) {
+		// throw new WrongData();
+		// }
 
 		Partner partner = order.getPartner();
 		String url = partner.getApiurl() + "/1.x/inform";
@@ -362,7 +363,7 @@ public class OrderService {
 
 	@Transactional
 	public void setNewcar(String partnerApiId, String partnerApiKey, String orderUuid, String newcar)
-			throws PartnerNotFoundException, OrderNotFoundException {
+			throws PartnerNotFoundException, OrderNotFoundException, CarNotFoundException {
 		Partner partner = partnerDao.getByApiId(partnerApiId);
 		if (partner == null) {
 			throw new PartnerNotFoundException(partnerApiId);
@@ -379,6 +380,11 @@ public class OrderService {
 
 		if (!order.getPartner().getId().equals(partner.getId())) {
 			throw new OrderNotFoundException(orderUuid);
+		}
+
+		Car car = carDao.getCar(partner.getId(), newcar);
+		if (car == null) {
+			throw new CarNotFoundException(partner.getId(), newcar);
 		}
 
 		order.setCarUuid(newcar);
@@ -417,8 +423,10 @@ public class OrderService {
 		orderStatusDao.save(status);
 
 		orderDao.addOrderProcessing(order.getId(),
-				"Партнер " + partner.getName() + " обновил статус заказа. " + newStatus
-						+ " " + (statusParams == null ? "" : statusParams));
+				"Партнер " + partner.getName() +
+				", водитель " + order.getCarUuid() +
+						", обновил статус заказа. " + newStatus +
+						" " + (statusParams == null ? "" : statusParams));
 	}
 
 	private OrderStatusType defineOrderStatusType(String status) {
@@ -480,6 +488,7 @@ public class OrderService {
 					order.getRequirements().stream()
 							.map(p -> p.getType() + " = " + p.getOptions())
 							.collect(Collectors.joining(", ")));
+			model.setVehicleClass(order.getOrderVehicleClass().name());
 		}
 
 		return models;

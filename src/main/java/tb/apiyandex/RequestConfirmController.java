@@ -1,5 +1,7 @@
 package tb.apiyandex;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import tb.service.OrderService;
 import tb.service.exceptions.PartnerNotFoundException;
+import tb.service.exceptions.CarNotFoundException;
 import tb.service.exceptions.OrderNotFoundException;
 
 @Controller("apiyandexRequestConfirmController")
@@ -18,13 +21,13 @@ import tb.service.exceptions.OrderNotFoundException;
 // Обновление статуса заказа
 public class RequestConfirmController {
 	private static final Logger logger = LoggerFactory.getLogger(RequestConfirmController.class);
-	
+
 	@Autowired
 	private OrderService orderService;
 
 	@RequestMapping(value = "")
-	//, method = RequestMethod.POST)
-	public void index(HttpServletRequest request, HttpServletResponse response) {
+	// , method = RequestMethod.POST)
+	public void index(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String clid = request.getParameter("clid");
 		String apikey = request.getParameter("apikey");
 		String orderId = request.getParameter("orderid");
@@ -34,16 +37,18 @@ public class RequestConfirmController {
 
 		try {
 			if (newcar != null) {
-				logger.info("Change the car: OrderId-"+ orderId+", Newcar-"+newcar+".");
+				logger.info("Change the car: OrderId-" + orderId + ", Newcar-" + newcar + ".");
 				orderService.setNewcar(clid, apikey, orderId, newcar);
 			} else {
-				logger.info("Set status: OrderId-"+ orderId+", Status-"+status+".");
+				logger.info("Set status: OrderId-" + orderId + ", Status-" + status + ".");
 				orderService.setStatus(clid, apikey, orderId, status, extra);
 			}
 		} catch (PartnerNotFoundException e) {
-			response.setStatus(403);
+			response.sendError(403, "PartnerNotFoundException");
 		} catch (OrderNotFoundException e) {
-			response.setStatus(404);
+			response.sendError(404, "OrderNotFoundException");
+		} catch (CarNotFoundException e) {
+			response.sendError(404, "CarNotFoundException");
 		}
 	}
 }

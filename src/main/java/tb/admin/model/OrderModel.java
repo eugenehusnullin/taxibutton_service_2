@@ -12,6 +12,7 @@ public class OrderModel {
 	private String uuid;
 	private String partnerName;
 	private String requirements;
+	private String vehicleClass;
 
 	public Long getId() {
 		return id;
@@ -83,5 +84,13 @@ public class OrderModel {
 
 	public void setRequirements(String requirements) {
 		this.requirements = requirements;
+	}
+
+	public String getVehicleClass() {
+		return vehicleClass;
+	}
+
+	public void setVehicleClass(String vehicleClass) {
+		this.vehicleClass = vehicleClass;
 	}
 }

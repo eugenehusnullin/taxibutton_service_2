@@ -1,11 +1,11 @@
 package tb.domain.order;
 
 public enum VehicleClass {
-	Ecomon, Comfort, Business, Minivan, VIP;
+	Econom, Comfort, Business, Minivan, VIP;
 	
 	public static int convert2Partner(VehicleClass vehicleClass) {
 		switch (vehicleClass) {
-		case Ecomon:
+		case Econom:
 			return 0;
 		case Comfort:
 			return 1;
@@ -22,7 +22,7 @@ public enum VehicleClass {
 	public static VehicleClass convertFromPartner(int value) {
 		switch (value) {
 		case 0:
-			return Ecomon;
+			return Econom;
 		case 1:
 			return Comfort;
 		case 2:
@@ -31,7 +31,7 @@ public enum VehicleClass {
 			return VIP;
 
 		default:
-			return Ecomon;
+			return Econom;
 		}
 	}
 }

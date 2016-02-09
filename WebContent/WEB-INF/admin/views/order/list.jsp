@@ -8,6 +8,7 @@
 			<tr>
 				<th>id</th>
 				<th>bookingDate</th>
+				<th>class</th>
 				<th>source</th>
 				<th>status</th>
 				<th>notlater</th>
@@ -22,6 +23,7 @@
 				<tr>
 					<td><a href="info?id=${order.getId()}">${order.getId()}</a></td>
 					<td>${order.getBookingDate()}</td>
+					<td>${order.getVehicleClass()}</td>
 					<td>${order.getSourceShortAddress()}</td>
 					<td>${order.getLastStatus()}</td>
 					<td>${order.getUrgent()}</td>
