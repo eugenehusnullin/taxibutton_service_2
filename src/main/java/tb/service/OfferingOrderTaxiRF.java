@@ -64,17 +64,14 @@ public class OfferingOrderTaxiRF {
 			return null;
 		}
 
+		//
+		// !select by car state
 		List<Object[]> comb = carDao.getNearCarStates(partners, order.getSource().getLat(),
 				order.getSource().getLon(),
 				COORDINATES_COEF);
-
-		// List<CarState> carStates = comb.stream()
-		// .map(p -> (CarState) p[0])
-		// .collect(Collectors.toList());
 		List<LastGeoData> lastGeoDatas = comb.stream()
 				.map(p -> (LastGeoData) p[1])
 				.collect(Collectors.toList());
-
 		if (lastGeoDatas.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(),
 					"Не найдено ни одной машины такси вблизи заказа, с допустимым состоянием.");
@@ -83,6 +80,8 @@ public class OfferingOrderTaxiRF {
 			return false;
 		}
 
+		//
+		// !select by partnerId in order
 		if (order.getOfferPartners() != null && order.getOfferPartners().size() > 0) {
 			final List<Long> limitPartnerIds = order.getOfferPartners().stream().map(m -> m.getId())
 					.collect(Collectors.toList());
@@ -99,6 +98,19 @@ public class OfferingOrderTaxiRF {
 			}
 		}
 
+		//
+		// !select by requirements and vehicle class
+		lastGeoDatas = carDao.getCarStatesByRequirements(lastGeoDatas, order.getRequirements(),
+				order.getOrderVehicleClass());
+		if (lastGeoDatas.size() == 0) {
+			orderDao.addOrderProcessing(order.getId(), "Не найдено ни одной машины такси с выбраными опциями.");
+			logger.info("Order - " + order.getUuid()
+					+ ", NOT OFFER - not found car with selected additional services.");
+			return false;
+		}
+
+		//
+		// !log for admin
 		String scars = lastGeoDatas
 				.stream()
 				.map(p -> p.getPartnerId().toString() + "->" + p.getUuid())
@@ -109,14 +121,6 @@ public class OfferingOrderTaxiRF {
 				.map(p -> p.getPartnerId())
 				.distinct()
 				.collect(Collectors.toList());
-
-		lastGeoDatas = carDao.getCarStatesByRequirements(lastGeoDatas, order.getRequirements(),
-				order.getOrderVehicleClass());
-		if (lastGeoDatas.size() == 0) {
-			orderDao.addOrderProcessing(order.getId(), "Не найдено ни одной машины такси с выбраными опциями.");
-			logger.info("Order - " + order.getUuid()
-					+ ", NOT OFFER - not found car with selected additional services.");
-		}
 		Map<Long, Document> messages4Send = createNotlaterOffer(order, partnerIdsList, lastGeoDatas);
 		return makeOffer(messages4Send, order);
 	}
