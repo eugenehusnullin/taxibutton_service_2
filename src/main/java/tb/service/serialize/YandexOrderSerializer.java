@@ -281,6 +281,10 @@ public class YandexOrderSerializer {
 			requireName = "coupon";
 			break;
 
+		case "isWiFi":
+			requireName = "wifi";
+			break;
+
 		default:
 			requireName = old;
 			break;
@@ -334,13 +338,13 @@ public class YandexOrderSerializer {
 		Element premiseNumber = doc.createElement("PremiseNumber");
 		premiseNumber.appendChild(doc.createTextNode(address.getHousing()));
 		premise.appendChild(premiseNumber);
-		
-		if(address.getEntrance() != null && address.getEntrance() != "" && address.getEntrance() != " ") {
+
+		if (address.getEntrance() != null && address.getEntrance() != "" && address.getEntrance() != " ") {
 			Element porchNumber = doc.createElement("PorchNumber");
 			porchNumber.appendChild(doc.createTextNode(address.getEntrance()));
 			premise.appendChild(porchNumber);
 		}
-		
+
 		if (address.getDescription() != null && !address.getDescription().isEmpty()) {
 			node.appendChild(createComments(doc, address.getDescription()));
 		}
