@@ -1,11 +1,13 @@
 package tb.admin.model;
 
+import java.util.Date;
+
 public class CarModel {
 	private String disp;
 	private String uuid;
 	private String name;
 	private String state;
-	private String date;
+	private Date date;
 	private Double lat;
 	private Double lon;
 	private String requirmets;
@@ -42,14 +44,6 @@ public class CarModel {
 
 	public void setState(String state) {
 		this.state = state;
-	}
-
-	public String getDate() {
-		return date;
-	}
-
-	public void setDate(String date) {
-		this.date = date;
 	}
 
 	public Double getLat() {
@@ -90,6 +84,14 @@ public class CarModel {
 
 	public void setGeoObsolete(boolean geoObsolete) {
 		this.geoObsolete = geoObsolete;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 }

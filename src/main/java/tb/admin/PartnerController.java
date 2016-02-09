@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -95,7 +96,7 @@ public class PartnerController {
 			car.setUuid(b.getUuid());
 			car.setName(b.getDriverDisplayName());
 			car.setState(a.getState().toString());
-			car.setDate(c.getDate().toString());
+			car.setDate(c.getDate());
 			car.setLat(c.getLat());
 			car.setLon(c.getLon());
 
@@ -117,6 +118,10 @@ public class PartnerController {
 
 			carModels.add(car);
 		}
+
+		carModels = carModels.stream()
+				.sorted((e1, e2) -> e2.getDate().compareTo(e1.getDate()))
+				.collect(Collectors.toList());
 
 		model.addAttribute("cars", carModels);
 		return "partner/cars";
