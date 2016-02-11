@@ -106,7 +106,7 @@ public class CostRequest {
 			call.enqueue(new Callback<String>() {
 
 				@Override
-				public void onResponse(Response<String> response) {
+				public void onResponse(Call<String> call, Response<String> response) {
 					String responseString = response.body();
 					logger.info("COST SUCCESS: " + responseString);
 					JSONObject responseJson = (JSONObject) new JSONTokener(responseString).nextValue();
@@ -117,15 +117,14 @@ public class CostRequest {
 					costJson.put("min", cr.getMin());
 					costJson.put("partner", cr.getPartnerName());
 
-					dr.setResult(costJson.toString());
+					dr.setResult(costJson.toString());					
 				}
 
 				@Override
-				public void onFailure(Throwable t) {
+				public void onFailure(Call<String> call, Throwable t) {
 					logger.warn("COST FAILURE: ResponseCode=" + t.getMessage() + " Partnername="
 							+ partner.getName());
-					dr.setErrorResult(t);
-
+					dr.setErrorResult(t);					
 				}
 			});
 		}

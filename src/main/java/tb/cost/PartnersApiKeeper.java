@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 import tb.domain.Partner;
 
 @Service
