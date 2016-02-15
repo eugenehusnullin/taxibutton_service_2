@@ -12,7 +12,6 @@ import org.w3c.dom.NodeList;
 
 import tb.car.domain.Car;
 import tb.domain.Partner;
-import tb.domain.order.VehicleClass;
 import tb.utils.XmlUtils;
 
 @Service
@@ -40,10 +39,7 @@ public class CarBuilder {
 			for (int j = 0; j < carClassNodeList.getLength(); j++) {
 				Node carClassNode = carClassNodeList.item(j);
 				Element carClassElement = (Element) carClassNode;
-				car.getVehicleClasses().add(
-						VehicleClass.convertFromPartner(
-								Integer.parseInt(
-										carClassElement.getFirstChild().getNodeValue())));
+				car.getCarClasses().add(carClassElement.getFirstChild().getNodeValue());
 			}
 
 			Element driverDetailsElement = XmlUtils.getOneElement(carElement, "DriverDetails");

@@ -22,7 +22,6 @@ import tb.car.domain.GeoData;
 import tb.car.domain.LastGeoData;
 import tb.domain.Partner;
 import tb.domain.order.Requirement;
-import tb.domain.order.VehicleClass;
 
 @Service
 public class CarDao {
@@ -136,7 +135,7 @@ public class CarDao {
 
 	@Transactional
 	public List<LastGeoData> getCarStatesByRequirements(List<LastGeoData> lastGeoDatas, Set<Requirement> reqs,
-			VehicleClass vehicleClass) {
+			String carClass) {
 		if (reqs == null || reqs.size() == 0) {
 			return lastGeoDatas;
 		}
@@ -150,8 +149,8 @@ public class CarDao {
 					.add(Restrictions.eq("uuid", lastGeoData.getUuid()))
 					.uniqueResult();
 
-			if (vehicleClass != null) {
-				if (!car.getVehicleClasses().contains(vehicleClass)) {
+			if (carClass != null) {
+				if (!car.getCarClasses().contains(carClass)) {
 					continue;
 				}
 			}

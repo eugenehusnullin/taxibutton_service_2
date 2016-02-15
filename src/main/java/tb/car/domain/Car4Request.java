@@ -1,12 +1,10 @@
 package tb.car.domain;
 
-import tb.domain.order.VehicleClass;
-
 public class Car4Request {
 	private String uuid;
 	private int dist;
 	private int time;
-	private VehicleClass vehicleClass;
+	private String carClass;
 
 	public String getUuid() {
 		return uuid;
@@ -32,11 +30,11 @@ public class Car4Request {
 		this.time = time;
 	}
 
-	public VehicleClass getVehicleClass() {
-		return vehicleClass;
+	public String getCarClass() {
+		return carClass;
 	}
 
-	public void setVehicleClass(VehicleClass vehicleClass) {
-		this.vehicleClass = vehicleClass;
+	public void setCarClass(String carClass) {
+		this.carClass = carClass;
 	}
 }

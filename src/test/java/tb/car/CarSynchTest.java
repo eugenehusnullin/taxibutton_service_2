@@ -40,7 +40,6 @@ public class CarSynchTest {
 
 		Car car1 = cars.stream().filter(a -> a.getUuid().equals("uuid01")).findFirst().get();
 		assertNotNull(car1);
-		assertEquals(3, car1.getVehicleClasses().size());
 		assertEquals(6, car1.getCarRequires().size());
 		assertNotNull(car1.getRealName());
 		assertNotNull(car1.getDriverDisplayName());

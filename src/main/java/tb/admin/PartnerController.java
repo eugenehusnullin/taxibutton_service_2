@@ -28,7 +28,6 @@ import tb.car.domain.LastGeoData;
 import tb.dao.IMapAreaDao;
 import tb.domain.Partner;
 import tb.domain.maparea.MapArea;
-import tb.domain.order.VehicleClass;
 import tb.service.PartnerService;
 import tb.service.Starter;
 
@@ -109,11 +108,11 @@ public class PartnerController {
 			}
 			car.setRequirmets(req.toString());
 
-			StringBuilder carClass = new StringBuilder();
-			for (VehicleClass vehicleClass : b.getVehicleClasses()) {
-				carClass.append(vehicleClass.name() + ", ");
+			StringBuilder carClassSB = new StringBuilder();
+			for (String carClass : b.getCarClasses()) {
+				carClassSB.append(carClass + ", ");
 			}
-			car.setCarclass(carClass.toString());
+			car.setCarclass(carClassSB.toString());
 
 			if (c.getDate().before(d)) {
 				car.setGeoObsolete(true);

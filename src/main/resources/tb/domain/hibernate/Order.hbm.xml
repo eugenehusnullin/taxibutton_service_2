@@ -16,6 +16,7 @@
 		<property name="phone" length="20" />
 		<property name="bookingDate" />
 		<property name="processingFinished" />
+		<property name="carClass" length="50"></property>
 		<set name="requirements" cascade="all">
 			<key>
 				<column name="orderid" />
@@ -45,12 +46,7 @@
 			<many-to-many entity-name="tb.domain.Partner">
 				<column name="partnerid" not-null="true" />
 			</many-to-many>
-		</set>
-		<property name="orderVehicleClass">
-			<type name="org.hibernate.type.EnumType">
-				<param name="enumClass">tb.domain.order.VehicleClass</param>
-			</type>
-		</property>
+		</set>		
 		<property name="comments" length="128"/>
 		<property name="createdDate" />
 		<property name="startProcessing"></property> 

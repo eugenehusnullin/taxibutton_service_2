@@ -20,7 +20,6 @@ import tb.car.domain.Car4Request;
 import tb.domain.order.AddressPoint;
 import tb.domain.order.Order;
 import tb.domain.order.Requirement;
-import tb.domain.order.VehicleClass;
 
 public class YandexOrderSerializer {
 
@@ -57,7 +56,7 @@ public class YandexOrderSerializer {
 			Element requestElement = doc.createElement("Request");
 			doc.appendChild(requestElement);
 			requestElement.appendChild(createOrderId(doc, order.getUuid()));
-			requestElement.appendChild(createCarClass(doc, order.getOrderVehicleClass()));
+			requestElement.appendChild(createCarClass(doc, order.getCarClass()));
 
 			if (cars != null && cars.size() > 0) {
 				requestElement.appendChild(createRequestCars(doc, cars));
@@ -106,9 +105,9 @@ public class YandexOrderSerializer {
 		return recipient;
 	}
 
-	private static Element createCarClass(Document doc, VehicleClass vehicleClass) {
+	private static Element createCarClass(Document doc, String carClass) {
 		Element element = doc.createElement("CarClass");
-		element.appendChild(doc.createTextNode(String.valueOf(VehicleClass.convert2Partner(vehicleClass))));
+		element.appendChild(doc.createTextNode(carClass));
 		return element;
 	}
 
@@ -208,7 +207,7 @@ public class YandexOrderSerializer {
 
 		Element carClassElement = doc.createElement("CarClass");
 		carClassElement
-				.appendChild(doc.createTextNode(String.valueOf(VehicleClass.convert2Partner(car.getVehicleClass()))));
+				.appendChild(doc.createTextNode(car.getCarClass()));
 		carElement.appendChild(carClassElement);
 
 		Element maphrefElement = doc.createElement("MapHref");
@@ -238,7 +237,7 @@ public class YandexOrderSerializer {
 
 			Element carClassElement = doc.createElement("CarClass");
 			carClassElement.appendChild(
-					doc.createTextNode(String.valueOf(VehicleClass.convert2Partner(car.getVehicleClass()))));
+					doc.createTextNode(car.getCarClass()));
 			carElement.appendChild(carClassElement);
 
 			Element maphrefElement = doc.createElement("MapHref");

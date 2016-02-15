@@ -15,7 +15,6 @@ import tb.domain.Partner;
 import tb.domain.order.AddressPoint;
 import tb.domain.order.Order;
 import tb.domain.order.Requirement;
-import tb.domain.order.VehicleClass;
 import tb.service.exceptions.ParseOrderException;
 import tb.utils.DatetimeUtils;
 
@@ -93,12 +92,7 @@ public class OrderJsonParser {
 			throw new ParseOrderException("requirements bad. " + ex.toString());
 		}
 
-		try {
-			int vehicleClass = jsonObject.getInt("vehicleClass");
-			order.setOrderVehicleClass(VehicleClass.values()[vehicleClass]);
-		} catch (JSONException ex) {
-			throw new ParseOrderException("vehicleClass bad. " + ex.toString());
-		}
+		order.setCarClass(jsonObject.getString("vehicleClass"));
 
 		Set<Partner> offerPartners = new HashSet<Partner>();
 		if (!jsonObject.isNull("partners")) {

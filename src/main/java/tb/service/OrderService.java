@@ -424,7 +424,7 @@ public class OrderService {
 
 		orderDao.addOrderProcessing(order.getId(),
 				"ѕартнер " + partner.getName() +
-				", водитель " + order.getCarUuid() +
+						", водитель " + order.getCarUuid() +
 						", обновил статус заказа. " + newStatus +
 						" " + (statusParams == null ? "" : statusParams));
 	}
@@ -488,7 +488,7 @@ public class OrderService {
 					order.getRequirements().stream()
 							.map(p -> p.getType() + " = " + p.getOptions())
 							.collect(Collectors.joining(", ")));
-			model.setVehicleClass(order.getOrderVehicleClass().name());
+			model.setVehicleClass(order.getCarClass());
 		}
 
 		return models;
@@ -565,7 +565,7 @@ public class OrderService {
 		Car car = carDao.getCar(assignRequest.getPartner().getId(), assignRequest.getUuid());
 		Car4Request car4Request = new Car4Request();
 		car4Request.setUuid(car.getUuid());
-		car4Request.setVehicleClass(order.getOrderVehicleClass());
+		car4Request.setCarClass(order.getCarClass());
 
 		Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC",
 				assignRequest.getPartner().getTimezoneId());

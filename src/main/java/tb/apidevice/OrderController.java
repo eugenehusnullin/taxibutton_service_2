@@ -40,7 +40,6 @@ import tb.domain.Partner;
 import tb.domain.PartnerSettings;
 import tb.domain.maparea.Point;
 import tb.domain.order.Order;
-import tb.domain.order.VehicleClass;
 import tb.service.OrderService;
 import tb.service.PartnerService;
 import tb.service.exceptions.DeviceNotFoundException;
@@ -272,10 +271,10 @@ public class OrderController {
 			Point source = createPoint(costJson.getJSONObject("source"));
 			List<Point> destinations = createPoints(costJson.optJSONArray("destinations"));
 			Date bookDate = createBookDate(costJson.getString("bookingDate"));
-			VehicleClass vehicleClass = createVehicleClass(costJson.getInt("class"));
+			String carClass = costJson.getString("class");
 			List<String> adds = createAdds(costJson.optJSONArray("adds"));
 
-			return costRequest.getCostAsync(source, destinations, vehicleClass, bookDate, adds);
+			return costRequest.getCostAsync(source, destinations, carClass, bookDate, adds);
 		} catch (Exception e) {
 			logger.error("cost", e);
 			DeferredResult<String> dr = new DeferredResult<>();
@@ -329,7 +328,7 @@ public class OrderController {
 		}
 
 	}
-	
+
 	private InputStream getCarOptionsResource() throws FileNotFoundException {
 		URL url = getClass().getResource("/CarOptions.json");
 		File file = new File(url.getFile());
@@ -346,10 +345,6 @@ public class OrderController {
 			}
 			return adds;
 		}
-	}
-
-	private VehicleClass createVehicleClass(int value) {
-		return VehicleClass.values()[value];
 	}
 
 	private Date createBookDate(String bookingDateStr) {

@@ -101,7 +101,7 @@ public class OfferingOrderTaxiRF {
 		//
 		// !select by requirements and vehicle class
 		lastGeoDatas = carDao.getCarStatesByRequirements(lastGeoDatas, order.getRequirements(),
-				order.getOrderVehicleClass());
+				order.getCarClass());
 		if (lastGeoDatas.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(), "Не найдено ни одной машины такси с выбраными опциями.");
 			logger.info("Order - " + order.getUuid()
@@ -145,7 +145,7 @@ public class OfferingOrderTaxiRF {
 				int dist = (int) calcDistance(lat, lon, lastGeoData.getLat(), lastGeoData.getLon());
 				car4Request.setDist(dist);
 				car4Request.setTime((dist * MINUTE_IN_HOUR) / SPEED);
-				car4Request.setVehicleClass(order.getOrderVehicleClass());
+				car4Request.setCarClass(order.getCarClass());
 
 				car4RequestList.add(car4Request);
 			}

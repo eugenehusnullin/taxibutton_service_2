@@ -22,7 +22,7 @@ public class Order {
 	private Set<OrderCancel> orderCancel;
 	// only this partners whom to offer order, if is null or size()==0 then to all partners
 	private Set<Partner> offerPartners;
-	private VehicleClass orderVehicleClass;
+	private String carClass;
 	private Boolean notlater;
 	private String comments;
 	private Date createdDate;
@@ -114,14 +114,6 @@ public class Order {
 		this.orderCancel = orderCancel;
 	}
 
-	public VehicleClass getOrderVehicleClass() {
-		return orderVehicleClass;
-	}
-
-	public void setOrderVehicleClass(VehicleClass orderVehicleClass) {
-		this.orderVehicleClass = orderVehicleClass;
-	}
-
 	public Set<Partner> getOfferPartners() {
 		return offerPartners;
 	}
@@ -184,5 +176,13 @@ public class Order {
 
 	public void setStartProcessing(Date startProcessing) {
 		this.startProcessing = startProcessing;
+	}
+
+	public String getCarClass() {
+		return carClass;
+	}
+
+	public void setCarClass(String carClass) {
+		this.carClass = carClass;
 	}
 }
