@@ -8,11 +8,6 @@ hibernate.show_sql=true
 hibernate.hbm2ddl.auto=update
 
 
-;;; COST SERVICE
-costservice.url=http://localhost:2351/cost
-costservice.routingservicenames=YandexMapsService,GoogleMapsService,DirectDistanceService
-
-
 ;;; COMMON
 offerorder.coordcoef=0.1
 offerorder.deltaminutes=30

@@ -14,7 +14,6 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -32,14 +31,12 @@ import tb.utils.HttpUtils;
 public class CostRequest {
 	private static final Logger logger = LoggerFactory.getLogger(CostRequest.class);
 
-	@Value("#{mainSettings['costservice.url']}")
-	private String costServiceUrl;
-
 	@Autowired
 	private PartnerService partnerService;
 	@Autowired
 	private PartnersApiKeeper partnersApiKeeper;
 
+	@Deprecated
 	public JSONObject getCost(Point source, List<Point> destinations, VehicleClass vehicleClass, Date bookDate,
 			List<String> adds) {
 
@@ -117,14 +114,14 @@ public class CostRequest {
 					costJson.put("min", cr.getMin());
 					costJson.put("partner", cr.getPartnerName());
 
-					dr.setResult(costJson.toString());					
+					dr.setResult(costJson.toString());
 				}
 
 				@Override
 				public void onFailure(Call<String> call, Throwable t) {
 					logger.warn("COST FAILURE: ResponseCode=" + t.getMessage() + " Partnername="
 							+ partner.getName());
-					dr.setErrorResult(t);					
+					dr.setErrorResult(t);
 				}
 			});
 		}

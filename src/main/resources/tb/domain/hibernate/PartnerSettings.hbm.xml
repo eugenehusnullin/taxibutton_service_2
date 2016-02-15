@@ -3,12 +3,12 @@
 		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
-<hibernate-mapping package="tb.domain.phone">
-	<class name="BlackPhone" table="blacklist">
+<hibernate-mapping package="tb.domain">
+	<class name="PartnerSettings" table="partnersettings">
 		<id name="id">
 			<generator class="identity" />
 		</id>
-		<many-to-one name="partner" column="partnerid" unique-key="blacklist_uk1" />
-		<property name="number" length="20" />
+		<many-to-one name="partner" class="tb.domain.Partner" unique="true" column="partnerid"></many-to-one>
+		<property name="settings" length="51200" />
 	</class>
 </hibernate-mapping>

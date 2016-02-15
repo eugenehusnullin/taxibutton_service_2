@@ -10,6 +10,10 @@
 		<br /> apikey <input type="text" name="apiKey" value="${apiKey}" />
 		<br /> url <input type="text" name="apiUrl" value="${apiUrl}" />
 		<br/>TimeZone ID <input type="text" name="timezoneId" value="${timezoneId}"/>
+		<br/>Опции машин брать из диспетчерской <input type="checkbox" name="customCarOptions"
+			<c:if test="${customCarOptions}">checked="checked"</c:if>
+		/>
+		<br />codeName <input type="text" name="codeName" value="${codeName}" />
 		
 		<br />
 		<br /> Map areas:

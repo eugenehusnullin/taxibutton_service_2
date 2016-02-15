@@ -13,6 +13,8 @@
 		<property name="apiKey" length="20" />
 		<property name="name" length="100" />
 		<property name="apiurl" length="100" />
+		<property name="customCarOptions"></property>
+		<property name="codeName" length="20"></property>
 		<set name="mapAreas" table="partnermapareas" lazy="false">
 			<key column="partnerid"></key>
 			<many-to-many column="mapareaid" class="tb.domain.maparea.MapArea"></many-to-many>

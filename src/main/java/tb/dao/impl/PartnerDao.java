@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import tb.dao.IPartnerDao;
 import tb.domain.Partner;
+import tb.domain.PartnerSettings;
 
 @Repository("PartnerDao")
 public class PartnerDao implements IPartnerDao {
@@ -79,5 +80,27 @@ public class PartnerDao implements IPartnerDao {
 				.add(Restrictions.isNotNull("mapareaUrl"))
 				.add(Restrictions.isNotEmpty("mapareaUrl"))
 				.list();
+	}
+
+	@Transactional
+	@Override
+	public void saveSettings(PartnerSettings settings) {
+		sessionFactory.getCurrentSession().saveOrUpdate(settings);		
+	}
+
+	@Override
+	public Partner getByCodeName(String codeName) {
+		return (Partner) sessionFactory.getCurrentSession()
+				.createCriteria(Partner.class)
+				.add(Restrictions.eq("codeName", codeName))
+				.uniqueResult();
+	}
+	
+	@Override
+	public PartnerSettings getPartnerSettings(Partner partner) {
+		return (PartnerSettings) sessionFactory.getCurrentSession()
+				.createCriteria(PartnerSettings.class)
+				.add(Restrictions.eq("partner", partner))
+				.uniqueResult();
 	}
 }

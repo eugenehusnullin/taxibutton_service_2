@@ -3,6 +3,7 @@ package tb.dao;
 import java.util.List;
 
 import tb.domain.Partner;
+import tb.domain.PartnerSettings;
 
 public interface IPartnerDao {
 
@@ -25,4 +26,10 @@ public interface IPartnerDao {
 	void delete(Partner partner);
 
 	List<Partner> getPartnersNeedMapareaSynch();
+	
+	void saveSettings(PartnerSettings settings);
+
+	Partner getByCodeName(String codeName);
+
+	PartnerSettings getPartnerSettings(Partner partner);
 }

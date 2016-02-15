@@ -1,7 +1,12 @@
 package tb.apidevice;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,11 +29,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import tb.cost.CostRequest;
+import tb.dao.IDeviceDao;
+import tb.domain.Device;
 import tb.domain.Partner;
+import tb.domain.PartnerSettings;
 import tb.domain.maparea.Point;
 import tb.domain.order.Order;
 import tb.domain.order.VehicleClass;
@@ -50,6 +59,8 @@ public class OrderController {
 	private OrderService orderService;
 	@Autowired
 	private PartnerService partnerService;
+	@Autowired
+	private IDeviceDao deviceDao;
 
 	// create an order from apk request (json string)
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -285,6 +296,44 @@ public class OrderController {
 		} catch (IOException e) {
 			logger.error("getbookmins", e);
 		}
+	}
+
+	@RequestMapping(value = "/caroptions", method = RequestMethod.GET)
+	public void getCarOptions(@RequestParam("apiId") String apiId, HttpServletResponse response) throws IOException {
+		Device device = deviceDao.get(apiId);
+		response.addHeader("Content-Type", "application/json");
+		if (device == null) {
+			response.sendError(404, "Device not found.");
+		} else {
+			if (device.getTaxi() == null || device.getTaxi().isEmpty() || device.getTaxi().equals("demo")
+					|| device.getTaxi().equals("test")) {
+				FileInputStream fis = (FileInputStream) getCarOptionsResource();
+				IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
+
+			} else {
+				Partner partner = partnerService.getByCodeName(device.getTaxi());
+				if (partner != null) {
+					PartnerSettings partnerSettings = partnerService.getPartnerSettings(partner);
+					if (partnerSettings != null) {
+						IOUtils.write(partnerSettings.getSettings(), response.getOutputStream(), "UTF-8");
+					} else {
+						FileInputStream fis = (FileInputStream) getCarOptionsResource();
+						IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
+					}
+
+				} else {
+					FileInputStream fis = (FileInputStream) getCarOptionsResource();
+					IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
+				}
+			}
+		}
+
+	}
+	
+	private InputStream getCarOptionsResource() throws FileNotFoundException {
+		URL url = getClass().getResource("/CarOptions.json");
+		File file = new File(url.getFile());
+		return new FileInputStream(file);
 	}
 
 	private List<String> createAdds(JSONArray addsJson) {

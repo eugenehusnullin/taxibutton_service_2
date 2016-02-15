@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import tb.dao.IPartnerDao;
 import tb.domain.Partner;
+import tb.domain.PartnerSettings;
 import tb.domain.maparea.MapArea;
 
 @Service
@@ -62,7 +63,7 @@ public class PartnerService {
 
 	@Transactional
 	public void update(Long partnerId, String apiId, String apiKey, String name, String apiUrl, String timezoneId,
-			Set<MapArea> mapAreasSet) {
+			Set<MapArea> mapAreasSet, Boolean customCarOptions, String codeName) {
 		Partner partner = partnerDao.get(partnerId);
 
 		partner.setApiId(apiId);
@@ -71,11 +72,23 @@ public class PartnerService {
 		partner.setName(name);
 		partner.setTimezoneId(timezoneId);
 		partner.setMapAreas(mapAreasSet);
+		partner.setCustomCarOptions(customCarOptions);
+		partner.setCodeName(codeName);
 		partnerDao.saveOrUpdate(partner);
 	}
 
 	@Transactional
 	public Partner getByUuid(String uuid) {
 		return partnerDao.get(uuid);
+	}
+	
+	@Transactional
+	public Partner getByCodeName(String codeName) {
+		return partnerDao.getByCodeName(codeName);
+	}
+	
+	@Transactional
+	public PartnerSettings getPartnerSettings(Partner partner) {
+		return partnerDao.getPartnerSettings(partner);
 	}
 }

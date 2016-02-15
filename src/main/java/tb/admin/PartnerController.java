@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -34,6 +35,8 @@ import tb.service.Starter;
 @RequestMapping("/partner")
 @Controller
 public class PartnerController {
+	@Value("#{mainSettings['offerorder.cars.actual.geo.minutes']}")
+	private Integer actualGeoMinutes;
 
 	@Autowired
 	private PartnerService partnerService;
@@ -68,7 +71,7 @@ public class PartnerController {
 	@RequestMapping(value = "/cars", method = RequestMethod.GET)
 	public String cars(@RequestParam("id") Long partnerId, Model model) {
 		Date d = new Date();
-		d = new Date(d.getTime() - (5 * 60 * 1000));
+		d = new Date(d.getTime() - (actualGeoMinutes * 60 * 1000));
 
 		List<Object[]> list = carDao.getCarsWithCarStates(partnerId);
 		List<LastGeoData> lastGeoDatas = carDao.getLastGeoDatas(partnerId);
@@ -149,6 +152,8 @@ public class PartnerController {
 			@RequestParam("apiKey") String apiKey,
 			@RequestParam("timezoneId") String timezoneId,
 			@RequestParam("mapareas") String[] mapAreaIds,
+			@RequestParam(value = "customCarOptions", required = false, defaultValue = "false") Boolean customCarOptions,
+			@RequestParam("codeName") String codeName,
 			Model model) {
 
 		Set<MapArea> mapAreasSet = new HashSet<MapArea>();
@@ -165,6 +170,8 @@ public class PartnerController {
 		partner.setApiKey(apiKey);
 		partner.setTimezoneId(timezoneId);
 		partner.setMapAreas(mapAreasSet);
+		partner.setCustomCarOptions(customCarOptions);
+		partner.setCodeName(codeName == "" ? null : codeName);
 		partnerService.add(partner);
 
 		return "redirect:list";
@@ -187,6 +194,8 @@ public class PartnerController {
 		model.addAttribute("name", partner.getName());
 		model.addAttribute("apiUrl", partner.getApiurl());
 		model.addAttribute("timezoneId", partner.getTimezoneId());
+		model.addAttribute("customCarOptions", partner.getCustomCarOptions());
+		model.addAttribute("codeName", partner.getCodeName());
 
 		List<MapAreaModel> mapAreaModels = new ArrayList<MapAreaModel>();
 		List<MapArea> mapAreas = mapAreaDao.getAll();
@@ -212,7 +221,9 @@ public class PartnerController {
 			@RequestParam("name") String name,
 			@RequestParam("apiUrl") String apiUrl,
 			@RequestParam("timezoneId") String timezoneId,
-			@RequestParam("mapareas") String[] mapAreaIds) {
+			@RequestParam("mapareas") String[] mapAreaIds,
+			@RequestParam(value = "customCarOptions", required = false, defaultValue = "false") Boolean customCarOptions,
+			@RequestParam("codeName") String codeName) {
 
 		Set<MapArea> mapAreasSet = new HashSet<MapArea>();
 		for (String mapAreaId : mapAreaIds) {
@@ -221,7 +232,8 @@ public class PartnerController {
 			mapAreasSet.add(mapArea);
 		}
 
-		partnerService.update(partnerId, apiId, apiKey, name, apiUrl, timezoneId, mapAreasSet);
+		partnerService.update(partnerId, apiId, apiKey, name, apiUrl, timezoneId, mapAreasSet, customCarOptions,
+				codeName == "" ? null : codeName);
 		return "redirect:list";
 	}
 }

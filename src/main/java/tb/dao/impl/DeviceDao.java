@@ -2,6 +2,8 @@ package tb.dao.impl;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ public class DeviceDao implements IDeviceDao {
 				.get(Device.class, id);
 	}
 
+	@Transactional
 	@Override
 	public Device get(String apiId) {
 		return (Device) sessionFactory.getCurrentSession()

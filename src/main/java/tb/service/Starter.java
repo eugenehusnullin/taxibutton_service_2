@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
+import tb.car.CarOptionsSynch;
 import tb.car.CarSynch;
 
 @Service
@@ -18,6 +19,8 @@ public class Starter {
 	private CarSynch carSynch;
 	// @Autowired
 	// private TariffSynch tariffSynch;
+	@Autowired
+	private CarOptionsSynch carOptionsSynch;
 
 	private ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
@@ -28,8 +31,10 @@ public class Starter {
 	public void start() {
 		taskScheduler.initialize();
 		Date d = new Date(new Date().getTime() + (runsynchSeconds * 1000));
+
 		taskScheduler.schedule(carSynch::synch, d);
 		// taskScheduler.schedule(tariffSynch::synch, d);
+		taskScheduler.schedule(carOptionsSynch::synch, d);
 	}
 
 	@PreDestroy
