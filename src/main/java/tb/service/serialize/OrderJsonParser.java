@@ -77,8 +77,7 @@ public class OrderJsonParser {
 					Requirement currentRequirement = new Requirement();
 
 					try {
-						String name = YandexOrderSerializer.defineRequireName(requirementJson.getString("name"));
-						currentRequirement.setType(name);
+						currentRequirement.setType(requirementJson.getString("name"));
 						currentRequirement.setOptions(requirementJson.getString("value"));
 					} catch (JSONException ex) {
 						throw new ParseOrderException("requirement bad. " + ex.toString());

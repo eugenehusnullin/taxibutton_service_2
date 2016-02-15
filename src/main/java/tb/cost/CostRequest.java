@@ -20,7 +20,6 @@ import retrofit2.Response;
 import tb.domain.Partner;
 import tb.domain.maparea.Point;
 import tb.service.PartnerService;
-import tb.service.serialize.YandexOrderSerializer;
 
 @Service
 public class CostRequest {
@@ -97,8 +96,7 @@ public class CostRequest {
 	private JSONArray getAdds(List<String> adds) {
 		JSONArray array = new JSONArray();
 		for (String add : adds) {
-			String yandexAdd = YandexOrderSerializer.defineRequireName(add);
-			array.put(yandexAdd);
+			array.put(add);
 		}
 		return array;
 	}

@@ -134,7 +134,7 @@ public class YandexOrderSerializer {
 		Element requirements = doc.createElement("Requirements");
 		for (Requirement requirement : set) {
 			Element requireElement = doc.createElement("Require");
-			requireElement.setAttribute("name", defineRequireName(requirement.getType()));
+			requireElement.setAttribute("name", requirement.getType());
 			if (requirement.getOptions() != null) {
 				if (requirement.getOptions().trim() != "") {
 					requireElement.appendChild(doc.createTextNode(requirement.getOptions()));
@@ -246,50 +246,6 @@ public class YandexOrderSerializer {
 		}
 
 		return carsElement;
-	}
-
-	public static String defineRequireName(String old) {
-		String requireName = null;
-
-		switch (old) {
-		case "isConditioner":
-			requireName = "has_conditioner";
-			break;
-
-		case "noSmoking":
-			requireName = "no_smoking";
-			break;
-
-		case "isCheck":
-			requireName = "check";
-			break;
-
-		case "isChildChair":
-			requireName = "child_chair";
-			break;
-
-		case "isAnimalTransport":
-			requireName = "animal_transport";
-			break;
-
-		case "isUniversal":
-			requireName = "universal";
-			break;
-
-		case "isCoupon":
-			requireName = "coupon";
-			break;
-
-		case "isWiFi":
-			requireName = "wifi";
-			break;
-
-		default:
-			requireName = old;
-			break;
-		}
-
-		return requireName;
 	}
 
 	private static void insertAddressPoint(Document doc, Element node, AddressPoint address) {
