@@ -28,6 +28,7 @@ public class Order {
 	private Date createdDate;
 	private Boolean processingFinished;
 	private Date startProcessing;
+	private String carBasket;
 
 	public Order() {
 		processingFinished = false;
@@ -184,5 +185,13 @@ public class Order {
 
 	public void setCarClass(String carClass) {
 		this.carClass = carClass;
+	}
+
+	public String getCarBasket() {
+		return carBasket;
+	}
+
+	public void setCarBasket(String carBasket) {
+		this.carBasket = carBasket;
 	}
 }

@@ -135,7 +135,7 @@ public class CarDao {
 
 	@Transactional
 	public List<LastGeoData> getCarStatesByRequirements(List<LastGeoData> lastGeoDatas, Set<Requirement> reqs,
-			String carClass) {
+			String carClass, String carBasket) {
 		if (reqs == null || reqs.size() == 0) {
 			return lastGeoDatas;
 		}
@@ -157,6 +157,11 @@ public class CarDao {
 
 			boolean b = reqsKeys.stream().allMatch(p -> car.getCarRequires().containsKey(p)
 					&& !car.getCarRequires().get(p).equals("no"));
+			
+			if (b && carBasket != null) {
+				b = car.getCarBasket().equals(carBasket);
+			}
+			
 			if (b) {
 				filteredCarStates.add(lastGeoData);
 			}

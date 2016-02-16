@@ -27,6 +27,9 @@ public class OrderJsonParser {
 		Order order = new Order();
 
 		String recipientPhone = phone != null ? phone : jsonObject.optString("recipientPhone");
+		
+		String carBasket = jsonObject.optString("carbasket");
+		order.setCarBasket(carBasket.isEmpty() ? null : carBasket);
 
 		int bookMins = jsonObject.getInt("bookmins");
 		Date bookingDate = DatetimeUtils.localTimeToUtc(new Date());

@@ -57,6 +57,9 @@ public class YandexOrderSerializer {
 			doc.appendChild(requestElement);
 			requestElement.appendChild(createOrderId(doc, order.getUuid()));
 			requestElement.appendChild(createCarClass(doc, order.getCarClass()));
+			if (order.getCarBasket() != null) {
+				requestElement.appendChild(createCarBasket(doc, order.getCarBasket()));
+			}
 
 			if (cars != null && cars.size() > 0) {
 				requestElement.appendChild(createRequestCars(doc, cars));
@@ -108,6 +111,12 @@ public class YandexOrderSerializer {
 	private static Element createCarClass(Document doc, String carClass) {
 		Element element = doc.createElement("CarClass");
 		element.appendChild(doc.createTextNode(carClass));
+		return element;
+	}
+
+	private static Element createCarBasket(Document doc, String carBasket) {
+		Element element = doc.createElement("CarBasket");
+		element.appendChild(doc.createTextNode(carBasket));
 		return element;
 	}
 

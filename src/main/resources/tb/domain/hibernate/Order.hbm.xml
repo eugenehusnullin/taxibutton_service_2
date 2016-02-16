@@ -17,6 +17,7 @@
 		<property name="bookingDate" />
 		<property name="processingFinished" />
 		<property name="carClass" length="50"></property>
+		<property name="carBasket" length="20"></property>
 		<set name="requirements" cascade="all">
 			<key>
 				<column name="orderid" />

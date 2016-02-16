@@ -99,9 +99,9 @@ public class OfferingOrderTaxiRF {
 		}
 
 		//
-		// !select by requirements and vehicle class
+		// !select by requirements and car class
 		lastGeoDatas = carDao.getCarStatesByRequirements(lastGeoDatas, order.getRequirements(),
-				order.getCarClass());
+				order.getCarClass(), order.getCarBasket());
 		if (lastGeoDatas.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(), "Не найдено ни одной машины такси с выбраными опциями.");
 			logger.info("Order - " + order.getUuid()

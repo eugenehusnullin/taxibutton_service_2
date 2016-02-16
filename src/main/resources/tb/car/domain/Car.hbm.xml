@@ -13,13 +13,13 @@
 		<property name="realName" length="100"></property>
 		<property name="realWeb" length="100"></property>
 		<property name="realScid" length="50"></property>
-		<list name="carClasses" table="carClasses" lazy="false">
+		<list name="carClasses" table="carclasses" lazy="false">
 			<key>
 				<column name="partnerid"></column>
 				<column name="uuid"></column>
 			</key>
 			<index column="idx"></index>
-			<element column="carclass" type="String"></element>
+			<element column="carclass" type="string"></element>
 		</list>
 
 		<property name="driverDisplayName" length="100"></property>
@@ -29,6 +29,7 @@
 		<property name="driverPermit" length="60"></property>
 		
 		<property name="carModel" length="100"></property>
+		<property name="carBasket" length="20"></property>
 		<property name="carAge"></property>
 		<property name="carColor" length="100"></property>
 		<property name="carNumber" length="100"></property>

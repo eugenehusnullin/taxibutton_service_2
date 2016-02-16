@@ -53,6 +53,7 @@ public class CarBuilder {
 
 			Element carDetailsElement = XmlUtils.getOneElement(carElement, "CarDetails");
 			car.setCarModel(XmlUtils.getElementContent(carDetailsElement, "Model"));
+			car.setCarBasket(XmlUtils.getElementContent(carDetailsElement, "Basket"));
 			String carAge = XmlUtils.getElementContent(carDetailsElement, "Age");
 			car.setCarAge(carAge == null ? null : Integer.parseInt(carAge));
 			car.setCarColor(XmlUtils.getElementContent(carDetailsElement, "Color"));

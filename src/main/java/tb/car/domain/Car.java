@@ -29,6 +29,7 @@ public class Car implements Serializable {
 	private String carColor;
 	private String carNumber;
 	private String carPermit;
+	private String carBasket;
 	private Map<String, String> carRequires;
 
 	public Car() {
@@ -178,5 +179,13 @@ public class Car implements Serializable {
 
 	public void setCarClasses(List<String> carClasses) {
 		this.carClasses = carClasses;
+	}
+
+	public String getCarBasket() {
+		return carBasket;
+	}
+
+	public void setCarBasket(String carBasket) {
+		this.carBasket = carBasket;
 	}
 }

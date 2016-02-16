@@ -13,7 +13,7 @@ import tb.domain.Partner;
 import tb.domain.PartnerSettings;
 import tb.service.exceptions.PartnerNotFoundException;
 
-@Controller("apiyandexCarAckController")
+@Controller("apiyandexSettings")
 @RequestMapping("/settings")
 public class SettingsController {
 	@Autowired
