@@ -34,8 +34,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import tb.cost.CostRequest;
-import tb.dao.IDeviceDao;
-import tb.domain.Device;
 import tb.domain.Partner;
 import tb.domain.PartnerSettings;
 import tb.domain.maparea.Point;
@@ -58,8 +56,6 @@ public class OrderController {
 	private OrderService orderService;
 	@Autowired
 	private PartnerService partnerService;
-	@Autowired
-	private IDeviceDao deviceDao;
 
 	// create an order from apk request (json string)
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -298,35 +294,32 @@ public class OrderController {
 	}
 
 	@RequestMapping(value = "/caroptions", method = RequestMethod.GET)
-	public void getCarOptions(@RequestParam("apiId") String apiId, HttpServletResponse response) throws IOException {
-		Device device = deviceDao.get(apiId);
+	public void getCarOptions(@RequestParam(name = "taxi", required = false, defaultValue = "") String taxi,
+			HttpServletResponse response)
+					throws IOException {
+
 		response.addHeader("Content-Type", "application/json");
-		if (device == null) {
-			response.sendError(404, "Device not found.");
+
+		if (taxi == null || taxi.isEmpty() || taxi.equals("demo") || taxi.equals("test")) {
+			FileInputStream fis = (FileInputStream) getCarOptionsResource();
+			IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
+
 		} else {
-			if (device.getTaxi() == null || device.getTaxi().isEmpty() || device.getTaxi().equals("demo")
-					|| device.getTaxi().equals("test")) {
-				FileInputStream fis = (FileInputStream) getCarOptionsResource();
-				IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
-
-			} else {
-				Partner partner = partnerService.getByCodeName(device.getTaxi());
-				if (partner != null) {
-					PartnerSettings partnerSettings = partnerService.getPartnerSettings(partner);
-					if (partnerSettings != null) {
-						IOUtils.write(partnerSettings.getSettings(), response.getOutputStream(), "UTF-8");
-					} else {
-						FileInputStream fis = (FileInputStream) getCarOptionsResource();
-						IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
-					}
-
+			Partner partner = partnerService.getByCodeName(taxi);
+			if (partner != null) {
+				PartnerSettings partnerSettings = partnerService.getPartnerSettings(partner);
+				if (partnerSettings != null) {
+					IOUtils.write(partnerSettings.getSettings(), response.getOutputStream(), "UTF-8");
 				} else {
 					FileInputStream fis = (FileInputStream) getCarOptionsResource();
 					IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
 				}
+
+			} else {
+				FileInputStream fis = (FileInputStream) getCarOptionsResource();
+				IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
 			}
 		}
-
 	}
 
 	private InputStream getCarOptionsResource() throws FileNotFoundException {
