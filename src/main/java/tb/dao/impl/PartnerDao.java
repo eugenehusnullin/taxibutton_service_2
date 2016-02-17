@@ -85,7 +85,13 @@ public class PartnerDao implements IPartnerDao {
 	@Transactional
 	@Override
 	public void saveSettings(PartnerSettings settings) {
-		sessionFactory.getCurrentSession().saveOrUpdate(settings);		
+		PartnerSettings s1 = getPartnerSettings(settings.getPartner());
+		if (s1 != null) {
+			s1.setSettings(settings.getSettings());
+			sessionFactory.getCurrentSession().update(s1);
+		} else {
+			sessionFactory.getCurrentSession().saveOrUpdate(settings);
+		}
 	}
 
 	@Override
@@ -95,7 +101,7 @@ public class PartnerDao implements IPartnerDao {
 				.add(Restrictions.eq("codeName", codeName))
 				.uniqueResult();
 	}
-	
+
 	@Override
 	public PartnerSettings getPartnerSettings(Partner partner) {
 		return (PartnerSettings) sessionFactory.getCurrentSession()
