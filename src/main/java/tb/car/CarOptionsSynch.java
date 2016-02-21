@@ -42,7 +42,7 @@ public class CarOptionsSynch {
 		logger.info("Start caroptions synch.");
 		List<Partner> partners = partnerDao.getActive();
 		for (Partner partner : partners) {
-			if (partner.getCustomCarOptions()) {
+			if (partner.getCodeName() != null && !partner.getCodeName().isEmpty()) {
 				execService.execute(new Runnable() {
 					@Override
 					public void run() {

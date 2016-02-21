@@ -14,7 +14,6 @@ public class Partner {
 	private String apiurl;
 	private Set<MapArea> mapAreas;
 	private String timezoneId;
-	private Boolean customCarOptions;
 	private String codeName;
 
 	public Long getId() {
@@ -79,14 +78,6 @@ public class Partner {
 
 	public void setTimezoneId(String timezoneId) {
 		this.timezoneId = timezoneId;
-	}
-
-	public Boolean getCustomCarOptions() {
-		return customCarOptions;
-	}
-
-	public void setCustomCarOptions(Boolean customCarOptions) {
-		this.customCarOptions = customCarOptions;
 	}
 
 	public String getCodeName() {

@@ -63,7 +63,7 @@ public class PartnerService {
 
 	@Transactional
 	public void update(Long partnerId, String apiId, String apiKey, String name, String apiUrl, String timezoneId,
-			Set<MapArea> mapAreasSet, Boolean customCarOptions, String codeName) {
+			Set<MapArea> mapAreasSet, String codeName) {
 		Partner partner = partnerDao.get(partnerId);
 
 		partner.setApiId(apiId);
@@ -72,7 +72,6 @@ public class PartnerService {
 		partner.setName(name);
 		partner.setTimezoneId(timezoneId);
 		partner.setMapAreas(mapAreasSet);
-		partner.setCustomCarOptions(customCarOptions);
 		partner.setCodeName(codeName);
 		partnerDao.saveOrUpdate(partner);
 	}
