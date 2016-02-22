@@ -24,6 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +60,8 @@ public class OrderController {
 	private OrderService orderService;
 	@Autowired
 	private PartnerService partnerService;
+	@Autowired
+	private CostRequest costRequest;
 
 	// create an order from apk request (json string)
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -252,9 +258,6 @@ public class OrderController {
 		}
 	}
 
-	@Autowired
-	private CostRequest costRequest;
-
 	@RequestMapping(value = "/cost", method = RequestMethod.POST)
 	@ResponseBody
 	public DeferredResult<String> cost(@RequestBody String str) {
@@ -294,32 +297,25 @@ public class OrderController {
 	}
 
 	@RequestMapping(value = "/caroptions", method = RequestMethod.GET)
-	public void getCarOptions(@RequestParam(name = "taxi", required = false, defaultValue = "") String taxi,
-			HttpServletResponse response)
+	public ResponseEntity<String> getCarOptions(
+			@RequestParam(name = "taxi", required = false, defaultValue = "") String taxi)
 					throws IOException {
 
-		response.addHeader("Content-Type", "application/json");
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
-		if (taxi == null || taxi.isEmpty() || taxi.equals("demo") || taxi.equals("test")) {
-			FileInputStream fis = (FileInputStream) getCarOptionsResource();
-			IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
-
-		} else {
+		if (taxi != null && !taxi.isEmpty() && !taxi.equals("demo") & !taxi.equals("test")) {
 			Partner partner = partnerService.getByCodeName(taxi);
 			if (partner != null) {
 				PartnerSettings partnerSettings = partnerService.getPartnerSettings(partner);
 				if (partnerSettings != null) {
-					IOUtils.write(partnerSettings.getSettings(), response.getOutputStream(), "UTF-8");
-				} else {
-					FileInputStream fis = (FileInputStream) getCarOptionsResource();
-					IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
+					return new ResponseEntity<>(partnerSettings.getSettings(), httpHeaders, HttpStatus.OK);
 				}
-
-			} else {
-				FileInputStream fis = (FileInputStream) getCarOptionsResource();
-				IOUtils.write(IOUtils.toString(fis, "UTF-8"), response.getOutputStream(), "UTF-8");
 			}
 		}
+
+		FileInputStream fis = (FileInputStream) getCarOptionsResource();
+		return new ResponseEntity<>(IOUtils.toString(fis, "UTF-8"), httpHeaders, HttpStatus.OK);
 	}
 
 	private InputStream getCarOptionsResource() throws FileNotFoundException {
