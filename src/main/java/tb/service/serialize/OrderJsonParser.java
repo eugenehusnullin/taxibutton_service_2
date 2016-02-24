@@ -27,7 +27,7 @@ public class OrderJsonParser {
 		Order order = new Order();
 
 		String recipientPhone = phone != null ? phone : jsonObject.optString("recipientPhone");
-		
+
 		String carBasket = jsonObject.optString("carbasket");
 		order.setCarBasket(carBasket.isEmpty() ? null : carBasket);
 
@@ -75,13 +75,27 @@ public class OrderJsonParser {
 			JSONArray requirementsJson = jsonObject.optJSONArray("requirements");
 
 			if (requirementsJson != null) {
+				// for (int i = 0; i < requirementsJson.length(); i++) {
+				// JSONObject requirementJson = requirementsJson.getJSONObject(i);
+				// Requirement currentRequirement = new Requirement();
+				//
+				// try {
+				// currentRequirement.setType(requirementJson.getString("name"));
+				// currentRequirement.setOptions(requirementJson.getString("value"));
+				// } catch (JSONException ex) {
+				// throw new ParseOrderException("requirement bad. " + ex.toString());
+				// }
+				//
+				// currentRequirement.setOrder(order);
+				// requirements.add(currentRequirement);
+				// }
 				for (int i = 0; i < requirementsJson.length(); i++) {
-					JSONObject requirementJson = requirementsJson.getJSONObject(i);
+					String name = requirementsJson.getString(i);
 					Requirement currentRequirement = new Requirement();
 
 					try {
-						currentRequirement.setType(requirementJson.getString("name"));
-						currentRequirement.setOptions(requirementJson.getString("value"));
+						currentRequirement.setType(name);
+						currentRequirement.setOptions("yes");
 					} catch (JSONException ex) {
 						throw new ParseOrderException("requirement bad. " + ex.toString());
 					}
