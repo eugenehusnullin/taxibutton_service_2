@@ -272,8 +272,9 @@ public class OrderController {
 			Date bookDate = createBookDate(costJson.getString("bookingDate"));
 			String carClass = costJson.getString("class");
 			List<String> adds = createAdds(costJson.optJSONArray("adds"));
+			String carBasket = costJson.optString("carbasket");
 
-			return costRequest.getCostAsync(source, destinations, carClass, bookDate, adds);
+			return costRequest.getCostAsync(source, destinations, carClass, carBasket, bookDate, adds);
 		} catch (Exception e) {
 			logger.error("cost", e);
 			DeferredResult<String> dr = new DeferredResult<>();

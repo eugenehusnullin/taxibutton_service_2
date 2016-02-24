@@ -31,8 +31,8 @@ public class CostRequest {
 	private PartnersApiKeeper partnersApiKeeper;
 
 	public DeferredResult<String> getCostAsync(Point source, List<Point> destinations, String carClass,
-			Date bookDate, List<String> adds) {
-		String requestStr = createRequestBody(source, destinations, carClass, bookDate, adds);
+			String carBasket, Date bookDate, List<String> adds) {
+		String requestStr = createRequestBody(source, destinations, carClass, carBasket, bookDate, adds);
 		logger.debug("COST JSON: " + requestStr);
 
 		// cost http requests
@@ -72,13 +72,16 @@ public class CostRequest {
 		return dr;
 	}
 
-	private String createRequestBody(Point source, List<Point> destinations, String carClass,
+	private String createRequestBody(Point source, List<Point> destinations, String carClass, String carBasket,
 			Date bookDate, List<String> adds) {
 		JSONObject requestJson = new JSONObject();
 		requestJson.put("RoutingServiceName", "YandexMapsService");
 		requestJson.put("TaxiServiceId", "taxirf");
 		requestJson.put("BookingTime", getBookDate(bookDate));
 		requestJson.put("CarClass", carClass);
+		if (carBasket != null && !carBasket.isEmpty()) {
+			requestJson.put("CarBasket", carBasket);
+		}
 		requestJson.put("Source", getJsonPoint(source));
 		if (destinations != null) {
 			requestJson.put("Destinations", getJsonPoints(destinations));
