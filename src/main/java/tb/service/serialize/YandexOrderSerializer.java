@@ -31,6 +31,10 @@ public class YandexOrderSerializer {
 			Element requestElement = doc.createElement("Request");
 			doc.appendChild(requestElement);
 			requestElement.appendChild(createOrderId(doc, order.getUuid()));
+			requestElement.appendChild(createCarClass(doc, order.getCarClass()));
+			if (order.getCarBasket() != null) {
+				requestElement.appendChild(createCarBasket(doc, order.getCarBasket()));
+			}
 			requestElement.appendChild(createSetCar(doc, car));
 			requestElement.appendChild(createContactInfo(doc, clientPhone));
 			requestElement.appendChild(createSource(doc, order.getSource()));
