@@ -305,7 +305,7 @@ public class OrderController {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
-		if (taxi != null && !taxi.isEmpty() && !taxi.equals("demo") & !taxi.equals("test")) {
+		if (taxi != null && !taxi.isEmpty()) {
 			Partner partner = partnerService.getByCodeName(taxi);
 			if (partner != null) {
 				PartnerSettings partnerSettings = partnerService.getPartnerSettings(partner);
