@@ -13,5 +13,6 @@
 		</many-to-one>
 		<property name="type" length="40" />
 		<property name="options" length="100" />
+		<property name="needCarCheck"></property>
 	</class>
 </hibernate-mapping>

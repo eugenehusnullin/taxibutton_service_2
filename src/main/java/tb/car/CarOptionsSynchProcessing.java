@@ -11,9 +11,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import tb.cost.PartnerApi;
 import tb.cost.PartnersApiKeeper;
-import tb.dao.IPartnerDao;
 import tb.domain.Partner;
 import tb.domain.PartnerSettings;
+import tb.service.PartnerService;
 
 @Service
 public class CarOptionsSynchProcessing {
@@ -22,7 +22,7 @@ public class CarOptionsSynchProcessing {
 	@Autowired
 	private PartnersApiKeeper partnersApiKeeper;
 	@Autowired
-	private IPartnerDao partnerDao;
+	private PartnerService partnerService;
 
 	@Transactional
 	public void makeCarOptionsSynch(Partner partner) {
@@ -38,7 +38,7 @@ public class CarOptionsSynchProcessing {
 				settings.setPartner(partner);
 				settings.setSettings(responseString);
 
-				partnerDao.saveSettings(settings);
+				partnerService.savePartnerCarOptions(settings);
 			}
 
 			@Override

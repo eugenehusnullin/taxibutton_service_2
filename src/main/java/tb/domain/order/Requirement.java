@@ -6,6 +6,7 @@ public class Requirement {
 	private Order order;
 	private String type;
 	private String options;
+	private Boolean needCarCheck;
 	
 	public Order getOrder() {
 		return order;
@@ -39,4 +40,11 @@ public class Requirement {
 		this.id = id;
 	}
 
+	public Boolean getNeedCarCheck() {
+		return needCarCheck;
+	}
+
+	public void setNeedCarCheck(Boolean needCarCheck) {
+		this.needCarCheck = needCarCheck;
+	}
 }

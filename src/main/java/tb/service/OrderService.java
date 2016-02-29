@@ -1,5 +1,6 @@
 package tb.service;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +73,8 @@ public class OrderService {
 	private IDeviceDao deviceDao;
 	@Autowired
 	private IPartnerDao partnerDao;
+	@Autowired
+	private PartnerService partnerService;
 	@Autowired
 	private IOfferDao offerDao;
 	@Autowired
@@ -147,15 +151,15 @@ public class OrderService {
 	}
 
 	@Transactional
-	public Order initOrder(JSONObject createOrderObject) throws DeviceNotFoundException, ParseOrderException {
+	public Order initOrder(JSONObject createOrderObject) throws DeviceNotFoundException, ParseOrderException, JSONException, IOException {
 		String deviceApiid = createOrderObject.optString("apiId");
 		Device device = deviceDao.get(deviceApiid);
 		if (device == null) {
 			throw new DeviceNotFoundException(deviceApiid);
 		}
 
-		Order order = OrderJsonParser.Json2Order(createOrderObject.getJSONObject("order"), device.getPhone(),
-				partnerDao);
+		Order order = OrderJsonParser.Json2Order(createOrderObject.getJSONObject("order"), device,
+				partnerDao, partnerService);
 		order.setDevice(device);
 		return order;
 	}

@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import tb.dao.IPartnerDao;
 import tb.domain.Partner;
 import tb.domain.PartnerSettings;
+import tb.service.PartnerService;
 import tb.service.exceptions.PartnerNotFoundException;
 
 @Controller("apiyandexSettings")
 @RequestMapping("/settings")
 public class SettingsController {
+	@Autowired
+	private PartnerService partnerService;
 	@Autowired
 	private IPartnerDao partnerDao;
 
@@ -36,7 +39,7 @@ public class SettingsController {
 			PartnerSettings settings = new PartnerSettings();
 			settings.setPartner(partner);
 			settings.setSettings(str);
-			partnerDao.saveSettings(settings);
+			partnerService.savePartnerCarOptions(settings);
 
 		} catch (PartnerNotFoundException e) {
 			response.setStatus(403);

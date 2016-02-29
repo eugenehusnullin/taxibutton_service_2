@@ -1,12 +1,7 @@
 package tb.apidevice;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -315,14 +310,7 @@ public class OrderController {
 			}
 		}
 
-		FileInputStream fis = (FileInputStream) getCarOptionsResource();
-		return new ResponseEntity<>(IOUtils.toString(fis, "UTF-8"), httpHeaders, HttpStatus.OK);
-	}
-
-	private InputStream getCarOptionsResource() throws FileNotFoundException {
-		URL url = getClass().getResource("/CarOptions.json");
-		File file = new File(url.getFile());
-		return new FileInputStream(file);
+		return new ResponseEntity<>(partnerService.loadDefaultCarOptions(), httpHeaders, HttpStatus.OK);
 	}
 
 	private List<String> createAdds(JSONArray addsJson) {

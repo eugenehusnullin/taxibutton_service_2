@@ -82,7 +82,6 @@ public class PartnerDao implements IPartnerDao {
 				.list();
 	}
 
-	@Transactional
 	@Override
 	public void saveSettings(PartnerSettings settings) {
 		PartnerSettings s1 = getPartnerSettings(settings.getPartner());

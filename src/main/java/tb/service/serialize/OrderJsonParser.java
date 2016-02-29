@@ -1,5 +1,6 @@
 package tb.service.serialize;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,22 +12,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import tb.dao.IPartnerDao;
+import tb.domain.Device;
 import tb.domain.Partner;
 import tb.domain.order.AddressPoint;
 import tb.domain.order.Order;
 import tb.domain.order.Requirement;
+import tb.service.PartnerService;
 import tb.service.exceptions.ParseOrderException;
 import tb.utils.DatetimeUtils;
 
 public class OrderJsonParser {
 	private static final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
 
-	public static Order Json2Order(JSONObject jsonObject, String phone, IPartnerDao partnerDao)
-			throws ParseOrderException {
+	public static Order Json2Order(JSONObject jsonObject, Device device, IPartnerDao partnerDao,
+			PartnerService partnerService)
+					throws ParseOrderException, IOException {
 
 		Order order = new Order();
 
-		String recipientPhone = phone != null ? phone : jsonObject.optString("recipientPhone");
+		String recipientPhone = device.getPhone() != null ? device.getPhone() : jsonObject.optString("recipientPhone");
 
 		String carBasket = jsonObject.optString("carbasket");
 		order.setCarBasket(carBasket.isEmpty() ? null : carBasket);
@@ -89,17 +93,21 @@ public class OrderJsonParser {
 				// currentRequirement.setOrder(order);
 				// requirements.add(currentRequirement);
 				// }
+
+				Long partnerId = 0L;
+				if (device.getTaxi() != null && !device.getTaxi().isEmpty()) {
+					Partner partner = partnerDao.getByCodeName(device.getTaxi());
+					if (partner != null) {
+						partnerId = partner.getId();
+					}
+				}
 				for (int i = 0; i < requirementsJson.length(); i++) {
 					String name = requirementsJson.getString(i);
 					Requirement currentRequirement = new Requirement();
 
-					try {
-						currentRequirement.setType(name);
-						currentRequirement.setOptions("yes");
-					} catch (JSONException ex) {
-						throw new ParseOrderException("requirement bad. " + ex.toString());
-					}
-
+					currentRequirement.setNeedCarCheck(partnerService.isNeedCarCheck(partnerId, name));
+					currentRequirement.setType(name);
+					currentRequirement.setOptions("yes");
 					currentRequirement.setOrder(order);
 					requirements.add(currentRequirement);
 				}

@@ -140,7 +140,10 @@ public class CarDao {
 			return lastGeoDatas;
 		}
 
-		List<String> reqsKeys = reqs.stream().map(p -> p.getType()).collect(Collectors.toList());
+		List<String> reqsKeys = reqs.stream()
+				.filter(p -> p.getNeedCarCheck())
+				.map(p -> p.getType())
+				.collect(Collectors.toList());
 		Session session = sessionFactory.getCurrentSession();
 		List<LastGeoData> filteredCarStates = new ArrayList<LastGeoData>();
 		for (LastGeoData lastGeoData : lastGeoDatas) {
@@ -157,11 +160,11 @@ public class CarDao {
 
 			boolean b = reqsKeys.stream().allMatch(p -> car.getCarRequires().containsKey(p)
 					&& !car.getCarRequires().get(p).equals("no"));
-			
+
 			if (b && carBasket != null) {
 				b = car.getCarBasket().equals(carBasket);
 			}
-			
+
 			if (b) {
 				filteredCarStates.add(lastGeoData);
 			}
