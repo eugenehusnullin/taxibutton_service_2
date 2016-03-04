@@ -2,9 +2,7 @@ package tb.service;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +15,8 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +29,7 @@ import tb.domain.order.Requirement;
 
 @Service
 public class PartnerService {
+	private static final Logger logger = LoggerFactory.getLogger(PartnerService.class);
 
 	@Autowired
 	private IPartnerDao partnerDao;
@@ -56,29 +57,30 @@ public class PartnerService {
 	}
 
 	private List<Requirement> createRequirements(String settings) {
-		JSONObject settingsJSON = (JSONObject) new JSONTokener(settings).nextValue();
-		JSONArray array = settingsJSON.getJSONArray("requirements");
-		List<Requirement> updatedRequirements = new ArrayList<>(array.length());
-		for (int i = 0; i < array.length(); i++) {
-			JSONObject jsonObject = array.getJSONObject(i);
-			Requirement req = new Requirement();
-			req.setType(jsonObject.getString("code"));
-			req.setNeedCarCheck(jsonObject.getString("classType").equals("Car"));
-			updatedRequirements.add(req);
-		}
+		try {
+			JSONObject settingsJSON = (JSONObject) new JSONTokener(settings).nextValue();
+			JSONArray array = settingsJSON.getJSONArray("requirements");
+			List<Requirement> updatedRequirements = new ArrayList<>(array.length());
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject jsonObject = array.getJSONObject(i);
+				Requirement req = new Requirement();
+				req.setType(jsonObject.getString("code"));
+				req.setNeedCarCheck(jsonObject.getString("classType").equals("Car"));
+				updatedRequirements.add(req);
+			}
 
-		return updatedRequirements;
+			return updatedRequirements;
+		} catch (ClassCastException e) {
+			logger.error("createRequirements error: String settings = " + settings);
+			throw e;
+		}
 	}
 
 	public String loadDefaultCarOptions() throws IOException {
-		FileInputStream fis = (FileInputStream) getCarOptionsResource();
-		return IOUtils.toString(fis, "UTF-8");
-	}
-
-	private InputStream getCarOptionsResource() throws FileNotFoundException {
 		URL url = getClass().getResource("/CarOptions.json");
 		File file = new File(url.getFile());
-		return new FileInputStream(file);
+		FileInputStream fis = new FileInputStream(file);
+		return IOUtils.toString(fis, "UTF-8");
 	}
 
 	public boolean isNeedCarCheck(Long partnerId, String reqName) throws IOException {
