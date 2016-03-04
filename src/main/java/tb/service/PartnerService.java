@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +80,7 @@ public class PartnerService {
 		URL url = getClass().getResource("/CarOptions.json");
 		File file = new File(url.getFile());
 		FileInputStream fis = new FileInputStream(file);
-		return IOUtils.toString(fis, StandardCharsets.US_ASCII.name());
+		return IOUtils.toString(fis, "UTF-8");
 	}
 
 	public boolean isNeedCarCheck(Long partnerId, String reqName) throws IOException {
