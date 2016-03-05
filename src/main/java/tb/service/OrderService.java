@@ -211,6 +211,13 @@ public class OrderService {
 		if (!order.getDevice().getApiId().equals(apiId)) {
 			throw new OrderNotFoundException(orderUuid);
 		}
+		
+		OrderStatus status = orderStatusDao.getLast(order);
+		if (status.getStatus() == OrderStatusType.Completed
+				|| status.getStatus() == OrderStatusType.Cancelled
+				|| status.getStatus() == OrderStatusType.Failed) {
+			throw new NotValidOrderStatusException(status);
+		}
 
 		// create order processing info
 		orderDao.addOrderProcessing(order.getId(), "Заказ отменен пользователем.");

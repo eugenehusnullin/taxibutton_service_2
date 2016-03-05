@@ -112,7 +112,7 @@ public class OrderController {
 			} catch (OrderNotFoundException e) {
 				response.setStatus(404);
 			} catch (NotValidOrderStatusException e) {
-				response.setStatus(404);
+				response.sendError(404, "Order status is " + e.getStatus().getStatus().name());
 			}
 		} catch (UnsupportedEncodingException e) {
 			logger.error("apiDeviceOrderController.cancel", e);
@@ -295,7 +295,7 @@ public class OrderController {
 	@RequestMapping(value = "/caroptions", method = RequestMethod.GET)
 	public ResponseEntity<String> getCarOptions(
 			@RequestParam(name = "taxi", required = false, defaultValue = "") String taxi)
-					throws IOException {
+			throws IOException {
 
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
