@@ -55,6 +55,9 @@ public class OfferingOrderTaxiRF {
 
 	@Transactional
 	public Boolean offer(Order order) {
+
+		//
+		// !select partners by map area
 		List<Partner> partners = partnerService.getPartnersByMapAreas(order.getSource().getLat(),
 				order.getSource().getLon());
 
