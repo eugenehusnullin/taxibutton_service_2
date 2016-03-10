@@ -31,6 +31,8 @@
 					<a href="delete?id=${partner.getId()}">Delete</a>
 					---
 					<a href="cars?id=${partner.getId()}">Cars</a>
+					---
+					<a href="../../apidevice/order/caroptions<c:if test="${partner.getCodeName()!=null}">?taxi=${partner.getCodeName()}</c:if>">CarOptions</a>
 				</td>
 			</tr>
 		</c:forEach>
