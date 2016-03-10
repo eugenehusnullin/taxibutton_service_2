@@ -235,7 +235,7 @@ public class OrderController {
 			String lon = requestJson.optString("lon");
 			List<Partner> partners = null;
 			if (lat != null && lon != null) {
-				partners = partnerService.getPartnersByMapAreas(Double.parseDouble(lat), Double.parseDouble(lon));
+				partners = partnerService.getPartnersByMapAreas(null, Double.parseDouble(lat), Double.parseDouble(lon));
 			} else {
 				partners = partnerService.getAll();
 			}
@@ -257,9 +257,7 @@ public class OrderController {
 	@ResponseBody
 	public DeferredResult<String> cost(@RequestBody String str) {
 		try {
-			if (logger.isDebugEnabled()) {
-				logger.debug(str);
-			}
+			logger.debug(str);
 			JSONObject costJson = (JSONObject) new JSONTokener(str).nextValue();
 
 			Point source = createPoint(costJson.getJSONObject("source"));
@@ -268,8 +266,9 @@ public class OrderController {
 			String carClass = costJson.getString("class");
 			List<String> adds = createAdds(costJson.optJSONArray("adds"));
 			String carBasket = costJson.optString("carbasket");
+			String codeName = costJson.optString("taxi");
 
-			return costRequest.getCostAsync(source, destinations, carClass, carBasket, bookDate, adds);
+			return costRequest.getCostAsync(codeName, source, destinations, carClass, carBasket, bookDate, adds);
 		} catch (Exception e) {
 			logger.error("cost", e);
 			DeferredResult<String> dr = new DeferredResult<>();
@@ -301,8 +300,9 @@ public class OrderController {
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
 		if (taxi != null && !taxi.isEmpty()) {
-			Partner partner = partnerService.getByCodeName(taxi);
-			if (partner != null) {
+			List<Partner> partners = partnerService.getByCodeName(taxi);
+			if (partners.size() > 0) {
+				Partner partner = partners.get(0);
 				PartnerSettings partnerSettings = partnerService.getPartnerSettings(partner);
 				if (partnerSettings != null) {
 					return new ResponseEntity<>(partnerSettings.getSettings(), httpHeaders, HttpStatus.OK);

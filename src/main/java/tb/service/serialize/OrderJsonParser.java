@@ -3,6 +3,7 @@ package tb.service.serialize;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -26,7 +27,7 @@ public class OrderJsonParser {
 
 	public static Order Json2Order(JSONObject jsonObject, Device device, IPartnerDao partnerDao,
 			PartnerService partnerService)
-					throws ParseOrderException, IOException {
+			throws ParseOrderException, IOException {
 
 		Order order = new Order();
 
@@ -96,9 +97,9 @@ public class OrderJsonParser {
 
 				Long partnerId = 0L;
 				if (device.getTaxi() != null && !device.getTaxi().isEmpty()) {
-					Partner partner = partnerDao.getByCodeName(device.getTaxi());
-					if (partner != null) {
-						partnerId = partner.getId();
+					List<Partner> partners = partnerDao.getPartnersByCodeName(device.getTaxi());
+					if (partners != null && partners.size() > 0) {
+						partnerId = partners.get(0).getId();
 					}
 				}
 				for (int i = 0; i < requirementsJson.length(); i++) {

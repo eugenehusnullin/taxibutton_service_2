@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import retrofit2.Call;
@@ -30,14 +31,20 @@ public class CostRequest {
 	@Autowired
 	private PartnersApiKeeper partnersApiKeeper;
 
-	public DeferredResult<String> getCostAsync(Point source, List<Point> destinations, String carClass,
+	@Transactional
+	public DeferredResult<String> getCostAsync(String codeName, Point source, List<Point> destinations, String carClass,
 			String carBasket, Date bookDate, List<String> adds) {
 		String requestStr = createRequestBody(source, destinations, carClass, carBasket, bookDate, adds);
 		logger.debug("COST JSON: " + requestStr);
 
+		List<Partner> partners = null;
+		if (codeName != null && !codeName.isEmpty()) {
+			partners = partnerService.getByCodeName(codeName);
+		}
+
 		// cost http requests
 		DeferredResult<String> dr = new DeferredResult<>();
-		List<Partner> partners = partnerService.getPartnersByMapAreas(source.getLatitude(), source.getLongitude());
+		partners = partnerService.getPartnersByMapAreas(partners, source.getLatitude(), source.getLongitude());
 		if (partners != null && partners.size() > 0) {
 			Partner partner = partners.get(0);
 			PartnerApi api = partnersApiKeeper.getPartnerApi(partner);

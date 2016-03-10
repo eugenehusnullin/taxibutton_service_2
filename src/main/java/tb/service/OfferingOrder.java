@@ -33,8 +33,8 @@ import tb.utils.DatetimeUtils;
 import tb.utils.HttpUtils;
 
 @Service
-public class OfferingOrderTaxiRF {
-	private static final Logger logger = LoggerFactory.getLogger(OfferingOrderTaxiRF.class);
+public class OfferingOrder {
+	private static final Logger logger = LoggerFactory.getLogger(OfferingOrder.class);
 
 	@Autowired
 	private CarDao carDao;
@@ -56,10 +56,17 @@ public class OfferingOrderTaxiRF {
 	@Transactional
 	public Boolean offer(Order order) {
 
+		// !select partners by device codeName(taxi)
+		List<Partner> partners = null;
+		String taxi = order.getDevice().getTaxi();
+		if (taxi != null && !taxi.isEmpty()) {
+			partners = partnerService.getByCodeName(taxi);
+		}
+
 		//
 		// !select partners by map area
-		List<Partner> partners = partnerService.getPartnersByMapAreas(order.getSource().getLat(),
-				order.getSource().getLon());
+		partners = partnerService.getPartnersByMapAreas(partners,
+				order.getSource().getLat(), order.getSource().getLon());
 
 		if (partners == null || partners.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(), "Ќе найдены партнеры в геозоне действи€ заказа.");

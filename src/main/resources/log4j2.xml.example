@@ -59,7 +59,7 @@
 		</RollingFile>
 	</Appenders>
 	<Loggers>
-		<Logger name="tb.service.OfferingOrderTaxiRF" level="info">
+		<Logger name="tb.service.OfferingOrder" level="info">
       		<AppenderRef ref="RollingFileOfferingOrderTaxiRF" level="info"/>
     	</Logger>
     	<Logger name="tb.car.CarSynch" level="info">

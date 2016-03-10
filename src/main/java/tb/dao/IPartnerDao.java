@@ -25,11 +25,9 @@ public interface IPartnerDao {
 	
 	void delete(Partner partner);
 
-	List<Partner> getPartnersNeedMapareaSynch();
-	
 	void saveSettings(PartnerSettings settings);
 
-	Partner getByCodeName(String codeName);
+	List<Partner> getPartnersByCodeName(String codeName);
 
 	PartnerSettings getPartnerSettings(Partner partner);
 }

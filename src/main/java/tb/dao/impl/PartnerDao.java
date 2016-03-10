@@ -73,15 +73,6 @@ public class PartnerDao implements IPartnerDao {
 		return sessionFactory.getCurrentSession().createCriteria(Partner.class).list();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Partner> getPartnersNeedMapareaSynch() {
-		return sessionFactory.getCurrentSession().createCriteria(Partner.class)
-				.add(Restrictions.isNotNull("mapareaUrl"))
-				.add(Restrictions.isNotEmpty("mapareaUrl"))
-				.list();
-	}
-
 	@Override
 	public void saveSettings(PartnerSettings settings) {
 		PartnerSettings s1 = getPartnerSettings(settings.getPartner());
@@ -93,12 +84,13 @@ public class PartnerDao implements IPartnerDao {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Partner getByCodeName(String codeName) {
-		return (Partner) sessionFactory.getCurrentSession()
+	public List<Partner> getPartnersByCodeName(String codeName) {
+		return sessionFactory.getCurrentSession()
 				.createCriteria(Partner.class)
 				.add(Restrictions.eq("codeName", codeName))
-				.uniqueResult();
+				.list();
 	}
 
 	@Override

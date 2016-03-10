@@ -105,8 +105,14 @@ public class PartnerService {
 	}
 
 	@Transactional
-	public List<Partner> getPartnersByMapAreas(double lat, double lon) {
-		List<Partner> partners = partnerDao.getAll();
+	public List<Partner> getPartnersByMapAreas(List<Partner> preSelectedPartners, double lat, double lon) {
+		List<Partner> partners;
+		if (preSelectedPartners != null && preSelectedPartners.size() > 0) {
+			partners = preSelectedPartners;
+		} else {
+			partners = partnerDao.getAll();
+		}
+
 		List<Partner> result = new ArrayList<Partner>();
 		for (Partner partner : partners) {
 			for (MapArea mapArea : partner.getMapAreas()) {
@@ -157,8 +163,8 @@ public class PartnerService {
 	}
 
 	@Transactional
-	public Partner getByCodeName(String codeName) {
-		return partnerDao.getByCodeName(codeName);
+	public List<Partner> getByCodeName(String codeName) {
+		return partnerDao.getPartnersByCodeName(codeName);
 	}
 
 	@Transactional

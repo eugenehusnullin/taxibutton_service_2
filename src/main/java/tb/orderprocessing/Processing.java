@@ -19,7 +19,7 @@ import tb.domain.order.Order;
 import tb.domain.order.OrderCancelType;
 import tb.domain.order.OrderStatus;
 import tb.domain.order.OrderStatusType;
-import tb.service.OfferingOrderTaxiRF;
+import tb.service.OfferingOrder;
 import tb.service.OrderService;
 
 @Service
@@ -36,7 +36,7 @@ public class Processing {
 	@Autowired
 	private OrderService orderService;
 	@Autowired
-	private OfferingOrderTaxiRF offeringOrder;
+	private OfferingOrder offeringOrder;
 
 	@Value("#{mainSettings['processing.offer.expired.timeout']}")
 	private Integer offerExpiredTimeout;
