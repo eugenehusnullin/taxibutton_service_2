@@ -120,6 +120,7 @@ public class DeviceService {
 			model.setApiId(device.getApiId());
 			model.setPhone(device.getPhone());
 			model.setConfirmKey(device.getConfirmKey());
+			model.setTaxi(device.getTaxi());
 			models.add(model);
 		}
 

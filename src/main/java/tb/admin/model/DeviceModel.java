@@ -5,6 +5,7 @@ public class DeviceModel {
 	private String apiId;
 	private String phone;
 	private String confirmKey;
+	private String taxi;
 
 	public Long getId() {
 		return id;
@@ -36,5 +37,13 @@ public class DeviceModel {
 
 	public void setConfirmKey(String confirmKey) {
 		this.confirmKey = confirmKey;
+	}
+
+	public String getTaxi() {
+		return taxi;
+	}
+
+	public void setTaxi(String taxi) {
+		this.taxi = taxi;
 	}
 }

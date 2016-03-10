@@ -10,7 +10,7 @@
 			<th>Api id</th>
 			<th>Phone</th>
 			<th>Key</th>
-			<th>Action</th>
+			<th>codeName</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -20,7 +20,7 @@
 				<td>${device.getApiId()}</td>
 				<td>${device.getPhone()}</td>
 				<td>${device.getConfirmKey()}</td>
-				<td><a href="tariffs?apiId=${device.getApiId()}">Tariffs</a></td>
+				<td>${device.getTaxi()}</td>
 			</tr>
 		</c:forEach>
 	</tbody>
