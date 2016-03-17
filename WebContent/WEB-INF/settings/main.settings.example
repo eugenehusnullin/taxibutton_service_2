@@ -19,7 +19,6 @@ starter.runsynch.seconds=10
 
 
 ;;; SMS
-sms.url.old=http://crm.podglonass.ru/engine/ajax/crm/index.php?mod=taxiclub
 sms.url=http://crm.podglonass.ru/smser/index.php?taxiid=TAXIID&act=add
 
 

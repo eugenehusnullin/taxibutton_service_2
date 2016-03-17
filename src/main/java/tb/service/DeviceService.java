@@ -48,7 +48,7 @@ public class DeviceService {
 			device = new Device();
 			device.setApiId(newDeviceUuid);
 			device.setPhone(phone);
-			device.setTaxi(taxi);
+			device.setTaxi(taxi.isEmpty() ? null : taxi);
 			device.setRegDate(new Date());
 		}
 
@@ -57,7 +57,7 @@ public class DeviceService {
 			int keyInt = (new Random()).nextInt(9999 - 1000) + 1000;
 			device.setConfirmKey(Integer.toString(keyInt));
 			device.setConfirmDate(new Date());
-			boolean smsResult = smsService.send(taxi, phone, "Код: " + Integer.toString(keyInt));
+			boolean smsResult = smsService.send(taxi, phone, "Ваш код активации для приложения вызова такси " + Integer.toString(keyInt));
 			resultJson.put("result", smsResult ? "WAITSMS" : "ERROR");
 		} else {
 			resultJson.put("result", "OK");

@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 public class SmsService {
 	private static final Logger logger = LoggerFactory.getLogger(SmsService.class);
 
-	@Value("#{mainSettings['sms.url.old']}")
-	private String smsOldUrl;
 	@Value("#{mainSettings['sms.url']}")
 	private String smsUrl;
 
@@ -24,10 +22,7 @@ public class SmsService {
 		String body = createOutput(reciever, msg);
 
 		try {
-			String smsGatewayUrl = smsOldUrl;
-			if (!taxi.isEmpty()) {
-				smsGatewayUrl = smsUrl.replace("TAXIID", taxi);
-			}
+			String smsGatewayUrl = smsUrl.replace("TAXIID", taxi);
 			URL obj = new URL(smsGatewayUrl);
 
 			HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
