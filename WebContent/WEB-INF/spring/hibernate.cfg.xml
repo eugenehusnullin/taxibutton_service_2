@@ -24,5 +24,7 @@
  		<mapping resource="tb/car/domain/LastGeoData.hbm.xml" />
  		<mapping resource="tb/admin/security/User.hbm.xml"/>
  		<mapping resource="tb/admin/security/Authority.hbm.xml"/>
+ 		<mapping resource="tb/domain/hibernate/Brand.hbm.xml" />
+ 		<mapping resource="tb/domain/hibernate/BrandService.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

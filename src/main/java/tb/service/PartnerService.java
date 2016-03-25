@@ -144,7 +144,7 @@ public class PartnerService {
 
 	@Transactional
 	public void update(Long partnerId, String apiId, String apiKey, String name, String apiUrl, String timezoneId,
-			Set<MapArea> mapAreasSet, String codeName) {
+			Set<MapArea> mapAreasSet, String comment) {
 		Partner partner = partnerDao.get(partnerId);
 
 		partner.setApiId(apiId);
@@ -153,18 +153,13 @@ public class PartnerService {
 		partner.setName(name);
 		partner.setTimezoneId(timezoneId);
 		partner.setMapAreas(mapAreasSet);
-		partner.setCodeName(codeName);
+		partner.setComment(comment);
 		partnerDao.saveOrUpdate(partner);
 	}
 
 	@Transactional
 	public Partner getByUuid(String uuid) {
 		return partnerDao.get(uuid);
-	}
-
-	@Transactional
-	public List<Partner> getByCodeName(String codeName) {
-		return partnerDao.getPartnersByCodeName(codeName);
 	}
 
 	@Transactional

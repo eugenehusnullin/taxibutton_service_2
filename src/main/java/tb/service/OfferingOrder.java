@@ -22,9 +22,11 @@ import org.w3c.dom.Document;
 import tb.car.dao.CarDao;
 import tb.car.domain.Car4Request;
 import tb.car.domain.LastGeoData;
+import tb.dao.IBrandDao;
 import tb.dao.IOfferDao;
 import tb.dao.IOrderDao;
 import tb.dao.IPartnerDao;
+import tb.domain.Brand;
 import tb.domain.Partner;
 import tb.domain.order.Offer;
 import tb.domain.order.Order;
@@ -46,6 +48,8 @@ public class OfferingOrder {
 	private IOrderDao orderDao;
 	@Autowired
 	private PartnerService partnerService;
+	@Autowired
+	private IBrandDao brandDao;
 
 	@Value("#{mainSettings['offerorder.coordcoef']}")
 	private double COORDINATES_COEF;
@@ -54,13 +58,22 @@ public class OfferingOrder {
 	private final static int MINUTE_IN_HOUR = 60;
 
 	@Transactional
-	public Boolean offer(Order order) {
-
-		// !select partners by device codeName(taxi)
+	public void offer(Order order, Integer count) {
 		List<Partner> partners = null;
-		String taxi = order.getDevice().getTaxi();
-		if (taxi != null && !taxi.isEmpty()) {
-			partners = partnerService.getByCodeName(taxi);
+
+		// !select partners by device codeName(taxi) and PRIORITY
+		Brand brand = brandDao.get(order.getDevice().getTaxi());
+		partners = brand.getServices().stream()
+				.filter(p -> p.getPriority() <= count)
+				.map(p -> p.getPartner()).collect(Collectors.toList());
+		List<Offer> offers = offerDao.get(order);
+		if (offers.size() > 0) {
+			List<Long> offeredPartnersIds = offers.stream()
+					.map(p -> p.getPartner().getId())
+					.collect(Collectors.toList());
+			partners = partners.stream()
+					.filter(p -> offeredPartnersIds.contains(p.getId()))
+					.collect(Collectors.toList());
 		}
 
 		//
@@ -71,7 +84,7 @@ public class OfferingOrder {
 		if (partners == null || partners.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(), "Не найдены партнеры в геозоне действия заказа.");
 			logger.info("Order - " + order.getUuid() + ", partners not found.");
-			return null;
+			return;
 		}
 
 		//
@@ -87,7 +100,7 @@ public class OfferingOrder {
 					"Не найдено ни одной машины такси вблизи заказа, с допустимым состоянием.");
 			logger.info("Order - " + order.getUuid()
 					+ ", NOT OFFER - not found car normal state or(and) nornmal distance.");
-			return false;
+			return;
 		}
 
 		//
@@ -104,7 +117,7 @@ public class OfferingOrder {
 						"Не найдено ни одной машины такси вблизи заказа, для указаного в заказе партнера.");
 				logger.info("Order - " + order.getUuid()
 						+ ", NOT OFFER - not found car normal state or(and) nornmal distance of choosed partner.");
-				return false;
+				return;
 			}
 		}
 
@@ -116,7 +129,7 @@ public class OfferingOrder {
 			orderDao.addOrderProcessing(order.getId(), "Не найдено ни одной машины такси с выбраными опциями.");
 			logger.info("Order - " + order.getUuid()
 					+ ", NOT OFFER - not found car with selected additional services.");
-			return false;
+			return;
 		}
 
 		//
@@ -132,7 +145,7 @@ public class OfferingOrder {
 				.distinct()
 				.collect(Collectors.toList());
 		Map<Long, Document> messages4Send = createNotlaterOffer(order, partnerIdsList, lastGeoDatas);
-		return makeOffer(messages4Send, order);
+		makeOffer(messages4Send, order);
 	}
 
 	private Map<Long, Document> createNotlaterOffer(Order order, List<Long> partnerIdsList,
@@ -167,8 +180,7 @@ public class OfferingOrder {
 		return messagesMap;
 	}
 
-	private boolean makeOffer(Map<Long, Document> messages4Send, Order order) {
-		boolean result = false;
+	private void makeOffer(Map<Long, Document> messages4Send, Order order) {
 		List<Offer> offeredOrderPartnerList = offerDao.get(order);
 		List<Long> excludePartners = offeredOrderPartnerList
 				.stream()
@@ -188,13 +200,12 @@ public class OfferingOrder {
 			try {
 				int response = HttpUtils.postDocumentOverHttp(doc, url, logger).getResponseCode();
 				boolean posted = response == 200;
-				result |= posted;
 				if (posted) {
-					Offer offeredOrderPartner = new Offer();
-					offeredOrderPartner.setOrder(order);
-					offeredOrderPartner.setPartner(partner);
-					offeredOrderPartner.setTimestamp(new Date());
-					offerDao.save(offeredOrderPartner);
+					Offer offer = new Offer();
+					offer.setOrder(order);
+					offer.setPartner(partner);
+					offer.setTimestamp(new Date());
+					offerDao.save(offer);
 					orderDao.addOrderProcessing(order.getId(), "Заказ успешно предложен партнеру " + partner.getName());
 
 				} else {
@@ -209,7 +220,6 @@ public class OfferingOrder {
 								+ ", ошибка - " + e.getMessage());
 			}
 		}
-		return result;
 	}
 
 	private long calcDistance(double lat1, double lon1, double lat2, double lon2) {

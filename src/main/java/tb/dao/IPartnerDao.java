@@ -27,7 +27,5 @@ public interface IPartnerDao {
 
 	void saveSettings(PartnerSettings settings);
 
-	List<Partner> getPartnersByCodeName(String codeName);
-
 	PartnerSettings getPartnerSettings(Partner partner);
 }

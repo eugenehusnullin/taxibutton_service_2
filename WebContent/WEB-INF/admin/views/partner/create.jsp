@@ -11,7 +11,7 @@
 		<br/>apikey <input type="text" name="apiKey" value="уникальный номер"/>
 		<br/>url <input type="text" name="apiurl" value="http://name.com:port" />
 		<br/>TimeZone ID <input type="text" name="timezoneId" value="UTC"/>
-		<br/>codeName (для брендированных диспетчерских) <input type="text" name="codeName" value="" />
+		<br/>коментарий<input type="text" name="comment" value="" />
 		
 		<br />
 		<br /> Map areas:

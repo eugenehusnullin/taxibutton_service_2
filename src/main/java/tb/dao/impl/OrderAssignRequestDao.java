@@ -20,9 +20,12 @@ public class OrderAssignRequestDao implements IOrderAssignRequestDao {
 
 	@Override
 	public AssignRequest get(Order order, Partner partner, String uuid) {
-		return (AssignRequest) sessionFactory.getCurrentSession().createCriteria(AssignRequest.class)
-				.add(Restrictions.eq("order", order)).add(Restrictions.eq("partner", partner))
-				.add(Restrictions.eq("uuid", uuid)).uniqueResult();
+		return (AssignRequest) sessionFactory.getCurrentSession()
+				.createCriteria(AssignRequest.class)
+				.add(Restrictions.eq("order", order))
+				.add(Restrictions.eq("partner", partner))
+				.add(Restrictions.eq("uuid", uuid))
+				.uniqueResult();
 	}
 
 	@Override
@@ -33,8 +36,10 @@ public class OrderAssignRequestDao implements IOrderAssignRequestDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<AssignRequest> getAll(Order order) {
-		return sessionFactory.getCurrentSession().createCriteria(AssignRequest.class)
-				.add(Restrictions.eq("order", order)).list();
+		return sessionFactory.getCurrentSession()
+				.createCriteria(AssignRequest.class)
+				.add(Restrictions.eq("order", order))
+				.list();
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,6 +19,8 @@ import org.springframework.web.context.request.async.DeferredResult;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import tb.dao.IBrandDao;
+import tb.domain.Brand;
 import tb.domain.Partner;
 import tb.domain.maparea.Point;
 import tb.service.PartnerService;
@@ -30,6 +33,8 @@ public class CostRequest {
 	private PartnerService partnerService;
 	@Autowired
 	private PartnersApiKeeper partnersApiKeeper;
+	@Autowired
+	private IBrandDao brandDao;
 
 	@Transactional
 	public DeferredResult<String> getCostAsync(String codeName, Point source, List<Point> destinations, String carClass,
@@ -38,9 +43,9 @@ public class CostRequest {
 		logger.debug("COST JSON: " + requestStr);
 
 		List<Partner> partners = null;
-		if (codeName != null && !codeName.isEmpty()) {
-			partners = partnerService.getByCodeName(codeName);
-		}
+		Brand brand = brandDao.get(codeName);
+		partners = brand.getServices().stream()
+				.map(p -> p.getPartner()).collect(Collectors.toList());
 
 		// cost http requests
 		DeferredResult<String> dr = new DeferredResult<>();

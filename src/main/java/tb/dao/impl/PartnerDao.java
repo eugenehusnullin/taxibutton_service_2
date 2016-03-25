@@ -84,15 +84,6 @@ public class PartnerDao implements IPartnerDao {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Partner> getPartnersByCodeName(String codeName) {
-		return sessionFactory.getCurrentSession()
-				.createCriteria(Partner.class)
-				.add(Restrictions.eq("codeName", codeName))
-				.list();
-	}
-
 	@Override
 	public PartnerSettings getPartnerSettings(Partner partner) {
 		return (PartnerSettings) sessionFactory.getCurrentSession()

@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +34,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import tb.cost.CostRequest;
+import tb.dao.IBrandDao;
+import tb.domain.Brand;
 import tb.domain.Partner;
 import tb.domain.PartnerSettings;
 import tb.domain.maparea.Point;
@@ -57,6 +60,8 @@ public class OrderController {
 	private PartnerService partnerService;
 	@Autowired
 	private CostRequest costRequest;
+	@Autowired
+	private IBrandDao brandDao;
 
 	// create an order from apk request (json string)
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -300,7 +305,9 @@ public class OrderController {
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
 		if (taxi != null && !taxi.isEmpty()) {
-			List<Partner> partners = partnerService.getByCodeName(taxi);
+			Brand brand = brandDao.get(taxi);
+			List<Partner> partners = brand.getServices().stream()
+					.map(p -> p.getPartner()).collect(Collectors.toList());
 			if (partners.size() > 0) {
 				Partner partner = partners.get(0);
 				PartnerSettings partnerSettings = partnerService.getPartnerSettings(partner);

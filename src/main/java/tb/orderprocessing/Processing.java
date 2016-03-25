@@ -3,6 +3,9 @@ package tb.orderprocessing;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +15,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tb.dao.IBrandDao;
 import tb.dao.IOfferDao;
+import tb.dao.IOrderAssignRequestDao;
 import tb.dao.IOrderDao;
 import tb.dao.IOrderStatusDao;
+import tb.domain.Brand;
+import tb.domain.order.AssignRequest;
 import tb.domain.order.Order;
 import tb.domain.order.OrderCancelType;
 import tb.domain.order.OrderStatus;
@@ -37,11 +44,17 @@ public class Processing {
 	private OrderService orderService;
 	@Autowired
 	private OfferingOrder offeringOrder;
+	@Autowired
+	private IOrderAssignRequestDao orderAssignRequestDao;
+	@Autowired
+	private IBrandDao brandDao;
 
 	@Value("#{mainSettings['processing.offer.expired.timeout']}")
 	private Integer offerExpiredTimeout;
 	@Value("#{mainSettings['processing.assign.expired.timeout']}")
 	private Integer assignExpiredTimeout;
+
+	private Map<Long, Integer> offerCounts = new HashMap<>();
 
 	enum ProcessingState {
 		Offer, Assign
@@ -78,22 +91,32 @@ public class Processing {
 
 			logger.debug("process order id=" + orderId + " is expired.");
 			makeExpiredWork(order);
-			return;
-		}
 
-		switch (state) {
-		case Offer:
-			logger.debug("process order id=" + orderId + " make offer.");
-			makeOfferWork(order);
-			return;
+		} else {
+			Brand brand = brandDao.get(order.getDevice().getTaxi());
+			if (offerDao.getCount(order) < brand.getServices().size()) {
+				makeOfferWork(order);
+			}
 
-		case Assign:
-			logger.debug("process order id=" + orderId + " make assign.");
-			makeAssignWork(order);
-			return;
+			List<AssignRequest> assigns = orderAssignRequestDao.getAll(order);
+			if (assigns.size() > 0) {
+				makeAssignWork(order);
+			}
 
-		default:
-			break;
+			// switch (state) {
+			// case Offer:
+			// logger.debug("process order id=" + orderId + " make offer.");
+			// makeOfferWork(order);
+			// return;
+			//
+			// case Assign:
+			// logger.debug("process order id=" + orderId + " make assign.");
+			// makeAssignWork(order);
+			// return;
+			//
+			// default:
+			// break;
+			// }
 		}
 	}
 
@@ -108,11 +131,21 @@ public class Processing {
 	}
 
 	private void makeOfferWork(Order order) {
-		offeringOrder.offer(order);
+		Integer count = offerCounts.get(order.getId());
+		if (count == null) {
+			count = 0;
+		}
+		count++;
+		offerCounts.put(order.getId(), count);
+
+		offeringOrder.offer(order, count);
 	}
 
 	private void makeAssignWork(Order order) {
-		orderService.assign(order);
+		boolean assigned = orderService.assign(order);
+		if (assigned) {
+			offerCounts.remove(order.getId());
+		}
 	}
 
 	private ProcessingState defineProcessingState(Order order) {

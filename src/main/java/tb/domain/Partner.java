@@ -14,7 +14,7 @@ public class Partner {
 	private String apiurl;
 	private Set<MapArea> mapAreas;
 	private String timezoneId;
-	private String codeName;
+	private String comment;
 
 	public Long getId() {
 		return id;
@@ -80,11 +80,11 @@ public class Partner {
 		this.timezoneId = timezoneId;
 	}
 
-	public String getCodeName() {
-		return codeName;
+	public String getComment() {
+		return comment;
 	}
 
-	public void setCodeName(String codeName) {
-		this.codeName = codeName;
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 }

@@ -11,7 +11,7 @@
 			<th>Api key</th>
 			<th>Name</th>
 			<th>Api url</th>
-			<th>codeName</th>
+			<th>Comment</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -22,7 +22,7 @@
 				<td>${partner.getApiKey()}</td>
 				<td>${partner.getName()}</td>
 				<td>${partner.getApiurl()}</td>
-				<td>${partner.getCodeName()}</td>
+				<td>${partner.getComment()}</td>
 			</tr>
 			<tr class="actionTr">
 				<td class="actionTd" colspan="5">
@@ -31,8 +31,6 @@
 					<a href="delete?id=${partner.getId()}">Delete</a>
 					---
 					<a href="cars?id=${partner.getId()}">Cars</a>
-					---
-					<a href="../../apidevice/order/caroptions<c:if test="${partner.getCodeName()!=null}">?taxi=${partner.getCodeName()}</c:if>">CarOptions</a>
 				</td>
 			</tr>
 		</c:forEach>

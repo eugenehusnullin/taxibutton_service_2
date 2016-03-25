@@ -96,7 +96,7 @@ public class OrderController {
 		URL obj = new URL(url);
 		HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
 
-		OrderModel orderModel = orderService.getOrder(Long.parseLong(request.getParameter("orderId")));
+		OrderModel orderModel = orderService.getOrderModel(Long.parseLong(request.getParameter("orderId")));
 
 		String params = "orderid=" + orderModel.getUuid() + "&clid=" + request.getParameter("apiId") + "&apikey="
 				+ request.getParameter("apiKey") + "&uuid=" + request.getParameter("uuid");
@@ -119,7 +119,7 @@ public class OrderController {
 
 	@RequestMapping(value = "/setStatus", method = RequestMethod.GET)
 	public String setStatus(@RequestParam("id") Long orderId, Model model) {
-		Order order = orderService.getTrueOrder(orderId);
+		Order order = orderService.getOrder(orderId);
 		model.addAttribute("apiId", order.getPartner().getApiId());
 		model.addAttribute("apiKey", order.getPartner().getApiKey());
 
@@ -144,7 +144,7 @@ public class OrderController {
 		String extra = request.getParameter("extra");
 		String newcar = request.getParameter("newcar");
 
-		OrderModel orderModel = orderService.getOrder(orderId);
+		OrderModel orderModel = orderService.getOrderModel(orderId);
 		String params = "orderid=" + orderModel.getUuid() + "&clid=" + clid + "&apikey=" + apikey;
 		if (newcar != null && !newcar.isEmpty()) {
 			params += "&newcar=" + newcar;
@@ -182,7 +182,7 @@ public class OrderController {
 	public String getGeodata(HttpServletRequest request, @RequestParam("orderId") Long orderId,
 			@RequestParam("apiId") String apiId, Model model) {
 
-		OrderModel orderModel = orderService.getOrder(orderId);
+		OrderModel orderModel = orderService.getOrderModel(orderId);
 		JSONObject getGeodataJson = new JSONObject();
 
 		getGeodataJson.put("apiId", apiId);
@@ -231,7 +231,7 @@ public class OrderController {
 	public String getStatus(HttpServletRequest request, @RequestParam("orderId") Long orderId,
 			@RequestParam("apiId") String apiId, Model model) {
 
-		OrderModel orderModel = orderService.getOrder(orderId);
+		OrderModel orderModel = orderService.getOrderModel(orderId);
 		JSONObject getStatusJson = new JSONObject();
 
 		getStatusJson.put("apiId", apiId);
@@ -288,7 +288,7 @@ public class OrderController {
 	public String cancel(HttpServletRequest request, Model model) {
 
 		JSONObject cancelOrderJson = new JSONObject();
-		OrderModel orderModel = orderService.getOrder(Long.parseLong(request.getParameter("orderId")));
+		OrderModel orderModel = orderService.getOrderModel(Long.parseLong(request.getParameter("orderId")));
 
 		cancelOrderJson.put("apiId", request.getParameter("apiId"));
 		cancelOrderJson.put("orderId", orderModel.getUuid());

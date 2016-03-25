@@ -10,7 +10,7 @@
 		<br /> apikey <input type="text" name="apiKey" value="${apiKey}" />
 		<br /> url <input type="text" name="apiUrl" value="${apiUrl}" />
 		<br/>TimeZone ID <input type="text" name="timezoneId" value="${timezoneId}"/>
-		<br />codeName (для брендированных диспетчерских) <input type="text" name="codeName" value="${codeName}" />
+		<br />коментарий <input type="text" name="comment" value="${comment}" />
 		
 		<br />
 		<br /> Map areas:

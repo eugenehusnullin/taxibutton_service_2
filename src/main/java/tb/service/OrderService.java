@@ -29,6 +29,7 @@ import tb.car.dao.CarDao;
 import tb.car.domain.Car;
 import tb.car.domain.Car4Request;
 import tb.car.domain.GeoData;
+import tb.dao.IBrandDao;
 import tb.dao.IDeviceDao;
 import tb.dao.IOfferDao;
 import tb.dao.IOrderAssignRequestDao;
@@ -87,6 +88,8 @@ public class OrderService {
 	private CarDao carDao;
 	@Autowired
 	private SheduledProcessing processing;
+	@Autowired
+	private IBrandDao brandDao;
 
 	@Value("#{mainSettings['createorder.deltaminutes']}")
 	private Integer createOrderDeltaMinutes = 20;
@@ -151,7 +154,8 @@ public class OrderService {
 	}
 
 	@Transactional
-	public Order initOrder(JSONObject createOrderObject) throws DeviceNotFoundException, ParseOrderException, JSONException, IOException {
+	public Order initOrder(JSONObject createOrderObject)
+			throws DeviceNotFoundException, ParseOrderException, JSONException, IOException {
 		String deviceApiid = createOrderObject.optString("apiId");
 		Device device = deviceDao.get(deviceApiid);
 		if (device == null) {
@@ -159,7 +163,7 @@ public class OrderService {
 		}
 
 		Order order = OrderJsonParser.Json2Order(createOrderObject.getJSONObject("order"), device,
-				partnerDao, partnerService);
+				partnerDao, partnerService, brandDao);
 		order.setDevice(device);
 		return order;
 	}
@@ -211,7 +215,7 @@ public class OrderService {
 		if (!order.getDevice().getApiId().equals(apiId)) {
 			throw new OrderNotFoundException(orderUuid);
 		}
-		
+
 		OrderStatus status = orderStatusDao.getLast(order);
 		if (status.getStatus() == OrderStatusType.Completed
 				|| status.getStatus() == OrderStatusType.Cancelled
@@ -527,7 +531,7 @@ public class OrderService {
 	}
 
 	@Transactional
-	public OrderModel getOrder(Long orderId) {
+	public OrderModel getOrderModel(Long orderId) {
 		Order order = orderDao.get(orderId);
 		OrderStatus lastStatus = orderStatusDao.getLast(order);
 		OrderModel model = new OrderModel();
@@ -545,7 +549,7 @@ public class OrderService {
 	}
 
 	@Transactional
-	public Order getTrueOrder(Long orderId) {
+	public Order getOrder(Long orderId) {
 		return orderDao.get(orderId);
 	}
 
@@ -625,7 +629,7 @@ public class OrderService {
 	}
 
 	@Transactional
-	public void assign(Order order) {
+	public boolean assign(Order order) {
 		AssignRequest assignRequest = assignRequestDao.getBestAssignRequest(order);
 
 		if (assignRequest != null) {
@@ -651,6 +655,8 @@ public class OrderService {
 				orderDao.addOrderProcessing(order.getId(),
 						"Заказ успешно отдан на исполнение партнеру " + assignRequest.getPartner().getName()
 								+ ", водитель " + assignRequest.getUuid());
+				
+				return true;
 			} else {
 				if (responseCode != 0) {
 					logger.info("assign for order id=" + order.getId() + ", fail give to partner.");
@@ -668,6 +674,8 @@ public class OrderService {
 				}
 			}
 		}
+		
+		return false;
 	}
 
 	@Transactional

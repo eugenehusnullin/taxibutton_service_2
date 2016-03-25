@@ -151,7 +151,7 @@ public class PartnerController {
 			@RequestParam("apiKey") String apiKey,
 			@RequestParam("timezoneId") String timezoneId,
 			@RequestParam("mapareas") String[] mapAreaIds,
-			@RequestParam("codeName") String codeName,
+			@RequestParam("comment") String comment,
 			Model model) {
 
 		Set<MapArea> mapAreasSet = new HashSet<MapArea>();
@@ -168,7 +168,7 @@ public class PartnerController {
 		partner.setApiKey(apiKey);
 		partner.setTimezoneId(timezoneId);
 		partner.setMapAreas(mapAreasSet);
-		partner.setCodeName(codeName == "" ? null : codeName);
+		partner.setComment(comment);
 		partnerService.add(partner);
 
 		return "redirect:list";
@@ -191,7 +191,7 @@ public class PartnerController {
 		model.addAttribute("name", partner.getName());
 		model.addAttribute("apiUrl", partner.getApiurl());
 		model.addAttribute("timezoneId", partner.getTimezoneId());
-		model.addAttribute("codeName", partner.getCodeName());
+		model.addAttribute("comment", partner.getComment());
 
 		List<MapAreaModel> mapAreaModels = new ArrayList<MapAreaModel>();
 		List<MapArea> mapAreas = mapAreaDao.getAll();
@@ -218,7 +218,7 @@ public class PartnerController {
 			@RequestParam("apiUrl") String apiUrl,
 			@RequestParam("timezoneId") String timezoneId,
 			@RequestParam("mapareas") String[] mapAreaIds,
-			@RequestParam("codeName") String codeName) {
+			@RequestParam("comment") String comment) {
 
 		Set<MapArea> mapAreasSet = new HashSet<MapArea>();
 		for (String mapAreaId : mapAreaIds) {
@@ -227,8 +227,7 @@ public class PartnerController {
 			mapAreasSet.add(mapArea);
 		}
 
-		partnerService.update(partnerId, apiId, apiKey, name, apiUrl, timezoneId, mapAreasSet,
-				codeName == "" ? null : codeName);
+		partnerService.update(partnerId, apiId, apiKey, name, apiUrl, timezoneId, mapAreasSet, comment);
 		return "redirect:list";
 	}
 }
