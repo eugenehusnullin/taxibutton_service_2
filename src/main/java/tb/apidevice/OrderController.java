@@ -47,12 +47,14 @@ import tb.service.exceptions.NotValidOrderStatusException;
 import tb.service.exceptions.OrderNotFoundException;
 import tb.service.exceptions.ParseOrderException;
 import tb.service.exceptions.WrongData;
+import tb.utils.DatetimeUtils;
 
 @RequestMapping("/order")
 @Controller("apiDeviceOrderController")
 public class OrderController {
 
 	private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+	private static final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
 
 	@Autowired
 	private OrderService orderService;
@@ -267,11 +269,19 @@ public class OrderController {
 
 			Point source = createPoint(costJson.getJSONObject("source"));
 			List<Point> destinations = createPoints(costJson.optJSONArray("destinations"));
-			Date bookDate = createBookDate(costJson.getString("bookingDate"));
 			String carClass = costJson.getString("class");
 			List<String> adds = createAdds(costJson.optJSONArray("adds"));
 			String carBasket = costJson.optString("carbasket");
 			String codeName = costJson.optString("taxi");
+
+			// booking date
+			Date bookDate = DatetimeUtils.localTimeToUtc(new Date());
+			int bookMins = costJson.optInt("bookmins", -1);
+			if (bookMins == -1) {
+				bookDate = createBookDate(costJson.getString("bookingDate"));
+			} else {
+				bookDate = new Date(bookDate.getTime() + (bookMins * ONE_MINUTE_IN_MILLIS));
+			}
 
 			return costRequest.getCostAsync(codeName, source, destinations, carClass, carBasket, bookDate, adds);
 		} catch (Exception e) {
