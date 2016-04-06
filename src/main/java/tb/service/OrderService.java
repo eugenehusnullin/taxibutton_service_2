@@ -189,7 +189,8 @@ public class OrderService {
 		orderStatusDao.save(orderStatus);
 
 		// create order processing info
-		orderDao.addOrderProcessing(order.getId(), "Создан заказ.");
+		orderDao.addOrderProcessing(order.getId(),
+				"Создан заказ. Телефон " + order.getDevice().getPhone() + ". Бренд " + order.getDevice().getTaxi());
 
 		processing.processOrderAsync(order);
 	}
@@ -590,17 +591,12 @@ public class OrderService {
 
 		int responseCode = 0;
 		try {
-			// TODO: DELETE AFTER DEVICE TESTING COMPLETED
-			if (order.getDevice().getPhone().startsWith("+++")) {
-				responseCode = 200;
-			} else {
-				HttpURLConnection con = HttpUtils.postDocumentOverHttp(doc, url, logger);
-				responseCode = con.getResponseCode();
-				if (responseCode != 200) {
-					try {
-						logger.error(IOUtils.toString(con.getErrorStream()));
-					} catch (Exception e) {
-					}
+			HttpURLConnection con = HttpUtils.postDocumentOverHttp(doc, url, logger);
+			responseCode = con.getResponseCode();
+			if (responseCode != 200) {
+				try {
+					logger.error(IOUtils.toString(con.getErrorStream()));
+				} catch (Exception e) {
 				}
 			}
 		} catch (Exception e) {
@@ -655,7 +651,7 @@ public class OrderService {
 				orderDao.addOrderProcessing(order.getId(),
 						"Заказ успешно отдан на исполнение партнеру " + assignRequest.getPartner().getName()
 								+ ", водитель " + assignRequest.getUuid());
-				
+
 				return true;
 			} else {
 				if (responseCode != 0) {
@@ -674,7 +670,7 @@ public class OrderService {
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
