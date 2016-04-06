@@ -9,6 +9,7 @@ public class Device {
 	private String phone;
 	private String taxi;
 	private Date regDate;
+	private String userName;
 
 	private String confirmKey;
 	private Date confirmDate;
@@ -76,5 +77,13 @@ public class Device {
 
 	public void setTaxi(String taxi) {
 		this.taxi = taxi;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 }

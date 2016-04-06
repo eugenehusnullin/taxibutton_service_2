@@ -27,6 +27,7 @@ public class DeviceService {
 		JSONObject resultJson = new JSONObject();
 
 		String phone = registerJson.optString("phone");
+		String userName = registerJson.optString("name");
 
 		if (phone.isEmpty()) {
 			resultJson.put("result", "ERROR");
@@ -50,6 +51,7 @@ public class DeviceService {
 			device.setPhone(phone);
 			device.setTaxi(taxi.isEmpty() ? null : taxi);
 			device.setRegDate(new Date());
+			device.setUserName(userName);
 		}
 
 		boolean hasConfirm = registerJson.has("confirm");
@@ -57,7 +59,8 @@ public class DeviceService {
 			int keyInt = (new Random()).nextInt(9999 - 1000) + 1000;
 			device.setConfirmKey(Integer.toString(keyInt));
 			device.setConfirmDate(new Date());
-			boolean smsResult = smsService.send(taxi, phone, "Ваш код активации для приложения вызова такси " + Integer.toString(keyInt));
+			boolean smsResult = smsService.send(taxi, phone,
+					"Ваш код активации для приложения вызова такси " + Integer.toString(keyInt));
 			resultJson.put("result", smsResult ? "WAITSMS" : "ERROR");
 		} else {
 			resultJson.put("result", "OK");
@@ -121,6 +124,8 @@ public class DeviceService {
 			model.setPhone(device.getPhone());
 			model.setConfirmKey(device.getConfirmKey());
 			model.setTaxi(device.getTaxi());
+			model.setUserName(device.getUserName());
+
 			models.add(model);
 		}
 

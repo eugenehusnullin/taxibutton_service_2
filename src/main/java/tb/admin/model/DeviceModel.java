@@ -6,6 +6,7 @@ public class DeviceModel {
 	private String phone;
 	private String confirmKey;
 	private String taxi;
+	private String userName;
 
 	public Long getId() {
 		return id;
@@ -45,5 +46,13 @@ public class DeviceModel {
 
 	public void setTaxi(String taxi) {
 		this.taxi = taxi;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 }

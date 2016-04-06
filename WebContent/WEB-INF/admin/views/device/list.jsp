@@ -10,7 +10,8 @@
 			<th>Api id</th>
 			<th>Phone</th>
 			<th>Key</th>
-			<th>codeName</th>
+			<th>code name</th>
+			<th>user name</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -21,6 +22,7 @@
 				<td>${device.getPhone()}</td>
 				<td>${device.getConfirmKey()}</td>
 				<td>${device.getTaxi()}</td>
+				<td>${device.getUserName()}</td>
 			</tr>
 		</c:forEach>
 	</tbody>
