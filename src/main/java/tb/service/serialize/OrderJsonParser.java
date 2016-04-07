@@ -52,7 +52,7 @@ public class OrderJsonParser {
 		SortedSet<AddressPoint> addressPoints = new TreeSet<AddressPoint>();
 		try {
 			JSONObject sourceJson = jsonObject.getJSONObject("source");
-			addressPoints.add(OrderJsonParser.getPoint(sourceJson, order, 0));
+			addressPoints.add(OrderJsonParser.parsePoint(sourceJson, order, 0));
 		} catch (JSONException ex) {
 			throw new ParseOrderException("source bad. " + ex.toString());
 		}
@@ -69,12 +69,7 @@ public class OrderJsonParser {
 					throw new ParseOrderException("destination index bad. " + ex.toString());
 				}
 
-				addressPoints.add(OrderJsonParser.getPoint(destinationJson, order, index));
-			}
-		} else {
-			boolean dest = jsonObject.optBoolean("destinations");
-			if (!dest) {
-				throw new ParseOrderException("destinations bad.");
+				addressPoints.add(OrderJsonParser.parsePoint(destinationJson, order, index));
 			}
 		}
 
@@ -145,7 +140,7 @@ public class OrderJsonParser {
 		return order;
 	}
 
-	private static AddressPoint getPoint(JSONObject pointJson, Order order, int index) {
+	private static AddressPoint parsePoint(JSONObject pointJson, Order order, int index) {
 		AddressPoint result = new AddressPoint();
 		Double lon = null;
 		Double lat = null;
