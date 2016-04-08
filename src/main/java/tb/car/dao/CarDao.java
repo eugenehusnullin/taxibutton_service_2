@@ -188,7 +188,7 @@ public class CarDao {
 				.createCriteria(GeoData.class)
 				.add(Restrictions.eq("partnerId", partnerId))
 				.add(Restrictions.eq("uuid", carUuid))
-				.add(Restrictions.ge("date", date))
+				.add(Restrictions.gt("date", date))
 				.addOrder(Order.asc("date"))
 				.list();
 	}

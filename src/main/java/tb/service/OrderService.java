@@ -307,18 +307,19 @@ public class OrderService {
 		OrderStatus lastStatus = orderStatusDao.getLast(order);
 		if (OrderStatusType.IsValidForUserGeodata(lastStatus.getStatus())) {
 			String lastDateString = jsonRequest.optString("lastDate");
-			Date date = null;
-			if (!lastDateString.isEmpty()) {
-				date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(lastDateString);
-			} else {
-				OrderStatus firstUserGeodataStatus = order.getStatuses().stream()
-						.filter(p -> OrderStatusType.IsValidForUserGeodata(p.getStatus()))
-						.sorted((e1, e2) -> e1.getDate().compareTo(e2.getDate()))
-						.findFirst()
-						.get();
+			OrderStatus firstUserGeodataStatus = order.getStatuses().stream()
+					.filter(p -> OrderStatusType.IsValidForUserGeodata(p.getStatus()))
+					.sorted((e1, e2) -> e1.getDate().compareTo(e2.getDate()))
+					.findFirst()
+					.get();
 
-				date = firstUserGeodataStatus.getDate();
-				date = new Date((date.getTime() - 5 * 60 * 1000));
+			Date date = firstUserGeodataStatus.getDate();
+
+			if (!lastDateString.isEmpty()) {
+				Date userDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(lastDateString);
+				if (userDate.after(date)) {
+					date = userDate;
+				}
 			}
 
 			geoDataList = carDao.getGeoData(order.getPartner().getId(), order.getCarUuid(), date);
