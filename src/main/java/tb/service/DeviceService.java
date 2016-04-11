@@ -44,8 +44,11 @@ public class DeviceService {
 			device = deviceDao.get(phone, taxi);
 		}
 
+		if (device == null) {
+			device = new Device();
+		}
+
 		String newDeviceUuid = UUID.randomUUID().toString();
-		device = new Device();
 		device.setApiId(newDeviceUuid);
 		device.setPhone(phone);
 		device.setTaxi(taxi.isEmpty() ? null : taxi);
