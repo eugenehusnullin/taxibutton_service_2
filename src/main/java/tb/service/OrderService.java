@@ -587,7 +587,8 @@ public class OrderService {
 		Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC",
 				assignRequest.getPartner().getTimezoneId());
 
-		Document doc = YandexOrderSerializer.orderToSetcarXml(order, bookDate, car4Request, order.getPhone());
+		Document doc = YandexOrderSerializer.orderToSetcarXml(order, bookDate, car4Request, order.getPhone(),
+				order.getDevice().getUserName());
 		String url = assignRequest.getPartner().getApiurl() + "/1.x/setcar";
 
 		int responseCode = 0;

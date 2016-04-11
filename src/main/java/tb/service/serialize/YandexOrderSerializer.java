@@ -25,7 +25,8 @@ public class YandexOrderSerializer {
 
 	private static final Logger log = LoggerFactory.getLogger(YandexOrderSerializer.class);
 
-	public static Document orderToSetcarXml(Order order, Date bookingdate, Car4Request car, String clientPhone) {
+	public static Document orderToSetcarXml(Order order, Date bookingdate, Car4Request car, String clientPhone,
+			String clientName) {
 		try {
 			Document doc = createDoc();
 			Element requestElement = doc.createElement("Request");
@@ -36,7 +37,7 @@ public class YandexOrderSerializer {
 				requestElement.appendChild(createCarBasket(doc, order.getCarBasket()));
 			}
 			requestElement.appendChild(createSetCar(doc, car));
-			requestElement.appendChild(createContactInfo(doc, clientPhone));
+			requestElement.appendChild(createContactInfo(doc, clientPhone, clientName));
 			requestElement.appendChild(createSource(doc, order.getSource()));
 			requestElement.appendChild(createDestinations(doc, order.getDestinations()));
 			requestElement.appendChild(createBooking(doc, order.getNotlater(), bookingdate));
@@ -124,7 +125,7 @@ public class YandexOrderSerializer {
 		return element;
 	}
 
-	private static Element createContactInfo(Document doc, String clientPhone) {
+	private static Element createContactInfo(Document doc, String clientPhone, String clientName) {
 		Element contactInfo = doc.createElement("ContactInfo");
 
 		Element phones = doc.createElement("Phones");
@@ -139,6 +140,12 @@ public class YandexOrderSerializer {
 		phones.appendChild(phone4Dispatch);
 		phone4Dispatch.appendChild(doc.createTextNode(clientPhone));
 		phone4Dispatch.setAttribute("for", "dispatch");
+
+		if (clientName != null && !clientName.isEmpty()) {
+			Element name = doc.createElement("Name");
+			contactInfo.appendChild(name);
+			name.appendChild(doc.createTextNode(clientName));
+		}
 
 		return contactInfo;
 	}
