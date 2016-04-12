@@ -10,3 +10,8 @@ src/main/resources/log4j2.xml
 src/main/resources/tb/apitaxirf/*
 
 src/main/resources/CarOptions.json
+angular/*
+WebContent/resources/angular/*
+WebContent/resources/bootstrap/*
+WebContent/resources/css/*
+WebContent/resources/jquery/*
