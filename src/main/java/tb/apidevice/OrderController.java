@@ -109,11 +109,7 @@ public class OrderController {
 			try {
 				orderService.cancel(cancelOrderJson);
 
-				JSONObject responseJson = new JSONObject();
 				response.setStatus(200);
-				responseJson.put("status", "success");
-				IOUtils.write(responseJson.toString(), response.getOutputStream(), "UTF-8");
-
 			} catch (DeviceNotFoundException e) {
 				response.setStatus(403);
 			} catch (OrderNotFoundException e) {
