@@ -414,6 +414,11 @@ public class OrderService {
 	@Transactional
 	public void setStatus(String partnerApiId, String partnerApiKey, String orderUuid, String newStatus,
 			String statusParams) throws PartnerNotFoundException, OrderNotFoundException {
+		OrderStatusType newStatusType = defineOrderStatusType(newStatus);
+		if (newStatusType == null) {
+			return;
+		}
+		
 		Partner partner = partnerDao.getByApiId(partnerApiId);
 		if (partner == null) {
 			throw new PartnerNotFoundException(partnerApiId);
@@ -435,7 +440,7 @@ public class OrderService {
 		OrderStatus status = new OrderStatus();
 		status.setOrder(order);
 		status.setDate(new Date());
-		status.setStatus(defineOrderStatusType(newStatus));
+		status.setStatus(newStatusType);
 		status.setStatusDescription(statusParams);
 		orderStatusDao.save(status);
 

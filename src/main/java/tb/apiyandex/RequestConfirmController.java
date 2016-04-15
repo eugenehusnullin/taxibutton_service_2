@@ -39,7 +39,9 @@ public class RequestConfirmController {
 			if (newcar != null) {
 				logger.info("Change the car: OrderId-" + orderId + ", Newcar-" + newcar + ".");
 				orderService.setNewcar(clid, apikey, orderId, newcar);
-			} else {
+			}
+
+			if (status != null && !status.isEmpty()) {
 				logger.info("Set status: OrderId-" + orderId + ", Status-" + status + ".");
 				orderService.setStatus(clid, apikey, orderId, status, extra);
 			}
