@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,40 +18,31 @@ import org.springframework.web.context.request.async.DeferredResult;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import tb.dao.IBrandDao;
-import tb.domain.Brand;
 import tb.domain.Partner;
 import tb.domain.maparea.Point;
-import tb.service.PartnerService;
+import tb.service.BrandingService;
 
 @Service
 public class CostRequest {
 	private static final Logger logger = LoggerFactory.getLogger(CostRequest.class);
 
 	@Autowired
-	private PartnerService partnerService;
-	@Autowired
 	private PartnersApiKeeper partnersApiKeeper;
 	@Autowired
-	private IBrandDao brandDao;
+	private BrandingService brandingService;
 
 	@Transactional
-	public DeferredResult<String> getCostAsync(String codeName, Point source, List<Point> destinations, String carClass,
+	public DeferredResult<String> getCostAsync(String brandName, Point source, List<Point> destinations,
+			String carClass,
 			String carBasket, Date bookDate, List<String> adds) {
 		String requestStr = createRequestBody(source, destinations, carClass, carBasket, bookDate, adds);
 		logger.debug("COST JSON: " + requestStr);
 
-		List<Partner> partners = null;
-		Brand brand = brandDao.get(codeName);
-		partners = brand.getServices().stream()
-				.map(p -> p.getPartner()).collect(Collectors.toList());
-
 		// cost http requests
 		DeferredResult<String> dr = new DeferredResult<>();
-		partners = partnerService.getPartnersByMapAreas(partners, source.getLatitude(), source.getLongitude());
-		if (partners != null && partners.size() > 0) {
-			Partner partner = partners.get(0);
-			PartnerApi api = partnersApiKeeper.getPartnerApi(partner);
+		Partner majorPartner = brandingService.getMajorPartner(brandName);
+		if (majorPartner != null) {
+			PartnerApi api = partnersApiKeeper.getPartnerApi(majorPartner);
 
 			Call<String> call = api.cost(requestStr);
 			call.enqueue(new Callback<String>() {
@@ -62,7 +52,7 @@ public class CostRequest {
 					String responseString = response.body();
 					logger.info("COST SUCCESS: " + responseString);
 					JSONObject responseJson = (JSONObject) new JSONTokener(responseString).nextValue();
-					CostResponse cr = convertCostResponse(responseJson, partner.getName());
+					CostResponse cr = convertCostResponse(responseJson, majorPartner.getName());
 					JSONObject costJson = new JSONObject();
 					costJson.put("sum", cr.getPrice());
 					costJson.put("km", cr.getKm());
@@ -75,7 +65,7 @@ public class CostRequest {
 				@Override
 				public void onFailure(Call<String> call, Throwable t) {
 					logger.warn("COST FAILURE: ResponseCode=" + t.getMessage() + " Partnername="
-							+ partner.getName());
+							+ majorPartner.getName());
 					dr.setErrorResult(t);
 				}
 			});

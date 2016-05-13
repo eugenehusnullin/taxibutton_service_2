@@ -29,7 +29,6 @@ import tb.car.dao.CarDao;
 import tb.car.domain.Car;
 import tb.car.domain.Car4Request;
 import tb.car.domain.GeoData;
-import tb.dao.IBrandDao;
 import tb.dao.IDeviceDao;
 import tb.dao.IOfferDao;
 import tb.dao.IOrderAssignRequestDao;
@@ -89,7 +88,7 @@ public class OrderService {
 	@Autowired
 	private SheduledProcessing processing;
 	@Autowired
-	private IBrandDao brandDao;
+	private BrandingService brandingService;
 
 	@Value("#{mainSettings['createorder.deltaminutes']}")
 	private Integer createOrderDeltaMinutes = 20;
@@ -163,7 +162,7 @@ public class OrderService {
 		}
 
 		Order order = OrderJsonParser.Json2Order(createOrderObject.getJSONObject("order"), device,
-				partnerDao, partnerService, brandDao);
+				partnerDao, partnerService, brandingService);
 		order.setDevice(device);
 		return order;
 	}
@@ -277,7 +276,6 @@ public class OrderService {
 			statusJson.put("driver_name", car.getDriverDisplayName());
 			statusJson.put("driver_phone", car.getDriverPhone());
 			statusJson.put("car_color", car.getCarColor());
-			statusJson.put("car_mark", car.getCarModel());
 			statusJson.put("car_model", car.getCarModel());
 			statusJson.put("car_number", car.getCarNumber());
 		}

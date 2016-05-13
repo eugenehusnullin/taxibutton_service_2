@@ -3,24 +3,21 @@ package tb.service.serialize;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import tb.dao.IBrandDao;
 import tb.dao.IPartnerDao;
-import tb.domain.Brand;
 import tb.domain.Device;
 import tb.domain.Partner;
 import tb.domain.order.AddressPoint;
 import tb.domain.order.Order;
 import tb.domain.order.Requirement;
+import tb.service.BrandingService;
 import tb.service.PartnerService;
 import tb.service.exceptions.ParseOrderException;
 import tb.utils.DatetimeUtils;
@@ -29,7 +26,7 @@ public class OrderJsonParser {
 	private static final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
 
 	public static Order Json2Order(JSONObject jsonObject, Device device, IPartnerDao partnerDao,
-			PartnerService partnerService, IBrandDao brandDao)
+			PartnerService partnerService, BrandingService brandingService)
 			throws ParseOrderException, IOException {
 
 		Order order = new Order();
@@ -95,11 +92,9 @@ public class OrderJsonParser {
 
 				Long partnerId = 0L;
 				if (device.getTaxi() != null && !device.getTaxi().isEmpty()) {
-					Brand brand = brandDao.get(device.getTaxi());
-					List<Partner> partners = brand.getServices().stream()
-							.map(p -> p.getPartner()).collect(Collectors.toList());
-					if (partners != null && partners.size() > 0) {
-						partnerId = partners.get(0).getId();
+					Partner majorPartner = brandingService.getMajorPartner(device.getTaxi());
+					if (majorPartner != null) {
+						partnerId = majorPartner.getId();
 					}
 				}
 				for (int i = 0; i < requirementsJson.length(); i++) {

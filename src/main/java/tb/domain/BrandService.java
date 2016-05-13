@@ -4,6 +4,7 @@ public class BrandService {
 	private Long id;
 	private Partner partner;
 	private int priority;
+	private Boolean major;
 
 	public Long getId() {
 		return id;
@@ -29,4 +30,11 @@ public class BrandService {
 		this.priority = priority;
 	}
 
+	public Boolean getMajor() {
+		return major;
+	}
+
+	public void setMajor(Boolean major) {
+		this.major = major;
+	}
 }

@@ -59,11 +59,9 @@ public class OfferingOrder {
 
 	@Transactional
 	public void offer(Order order, Integer count) {
-		List<Partner> partners = null;
-
 		// !select partners by device codeName(taxi) and PRIORITY
 		Brand brand = brandDao.get(order.getDevice().getTaxi());
-		partners = brand.getServices().stream()
+		List<Partner> partners = brand.getServices().stream()
 				.filter(p -> p.getPriority() <= count)
 				.map(p -> p.getPartner()).collect(Collectors.toList());
 		List<Offer> offers = offerDao.get(order);

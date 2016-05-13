@@ -10,5 +10,6 @@
 		</id>
 		<many-to-one name="partner" column="partnerid" lazy="false" />
 		<property name="priority"></property>
+		<property name="major"></property>
 	</class>
 </hibernate-mapping>

@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,11 +34,11 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import tb.cost.CostRequest;
 import tb.dao.IBrandDao;
-import tb.domain.Brand;
 import tb.domain.Partner;
 import tb.domain.PartnerSettings;
 import tb.domain.maparea.Point;
 import tb.domain.order.Order;
+import tb.service.BrandingService;
 import tb.service.OrderService;
 import tb.service.PartnerService;
 import tb.service.exceptions.DeviceNotFoundException;
@@ -63,7 +62,7 @@ public class OrderController {
 	@Autowired
 	private CostRequest costRequest;
 	@Autowired
-	private IBrandDao brandDao;
+	private BrandingService brandingService;
 
 	// create an order from apk request (json string)
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -268,7 +267,7 @@ public class OrderController {
 			String carClass = costJson.getString("class");
 			List<String> adds = createAdds(costJson.optJSONArray("adds"));
 			String carBasket = costJson.optString("carbasket");
-			String codeName = costJson.optString("taxi");
+			String brandName = costJson.optString("taxi");
 
 			// booking date
 			Date bookDate = DatetimeUtils.localTimeToUtc(new Date());
@@ -279,7 +278,7 @@ public class OrderController {
 				bookDate = new Date(bookDate.getTime() + (bookMins * ONE_MINUTE_IN_MILLIS));
 			}
 
-			return costRequest.getCostAsync(codeName, source, destinations, carClass, carBasket, bookDate, adds);
+			return costRequest.getCostAsync(brandName, source, destinations, carClass, carBasket, bookDate, adds);
 		} catch (Exception e) {
 			logger.error("cost", e);
 			DeferredResult<String> dr = new DeferredResult<>();
@@ -304,19 +303,16 @@ public class OrderController {
 
 	@RequestMapping(value = "/caroptions", method = RequestMethod.GET)
 	public ResponseEntity<String> getCarOptions(
-			@RequestParam(name = "taxi", required = false, defaultValue = "") String taxi)
+			@RequestParam(name = "taxi", required = false, defaultValue = "") String brandName)
 			throws IOException {
 
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
-		if (taxi != null && !taxi.isEmpty()) {
-			Brand brand = brandDao.get(taxi);
-			List<Partner> partners = brand.getServices().stream()
-					.map(p -> p.getPartner()).collect(Collectors.toList());
-			if (partners.size() > 0) {
-				Partner partner = partners.get(0);
-				PartnerSettings partnerSettings = partnerService.getPartnerSettings(partner);
+		if (brandName != null && !brandName.isEmpty()) {
+			Partner majorPartner = brandingService.getMajorPartner(brandName);
+			if (majorPartner != null) {
+				PartnerSettings partnerSettings = partnerService.getPartnerSettings(majorPartner);
 				if (partnerSettings != null) {
 					return new ResponseEntity<>(partnerSettings.getSettings(), httpHeaders, HttpStatus.OK);
 				}
