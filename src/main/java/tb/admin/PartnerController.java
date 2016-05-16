@@ -20,12 +20,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import tb.admin.model.CarModel;
 import tb.admin.model.MapAreaModel;
+import tb.admin.model.PartnerModel;
 import tb.car.CarSynch;
 import tb.car.dao.CarDao;
 import tb.car.domain.Car;
 import tb.car.domain.CarState;
 import tb.car.domain.LastGeoData;
+import tb.dao.IBrandDao;
 import tb.dao.IMapAreaDao;
+import tb.domain.BrandService;
 import tb.domain.Partner;
 import tb.domain.maparea.MapArea;
 import tb.service.PartnerService;
@@ -39,8 +42,6 @@ public class PartnerController {
 
 	@Autowired
 	private PartnerService partnerService;
-	// @Autowired
-	// private TariffService tariffService;
 	@Autowired
 	private Starter starter;
 	@Autowired
@@ -49,6 +50,8 @@ public class PartnerController {
 	private IMapAreaDao mapAreaDao;
 	@Autowired
 	private CarDao carDao;
+	@Autowired
+	private IBrandDao brandDao;
 
 	@RequestMapping(value = "/carsynch", method = RequestMethod.GET)
 	public String carSynch(Model model) {
@@ -62,7 +65,19 @@ public class PartnerController {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public String list(Model model) {
 		List<Partner> list = partnerService.getAll();
-		model.addAttribute("partners", list);
+		List<PartnerModel> result = new ArrayList<>();
+		for (Partner partner : list) {
+			List<BrandService> brandServices = brandDao.getBrandServices(partner);
+
+			PartnerModel partnerModel = new PartnerModel(partner);
+			result.add(partnerModel);
+			String desc = brandServices.stream()
+					.map(p -> p.getBrand().getCodeName() + " - " + p.getPriority())
+					.collect(Collectors.joining("; "));
+			partnerModel.setBrands(desc);
+		}
+
+		model.addAttribute("partners", result);
 		return "partner/list";
 	}
 

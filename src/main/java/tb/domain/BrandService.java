@@ -5,6 +5,7 @@ public class BrandService {
 	private Partner partner;
 	private int priority;
 	private Boolean major;
+	private Brand brand;
 
 	public Long getId() {
 		return id;
@@ -36,5 +37,13 @@ public class BrandService {
 
 	public void setMajor(Boolean major) {
 		this.major = major;
+	}
+
+	public Brand getBrand() {
+		return brand;
+	}
+
+	public void setBrand(Brand brand) {
+		this.brand = brand;
 	}
 }

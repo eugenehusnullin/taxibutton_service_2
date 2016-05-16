@@ -11,6 +11,7 @@
 			<th>Api key</th>
 			<th>Name</th>
 			<th>Api url</th>
+			<th>brands</th>
 			<th>Comment</th>
 		</tr>
 	</thead>
@@ -22,6 +23,7 @@
 				<td>${partner.getApiKey()}</td>
 				<td>${partner.getName()}</td>
 				<td>${partner.getApiurl()}</td>
+				<td>${partner.getBrands()}</td>
 				<td>${partner.getComment()}</td>
 			</tr>
 			<tr class="actionTr">

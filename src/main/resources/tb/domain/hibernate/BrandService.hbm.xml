@@ -8,8 +8,9 @@
 		<id name="id">
 			<generator class="identity" />
 		</id>
-		<many-to-one name="partner" column="partnerid" lazy="false" />
+		<many-to-one name="partner" column="partnerid" lazy="false" not-null="true"/>
 		<property name="priority"></property>
 		<property name="major"></property>
+		<many-to-one name="brand" column="brandid" lazy="false" not-null="true"/>
 	</class>
 </hibernate-mapping>
