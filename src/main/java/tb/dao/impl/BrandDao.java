@@ -36,5 +36,14 @@ public class BrandDao implements IBrandDao {
 				.add(Restrictions.eq("partner", partner))
 				.list();
 	}
+	
+	@Transactional
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Brand> getAll() {
+		return (List<Brand>) sessionFactory.getCurrentSession()
+				.createCriteria(Brand.class)				
+				.list();
+	}
 
 }

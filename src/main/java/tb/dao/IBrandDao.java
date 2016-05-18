@@ -10,4 +10,6 @@ public interface IBrandDao {
 	Brand get(String codeName);
 
 	List<BrandService> getBrandServices(Partner partner);
+
+	List<Brand> getAll();
 }

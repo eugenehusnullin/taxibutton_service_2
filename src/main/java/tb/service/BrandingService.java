@@ -1,6 +1,9 @@
 package tb.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tb.admin.model.BrandModel;
 import tb.dao.IBrandDao;
 import tb.domain.Brand;
 import tb.domain.BrandService;
@@ -37,6 +41,25 @@ public class BrandingService {
 		logger.warn("Brand: " + brandName + " - not exists.");
 		return null;
 
+	}
+
+	@Transactional
+	public List<BrandModel> getBrandModels() {
+		List<Brand> brands = brandDao.getAll();
+
+		List<BrandModel> brandModels = new ArrayList<>(brands.size());
+		for (Brand brand : brands) {
+			String partners = brand.getServices().stream()
+					.map(p -> p.getPartner().getName() + " - " + p.getPriority())
+					.collect(Collectors.joining("; "));
+			
+			BrandModel brandModel = new BrandModel(brand);
+			brandModel.setPartners(partners);
+			
+			brandModels.add(brandModel);
+		}
+		
+		return brandModels;
 	}
 
 }
