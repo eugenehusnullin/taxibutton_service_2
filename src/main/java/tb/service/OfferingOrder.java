@@ -63,7 +63,8 @@ public class OfferingOrder {
 		Brand brand = brandDao.get(order.getDevice().getTaxi());
 		List<Partner> partners = brand.getServices().stream()
 				.filter(p -> p.getPriority() <= count)
-				.map(p -> p.getPartner()).collect(Collectors.toList());
+				.map(p -> p.getPartner())
+				.collect(Collectors.toList());
 		List<Offer> offers = offerDao.get(order);
 		if (offers.size() > 0) {
 			List<Long> offeredPartnersIds = offers.stream()
@@ -72,6 +73,28 @@ public class OfferingOrder {
 			partners = partners.stream()
 					.filter(p -> offeredPartnersIds.contains(p.getId()))
 					.collect(Collectors.toList());
+		}
+
+		//
+		// createorder to partners (может отправляться два раза, если в setcar произойдет ошибка)
+		for (Partner partner : partners) {
+			try {
+				Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC",
+						partner.getTimezoneId());
+				Document doc = YandexOrderSerializer.orderToRequestXml(order, bookDate, null);
+				String url = partner.getApiurl() + "/1.x/createorder";
+				int response = HttpUtils.postDocumentOverHttp(doc, url, logger).getResponseCode();
+				if (response != 200) {
+					orderDao.addOrderProcessing(order.getId(),
+							"createorder - передача заказа без авто " + partner.getName()
+									+ ", ошибка - " + response);
+				}
+			} catch (IOException | TransformerException | TransformerFactoryConfigurationError e) {
+				logger.error("request CREATEORDER - " + order.getUuid() + ".", e);
+				orderDao.addOrderProcessing(order.getId(),
+						"createorder - передача заказа без авто " + partner.getName()
+								+ ", ошибка - " + e.getMessage());
+			}
 		}
 
 		//
@@ -205,7 +228,6 @@ public class OfferingOrder {
 					offer.setTimestamp(new Date());
 					offerDao.save(offer);
 					orderDao.addOrderProcessing(order.getId(), "Заказ успешно предложен партнеру " + partner.getName());
-
 				} else {
 					orderDao.addOrderProcessing(order.getId(),
 							"Заказ не смог быть предложенным партнеру " + partner.getName()
