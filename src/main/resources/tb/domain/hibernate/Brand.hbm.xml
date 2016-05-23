@@ -9,7 +9,7 @@
 			<generator class="identity" />
 		</id>
 		<property name="codeName" length="32" unique-key="brands_uk1" />
-		<set name="services" lazy="false">
+		<set name="services" lazy="false" cascade="save-update">
 			<key column="brandid"></key>
 			<one-to-many class="tb.domain.BrandService"/>
 		</set>

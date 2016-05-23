@@ -16,7 +16,7 @@
 		<br /> Map areas:
 		<br />
 		<c:forEach items="${mapareas}" var="maparea">
-			<input type="checkbox" name="mapareas" value="${maparea.getId()}" 
+			<input type="checkbox" name="mapareas" value="${maparea.getId()}"
 				<c:if test="${mapareasids.contains(maparea.getId())}">
 					checked="checked"
 				</c:if>

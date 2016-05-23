@@ -1,7 +1,9 @@
 package tb.dao.impl;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +38,35 @@ public class BrandDao implements IBrandDao {
 				.add(Restrictions.eq("partner", partner))
 				.list();
 	}
-	
+
 	@Transactional
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Brand> getAll() {
 		return (List<Brand>) sessionFactory.getCurrentSession()
-				.createCriteria(Brand.class)				
+				.createCriteria(Brand.class)
 				.list();
 	}
 
+	@Transactional
+	@Override
+	public Brand get(Long brandId) {
+		return (Brand) sessionFactory.getCurrentSession().get(Brand.class, brandId);
+	}
+
+	@Override
+	public void saveBrand(Brand brand) {
+		sessionFactory.getCurrentSession().saveOrUpdate(brand);
+	}
+
+	@Override
+	public void deleteBrandServices(Brand brand) {
+		Session s = sessionFactory.getCurrentSession();
+		Iterator<BrandService> iterator = brand.getServices().iterator();
+		while (iterator.hasNext()) {
+			BrandService bs = iterator.next();
+			iterator.remove();
+			s.delete(bs);
+		}
+	}
 }

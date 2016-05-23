@@ -12,4 +12,10 @@ public interface IBrandDao {
 	List<BrandService> getBrandServices(Partner partner);
 
 	List<Brand> getAll();
+
+	Brand get(Long brandId);
+
+	void saveBrand(Brand brand);
+
+	void deleteBrandServices(Brand brand);
 }

@@ -2,18 +2,10 @@ package tb.domain;
 
 public class BrandService {
 	private Long id;
+	private Brand brand;
 	private Partner partner;
 	private int priority;
 	private Boolean major;
-	private Brand brand;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public Partner getPartner() {
 		return partner;
@@ -45,5 +37,13 @@ public class BrandService {
 
 	public void setBrand(Brand brand) {
 		this.brand = brand;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }

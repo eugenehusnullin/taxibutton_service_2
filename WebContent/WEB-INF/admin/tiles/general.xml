@@ -121,4 +121,8 @@
 		<put-attribute name="title" value="List of brands" />
 		<put-attribute name="body" value="/WEB-INF/admin/views/brand/list.jsp" />
 	</definition>
+	<definition name="brand/edit" extends="default">
+		<put-attribute name="title" value="Edit brand" />
+		<put-attribute name="body" value="/WEB-INF/admin/views/brand/edit.jsp" />
+	</definition>
 </tiles-definitions>

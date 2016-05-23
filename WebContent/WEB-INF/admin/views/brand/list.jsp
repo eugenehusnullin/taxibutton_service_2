@@ -13,14 +13,14 @@
 	<tbody>
 		<c:forEach items="${brands}" var="brand">
 			<tr>
-				<td>${brand.getName()}</td>
+				<td><a href="edit?id=${brand.getId()}">${brand.getName()}</a></td>
 				<td>${brand.getPartners()}</td>
 			</tr>
 		</c:forEach>
 	</tbody>
 </table>
 <br />
-<a href="create">Create</a>
+<a href="edit">Create</a>
 <br />
 <br />
 <br />
