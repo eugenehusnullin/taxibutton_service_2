@@ -101,12 +101,17 @@ public class OfferingOrder {
 		// !select partners by map area
 		partners = partnerService.getPartnersByMapAreas(partners,
 				order.getSource().getLat(), order.getSource().getLon());
-
 		if (partners == null || partners.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(), "Не найдены партнеры в геозоне действия заказа.");
 			logger.info("Order - " + order.getUuid() + ", partners not found.");
 			return;
 		}
+
+		final List<Partner> finalPartners = partners;
+		//
+		// info users
+		String partnersNames = partners.stream().map(p -> p.getName()).collect(Collectors.joining("; "));
+		orderDao.addOrderProcessing(order.getId(), "====+++++ Цикл обработки заказа, для партнеров: " + partnersNames);
 
 		//
 		// !select by car state
@@ -118,7 +123,7 @@ public class OfferingOrder {
 				.collect(Collectors.toList());
 		if (lastGeoDatas.size() == 0) {
 			orderDao.addOrderProcessing(order.getId(),
-					"Не найдено ни одной машины такси вблизи заказа, с допустимым состоянием.");
+					"Нет свободных авто: ");
 			logger.info("Order - " + order.getUuid()
 					+ ", NOT OFFER - not found car normal state or(and) nornmal distance.");
 			return;
@@ -157,7 +162,12 @@ public class OfferingOrder {
 		// !log for admin
 		String scars = lastGeoDatas
 				.stream()
-				.map(p -> p.getPartnerId().toString() + "->" + p.getUuid())
+				.map(p -> finalPartners.stream()
+						.filter(p2 -> p2.getId() == p.getPartnerId())
+						.map(p2 -> p2.getName())
+						.findFirst()
+						.get()
+						+ "->" + p.getUuid())
 				.collect(Collectors.joining(", "));
 		orderDao.addOrderProcessing(order.getId(), "Подходящие машины такси: " + scars);
 
