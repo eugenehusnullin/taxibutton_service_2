@@ -76,6 +76,22 @@ public class OfferingOrder {
 		}
 
 		//
+		// !select partners by map area
+		partners = partnerService.getPartnersByMapAreas(partners,
+				order.getSource().getLat(), order.getSource().getLon());
+		if (partners == null || partners.size() == 0) {
+			orderDao.addOrderProcessing(order.getId(), "Не найдены партнеры в геозоне действия заказа.");
+			logger.info("Order - " + order.getUuid() + ", partners not found.");
+			return;
+		}
+
+		//
+		// info users
+		final List<Partner> finalPartners = partners;
+		String partnersNames = partners.stream().map(p -> p.getName()).collect(Collectors.joining("; "));
+		orderDao.addOrderProcessing(order.getId(), "====+++++ Цикл обработки заказа, для партнеров: " + partnersNames);
+
+		//
 		// createorder to partners (может отправляться два раза, если в setcar произойдет ошибка)
 		for (Partner partner : partners) {
 			try {
@@ -96,22 +112,6 @@ public class OfferingOrder {
 								+ ", ошибка - " + e.getMessage());
 			}
 		}
-
-		//
-		// !select partners by map area
-		partners = partnerService.getPartnersByMapAreas(partners,
-				order.getSource().getLat(), order.getSource().getLon());
-		if (partners == null || partners.size() == 0) {
-			orderDao.addOrderProcessing(order.getId(), "Не найдены партнеры в геозоне действия заказа.");
-			logger.info("Order - " + order.getUuid() + ", partners not found.");
-			return;
-		}
-
-		final List<Partner> finalPartners = partners;
-		//
-		// info users
-		String partnersNames = partners.stream().map(p -> p.getName()).collect(Collectors.joining("; "));
-		orderDao.addOrderProcessing(order.getId(), "====+++++ Цикл обработки заказа, для партнеров: " + partnersNames);
 
 		//
 		// !select by car state
