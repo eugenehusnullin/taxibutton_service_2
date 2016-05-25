@@ -71,7 +71,7 @@ public class OfferingOrder {
 					.map(p -> p.getPartner().getId())
 					.collect(Collectors.toList());
 			partners = partners.stream()
-					.filter(p -> offeredPartnersIds.contains(p.getId()))
+					.filter(p -> !offeredPartnersIds.contains(p.getId()))
 					.collect(Collectors.toList());
 		}
 
