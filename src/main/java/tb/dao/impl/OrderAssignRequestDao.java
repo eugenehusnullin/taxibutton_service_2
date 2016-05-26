@@ -51,7 +51,7 @@ public class OrderAssignRequestDao implements IOrderAssignRequestDao {
 						Restrictions.or(
 								Restrictions.eq("fail", false),
 								Restrictions.isNull("fail")))
-				.addOrder(org.hibernate.criterion.Order.asc("date"))
+				.addOrder(org.hibernate.criterion.Order.asc("farIndex"))
 				.setMaxResults(1)
 				.uniqueResult();
 

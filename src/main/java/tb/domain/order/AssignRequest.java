@@ -14,6 +14,7 @@ public class AssignRequest implements Serializable {
 	private Date date;
 	private Boolean fail;
 	private Integer failHttpCode;
+	private Double farIndex;
 
 	public Order getOrder() {
 		return order;
@@ -61,5 +62,13 @@ public class AssignRequest implements Serializable {
 
 	public void setPartner(Partner partner) {
 		this.partner = partner;
+	}
+
+	public Double getFarIndex() {
+		return farIndex;
+	}
+
+	public void setFarIndex(Double farIndex) {
+		this.farIndex = farIndex;
 	}
 }

@@ -11,7 +11,9 @@
 			<key-property name="uuid" length="40"></key-property>
 		</composite-id>
 		<property name="date" />
+		<property name="farIndex" />
 		<property name="fail" />
 		<property name="failHttpCode" />
+		
 	</class>
 </hibernate-mapping>

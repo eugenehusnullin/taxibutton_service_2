@@ -29,6 +29,7 @@ import tb.car.dao.CarDao;
 import tb.car.domain.Car;
 import tb.car.domain.Car4Request;
 import tb.car.domain.GeoData;
+import tb.car.domain.LastGeoData;
 import tb.dao.IDeviceDao;
 import tb.dao.IOfferDao;
 import tb.dao.IOrderAssignRequestDao;
@@ -38,6 +39,7 @@ import tb.dao.IOrderStatusDao;
 import tb.dao.IPartnerDao;
 import tb.domain.Device;
 import tb.domain.Partner;
+import tb.domain.order.AddressPoint;
 import tb.domain.order.AssignRequest;
 import tb.domain.order.Feedback;
 import tb.domain.order.Offer;
@@ -369,11 +371,17 @@ public class OrderService {
 			return;
 		}
 
+		AddressPoint source = order.getDestinations().first();
+		LastGeoData lastGeoData = carDao.getLastGeoData(partner.getId(), uuid);
+		double farIndex = Math.abs(lastGeoData.getLat() - source.getLat())
+				+ Math.abs(lastGeoData.getLon() - source.getLon());
+
 		AssignRequest alacrity = new AssignRequest();
 		alacrity.setPartner(partner);
 		alacrity.setOrder(order);
 		alacrity.setUuid(uuid);
 		alacrity.setDate(new Date());
+		alacrity.setFarIndex(farIndex);
 		assignRequestDao.save(alacrity);
 
 		orderDao.addOrderProcessing(order.getId(),

@@ -194,4 +194,15 @@ public class CarDao {
 				.addOrder(Order.asc("date"))
 				.list();
 	}
+
+	@Transactional
+	public LastGeoData getLastGeoData(Long partnerId, String carUuid) {
+		return (LastGeoData) sessionFactory.getCurrentSession()
+				.createCriteria(LastGeoData.class)
+				.add(Restrictions.eq("partnerId", partnerId))
+				.add(Restrictions.eq("uuid", carUuid))
+				.addOrder(Order.desc("date"))
+				.setMaxResults(1)
+				.uniqueResult();
+	}
 }
