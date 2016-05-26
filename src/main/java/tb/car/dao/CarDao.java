@@ -130,7 +130,9 @@ public class CarDao {
 	@Transactional
 	public List<LastGeoData> getLastGeoDatas(Long partnerId) {
 		Session session = sessionFactory.getCurrentSession();
-		return session.createCriteria(LastGeoData.class).list();
+		return session.createCriteria(LastGeoData.class)
+				.add(Restrictions.eq("partnerId", partnerId))
+				.list();
 	}
 
 	@Transactional
