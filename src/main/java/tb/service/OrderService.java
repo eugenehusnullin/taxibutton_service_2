@@ -135,7 +135,11 @@ public class OrderService {
 		Partner partner = order.getPartner();
 		String url = partner.getApiurl() + "/1.x/inform";
 		try {
-			HttpUtils.postRawData(informJson.toString(), url, "UTF-8", "application/json");
+			String informStr = informJson.toString();
+			HttpUtils.postRawData(informStr, url, "UTF-8", "application/json");
+
+			orderDao.addOrderProcessing(order.getId(), "Партнеру отправлен INFORM");
+			logger.info("OrderId = " + order.getId() + "Партнеру отправлен INFORM: " + informStr);
 		} catch (Exception e) {
 			logger.error("INFORM - " + order.getUuid() + ".", e);
 		}
@@ -416,7 +420,7 @@ public class OrderService {
 		if (newStatusType == null) {
 			return;
 		}
-		
+
 		Partner partner = partnerDao.getByApiId(partnerApiId);
 		if (partner == null) {
 			throw new PartnerNotFoundException(partnerApiId);
