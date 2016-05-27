@@ -44,6 +44,19 @@ public class PartnerService {
 
 	@Transactional
 	public void savePartnerCarOptions(PartnerSettings settings) {
+		// remove "knopkaVisible":false items
+		JSONObject settingsJSON = (JSONObject) new JSONTokener(settings.getSettings()).nextValue();
+		JSONArray array = settingsJSON.getJSONArray("requirements");
+		JSONArray array2 = new JSONArray();
+		for (int i = 0; i < array.length(); i++) {
+			JSONObject jsonObject = array.getJSONObject(i);
+			if (jsonObject.optBoolean("knopkaVisible", true)) {
+				array2.put(jsonObject);
+			}
+		}
+		settingsJSON.put("requirements", array2);
+		settings.setSettings(settingsJSON.toString());
+
 		holdCarOptions(settings.getPartner().getId(), settings.getSettings());
 		partnerDao.saveSettings(settings);
 	}
