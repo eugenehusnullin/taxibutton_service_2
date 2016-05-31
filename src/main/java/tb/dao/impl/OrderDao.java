@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import tb.dao.IOrderDao;
 import tb.domain.order.Feedback;
+import tb.domain.order.Notice;
 import tb.domain.order.Order;
 import tb.domain.order.OrderProcessing;
 
@@ -84,7 +85,7 @@ public class OrderDao implements IOrderDao {
 		pr.setOrderId(orderId);
 		pr.setNoteDate(new Date());
 		pr.setNote(note);
-		
+
 		sessionFactory.getCurrentSession().save(pr);
 	}
 
@@ -94,7 +95,21 @@ public class OrderDao implements IOrderDao {
 		return sessionFactory.getCurrentSession()
 				.createCriteria(OrderProcessing.class)
 				.add(Restrictions.eq("orderId", orderId))
-				.addOrder(org.hibernate.criterion.Order.asc("noteDate"))				
+				.addOrder(org.hibernate.criterion.Order.asc("noteDate"))
 				.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Notice> getNotices(Order order) {
+		return sessionFactory.getCurrentSession()
+				.createCriteria(Notice.class)
+				.add(Restrictions.eq("order", order))
+				.list();
+	}
+
+	@Override
+	public void saveNotice(Notice notice) {
+		sessionFactory.getCurrentSession().save(notice);
 	}
 }

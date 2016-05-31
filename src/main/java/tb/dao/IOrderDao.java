@@ -3,6 +3,7 @@ package tb.dao;
 import java.util.List;
 
 import tb.domain.order.Feedback;
+import tb.domain.order.Notice;
 import tb.domain.order.Order;
 import tb.domain.order.OrderProcessing;
 
@@ -27,4 +28,8 @@ public interface IOrderDao {
 	void addOrderProcessing(Long orderId, String note);
 
 	List<OrderProcessing> getOrderProcessing(Long orderId);
+
+	List<Notice> getNotices(Order order);
+
+	void saveNotice(Notice notice);
 }

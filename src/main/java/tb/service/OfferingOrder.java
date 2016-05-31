@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.xml.transform.TransformerException;
@@ -28,6 +29,7 @@ import tb.dao.IOrderDao;
 import tb.dao.IPartnerDao;
 import tb.domain.Brand;
 import tb.domain.Partner;
+import tb.domain.order.Notice;
 import tb.domain.order.Offer;
 import tb.domain.order.Order;
 import tb.service.serialize.YandexOrderSerializer;
@@ -92,18 +94,34 @@ public class OfferingOrder {
 		orderDao.addOrderProcessing(order.getId(), "====+++++ Цикл обработки заказа, для партнеров: " + partnersNames);
 
 		//
-		// createorder to partners (может отправляться два раза, если в setcar произойдет ошибка)
+		// createorder to partners
+		List<Notice> notices = orderDao.getNotices(order);
 		for (Partner partner : partners) {
 			try {
+				Optional<Notice> optionalNotice = notices.stream()
+						.filter(p -> p.getPartner().getId() == partner.getId())
+						.findFirst();
+				if (optionalNotice.isPresent()) {
+					continue;
+				}
+
 				Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC",
 						partner.getTimezoneId());
 				Document doc = YandexOrderSerializer.orderToRequestXml(order, bookDate, null);
 				String url = partner.getApiurl() + "/1.x/createorder";
 				int response = HttpUtils.postDocumentOverHttp(doc, url, logger).getResponseCode();
 				if (response != 200) {
+
 					orderDao.addOrderProcessing(order.getId(),
 							"createorder - передача заказа без авто " + partner.getName()
 									+ ", ошибка - " + response);
+				} else {
+
+					Notice notice = new Notice();
+					notice.setOrder(order);
+					notice.setPartner(partner);
+					notice.setTimestamp(new Date());
+					orderDao.saveNotice(notice);
 				}
 			} catch (IOException | TransformerException | TransformerFactoryConfigurationError e) {
 				logger.error("request CREATEORDER - " + order.getUuid() + ".", e);

@@ -26,5 +26,6 @@
  		<mapping resource="tb/admin/security/Authority.hbm.xml"/>
  		<mapping resource="tb/domain/hibernate/Brand.hbm.xml" />
  		<mapping resource="tb/domain/hibernate/BrandService.hbm.xml" />
+ 		<mapping resource="tb/domain/hibernate/Notice.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
