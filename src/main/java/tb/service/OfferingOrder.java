@@ -95,41 +95,7 @@ public class OfferingOrder {
 
 		//
 		// createorder to partners
-		List<Notice> notices = orderDao.getNotices(order);
-		for (Partner partner : partners) {
-			try {
-				Optional<Notice> optionalNotice = notices.stream()
-						.filter(p -> p.getPartner().getId() == partner.getId())
-						.findFirst();
-				if (optionalNotice.isPresent()) {
-					continue;
-				}
-
-				Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC",
-						partner.getTimezoneId());
-				Document doc = YandexOrderSerializer.orderToRequestXml(order, bookDate, null);
-				String url = partner.getApiurl() + "/1.x/createorder";
-				int response = HttpUtils.postDocumentOverHttp(doc, url, logger).getResponseCode();
-				if (response != 200) {
-
-					orderDao.addOrderProcessing(order.getId(),
-							"createorder - передача заказа без авто " + partner.getName()
-									+ ", ошибка - " + response);
-				} else {
-
-					Notice notice = new Notice();
-					notice.setOrder(order);
-					notice.setPartner(partner);
-					notice.setTimestamp(new Date());
-					orderDao.saveNotice(notice);
-				}
-			} catch (IOException | TransformerException | TransformerFactoryConfigurationError e) {
-				logger.error("request CREATEORDER - " + order.getUuid() + ".", e);
-				orderDao.addOrderProcessing(order.getId(),
-						"createorder - передача заказа без авто " + partner.getName()
-								+ ", ошибка - " + e.getMessage());
-			}
-		}
+		// createOrderRequest(partners, order);
 
 		//
 		// !select by car state
@@ -195,6 +161,45 @@ public class OfferingOrder {
 				.collect(Collectors.toList());
 		Map<Long, Document> messages4Send = createNotlaterOffer(order, partnerIdsList, lastGeoDatas);
 		makeOffer(messages4Send, order);
+	}
+
+	@SuppressWarnings("unused")
+	private void createOrderRequest(List<Partner> partners, Order order) {
+		List<Notice> notices = orderDao.getNotices(order);
+		for (Partner partner : partners) {
+			try {
+				Optional<Notice> optionalNotice = notices.stream()
+						.filter(p -> p.getPartner().getId() == partner.getId())
+						.findFirst();
+				if (optionalNotice.isPresent()) {
+					continue;
+				}
+
+				Date bookDate = DatetimeUtils.offsetTimeZone(order.getBookingDate(), "UTC",
+						partner.getTimezoneId());
+				Document doc = YandexOrderSerializer.orderToRequestXml(order, bookDate, null);
+				String url = partner.getApiurl() + "/1.x/createorder";
+				int response = HttpUtils.postDocumentOverHttp(doc, url, logger).getResponseCode();
+				if (response != 200) {
+
+					orderDao.addOrderProcessing(order.getId(),
+							"createorder - передача заказа без авто " + partner.getName()
+									+ ", ошибка - " + response);
+				} else {
+
+					Notice notice = new Notice();
+					notice.setOrder(order);
+					notice.setPartner(partner);
+					notice.setTimestamp(new Date());
+					orderDao.saveNotice(notice);
+				}
+			} catch (IOException | TransformerException | TransformerFactoryConfigurationError e) {
+				logger.error("request CREATEORDER - " + order.getUuid() + ".", e);
+				orderDao.addOrderProcessing(order.getId(),
+						"createorder - передача заказа без авто " + partner.getName()
+								+ ", ошибка - " + e.getMessage());
+			}
+		}
 	}
 
 	private Map<Long, Document> createNotlaterOffer(Order order, List<Long> partnerIdsList,
