@@ -102,21 +102,6 @@ public class Processing {
 			if (assigns.size() > 0) {
 				makeAssignWork(order);
 			}
-
-			// switch (state) {
-			// case Offer:
-			// logger.debug("process order id=" + orderId + " make offer.");
-			// makeOfferWork(order);
-			// return;
-			//
-			// case Assign:
-			// logger.debug("process order id=" + orderId + " make assign.");
-			// makeAssignWork(order);
-			// return;
-			//
-			// default:
-			// break;
-			// }
 		}
 	}
 

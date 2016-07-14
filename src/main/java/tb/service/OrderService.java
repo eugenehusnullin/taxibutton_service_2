@@ -167,7 +167,7 @@ public class OrderService {
 			throw new DeviceNotFoundException(deviceApiid);
 		}
 
-		Order order = OrderJsonParser.Json2Order(createOrderObject.getJSONObject("order"), device,
+		Order order = OrderJsonParser.Json2OrderWithBookingDate(createOrderObject.getJSONObject("order"), device,
 				partnerDao, partnerService, brandingService);
 		order.setDevice(device);
 		return order;

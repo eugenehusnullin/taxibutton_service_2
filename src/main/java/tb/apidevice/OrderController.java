@@ -37,6 +37,8 @@ import tb.domain.Partner;
 import tb.domain.PartnerSettings;
 import tb.domain.maparea.Point;
 import tb.domain.order.Order;
+import tb.flightstats.FlightStatsService;
+import tb.flightstats.domain.FlightStatusTask;
 import tb.service.BrandingService;
 import tb.service.OrderService;
 import tb.service.PartnerService;
@@ -62,6 +64,8 @@ public class OrderController {
 	private CostRequest costRequest;
 	@Autowired
 	private BrandingService brandingService;
+	@Autowired
+	private FlightStatsService flightStatsService;
 
 	// create an order from apk request (json string)
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -86,6 +90,48 @@ public class OrderController {
 				response.setStatus(403);
 				logger.error(dnfe.toString());
 			} catch (ParseOrderException e) {
+				response.sendError(404, e.toString());
+				logger.error(e.toString());
+			}
+		} catch (UnsupportedEncodingException e) {
+			logger.error("apiDeviceOrderController.create", e);
+			response.setStatus(500);
+		} catch (IOException e) {
+			logger.error("apiDeviceOrderController.create", e);
+			response.setStatus(500);
+		}
+	}
+
+	@RequestMapping(value = "/createFlightOrder", method = RequestMethod.POST)
+	public void createFlightOrder(HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+			String str = getHttpServletRequestBuffer(request);
+			logger.trace(str);
+
+			JSONObject createOrderObject = (JSONObject) new JSONTokener(str).nextValue();
+
+			try {
+				Order order = orderService.initOrder(createOrderObject);
+				FlightStatusTask fst = flightStatsService.initFlightStatsService(createOrderObject);
+				
+				orderService.create(order);
+				fst.setOrderId(order.getId());
+				flightStatsService.createFlightStatusTask(fst);
+
+				String orderUuid = order.getUuid();
+				JSONObject responseJson = new JSONObject();
+				responseJson.put("status", "ok");
+				responseJson.put("orderId", orderUuid);
+				response.setStatus(200);
+				IOUtils.write(responseJson.toString(), response.getOutputStream(), "UTF-8");
+			} catch (DeviceNotFoundException dnfe) {
+				response.setStatus(403);
+				logger.error(dnfe.toString());
+			} catch (ParseOrderException e) {
+				response.sendError(404, e.toString());
+				logger.error(e.toString());
+			} catch (Exception e) {
 				response.sendError(404, e.toString());
 				logger.error(e.toString());
 			}

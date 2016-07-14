@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="tb.flightstats.domain">
+	<class name="FlightStatusTask" table="flightstatustasks">
+		<id name="id">
+			<generator class="identity" />
+		</id>
+		<property name="orderId" column="orderId" />
+		<property name="finished" column="finished" />
+		
+		<property name="lastStatus" length="6" />
+		<property name="arrivalScheduledUtc" />
+		
+		<property name="carrier" length="6"/>
+		<property name="flight" length="20" />
+		<property name="depYear" />
+		<property name="depMonth" />
+		<property name="depDay" />		
+	</class>
+</hibernate-mapping>

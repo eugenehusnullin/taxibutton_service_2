@@ -76,6 +76,7 @@ public class OrderDao implements IOrderDao {
 	public List<Order> getUnfinishedOrders() {
 		return sessionFactory.getCurrentSession().createCriteria(Order.class)
 				.add(Restrictions.eq("processingFinished", false))
+				.add(Restrictions.isNotNull("bookingDate"))
 				.list();
 	}
 

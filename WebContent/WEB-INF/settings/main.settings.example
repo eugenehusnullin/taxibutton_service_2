@@ -25,3 +25,9 @@ sms.url=http://crm.podglonass.ru/smser/index.php?taxiid=TAXIID&act=add
 ;;; ORDER PROCESSING
 processing.offer.expired.timeout = 3
 processing.assign.expired.timeout = 6
+
+
+;;; flightstats
+flightstats.id = 7c0ad327
+flightstats.key = 2de9943f0d4f06a14f960a7229fa8b42
+flightstats.baseurl = https://api.flightstats.com/

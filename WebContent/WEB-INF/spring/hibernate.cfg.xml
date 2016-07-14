@@ -27,5 +27,7 @@
  		<mapping resource="tb/domain/hibernate/Brand.hbm.xml" />
  		<mapping resource="tb/domain/hibernate/BrandService.hbm.xml" />
  		<mapping resource="tb/domain/hibernate/Notice.hbm.xml" />
+ 		
+ 		<mapping resource="tb/flightstats/domain/FlightStatusTask.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

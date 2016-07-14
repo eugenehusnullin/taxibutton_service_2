@@ -25,26 +25,44 @@ import tb.utils.DatetimeUtils;
 public class OrderJsonParser {
 	private static final long ONE_MINUTE_IN_MILLIS = 60000;// millisecs
 
-	public static Order Json2Order(JSONObject jsonObject, Device device, IPartnerDao partnerDao,
+	public static Order Json2OrderWithAirport(JSONObject jsonObject, Device device, IPartnerDao partnerDao,
 			PartnerService partnerService, BrandingService brandingService)
 			throws ParseOrderException, IOException {
 
-		Order order = new Order();
+		Order order = json2OrderCommon(jsonObject, device, partnerDao, partnerService, brandingService);
+		order.setNotlater(false);
+		return order;
+	}
 
-		String recipientPhone = device.getPhone() != null ? device.getPhone() : jsonObject.optString("recipientPhone");
+	public static Order Json2OrderWithBookingDate(JSONObject jsonObject, Device device, IPartnerDao partnerDao,
+			PartnerService partnerService, BrandingService brandingService)
+			throws ParseOrderException, IOException {
 
-		String carBasket = jsonObject.optString("carbasket");
-		order.setCarBasket(carBasket.isEmpty() ? null : carBasket);
+		Order order = json2OrderCommon(jsonObject, device, partnerDao, partnerService, brandingService);
 
 		int bookMins = jsonObject.getInt("bookmins");
 		Date bookingDate = DatetimeUtils.localTimeToUtc(new Date());
 		bookingDate = new Date(bookingDate.getTime() + (bookMins * ONE_MINUTE_IN_MILLIS));
+		order.setBookingDate(bookingDate);
 
 		String bookType = jsonObject.getString("booktype");
 		if (!bookType.equals("notlater") && !bookType.equals("exact")) {
 			throw new ParseOrderException("bookType bad.");
 		}
 		order.setNotlater(bookType.equals("notlater"));
+		return order;
+	}
+
+	private static Order json2OrderCommon(JSONObject jsonObject, Device device, IPartnerDao partnerDao,
+			PartnerService partnerService, BrandingService brandingService)
+			throws ParseOrderException, IOException {
+		Order order = new Order();
+
+		String recipientPhone = device.getPhone() != null ? device.getPhone() : jsonObject.optString("recipientPhone");
+		order.setPhone(recipientPhone);
+
+		String carBasket = jsonObject.optString("carbasket");
+		order.setCarBasket(carBasket.isEmpty() ? null : carBasket);
 
 		SortedSet<AddressPoint> addressPoints = new TreeSet<AddressPoint>();
 		try {
@@ -69,27 +87,13 @@ public class OrderJsonParser {
 				addressPoints.add(OrderJsonParser.parsePoint(destinationJson, order, index));
 			}
 		}
+		order.setDestinations(addressPoints);
 
 		Set<Requirement> requirements = new HashSet<Requirement>();
 		try {
 			JSONArray requirementsJson = jsonObject.optJSONArray("requirements");
 
 			if (requirementsJson != null) {
-				// for (int i = 0; i < requirementsJson.length(); i++) {
-				// JSONObject requirementJson = requirementsJson.getJSONObject(i);
-				// Requirement currentRequirement = new Requirement();
-				//
-				// try {
-				// currentRequirement.setType(requirementJson.getString("name"));
-				// currentRequirement.setOptions(requirementJson.getString("value"));
-				// } catch (JSONException ex) {
-				// throw new ParseOrderException("requirement bad. " + ex.toString());
-				// }
-				//
-				// currentRequirement.setOrder(order);
-				// requirements.add(currentRequirement);
-				// }
-
 				Long partnerId = 0L;
 				if (device.getTaxi() != null && !device.getTaxi().isEmpty()) {
 					Partner majorPartner = brandingService.getMajorPartner(device.getTaxi());
@@ -111,7 +115,7 @@ public class OrderJsonParser {
 		} catch (JSONException ex) {
 			throw new ParseOrderException("requirements bad. " + ex.toString());
 		}
-
+		order.setRequirements(requirements);
 		order.setCarClass(jsonObject.getString("vehicleClass"));
 
 		Set<Partner> offerPartners = new HashSet<Partner>();
@@ -123,57 +127,27 @@ public class OrderJsonParser {
 				offerPartners.add(partner);
 			}
 		}
-
-		order.setComments(jsonObject.optString("comments", null));
-
-		order.setPhone(recipientPhone);
-		order.setBookingDate(bookingDate);
-		order.setDestinations(addressPoints);
-		order.setRequirements(requirements);
 		order.setOfferPartners(offerPartners);
+		order.setComments(jsonObject.optString("comments", null));
 
 		return order;
 	}
 
 	private static AddressPoint parsePoint(JSONObject pointJson, Order order, int index) {
 		AddressPoint result = new AddressPoint();
-		Double lon = null;
-		Double lat = null;
-		String fullAddress = null;
-		String shortAddress = null;
-		String closestStation = null;
-		String country = null;
-		String locality = null;
-		String street = null;
-		String housing = null;
-		String entrance = null;
-		String description = null;
-
-		lon = pointJson.optDouble("lon", 0.0);
-		lat = pointJson.optDouble("lat", 0.0);
-		fullAddress = pointJson.optString("fullAddress", "");
-		shortAddress = pointJson.optString("shortAddress", "");
-		closestStation = pointJson.optString("closestStation", "");
-		country = pointJson.optString("country", "");
-		locality = pointJson.optString("locality", "");
-		street = pointJson.optString("street", "");
-		housing = pointJson.optString("housing", "");
-		entrance = pointJson.optString("entrance", "");
-		description = pointJson.optString("description", "");
-
-		result.setLon(lon);
-		result.setLat(lat);
-		result.setFullAddress(fullAddress);
-		result.setShortAddress(shortAddress);
-		result.setClosesStation(closestStation);
-		result.setCounty(country);
-		result.setLocality(locality);
-		result.setStreet(street);
-		result.setHousing(housing);
 		result.setOrder(order);
+		result.setLon(pointJson.optDouble("lon", 0.0));
+		result.setLat(pointJson.optDouble("lat", 0.0));
+		result.setFullAddress(pointJson.optString("fullAddress", ""));
+		result.setShortAddress(pointJson.optString("shortAddress", ""));
+		result.setClosesStation(pointJson.optString("closestStation", ""));
+		result.setCounty(pointJson.optString("country", ""));
+		result.setLocality(pointJson.optString("locality", ""));
+		result.setStreet(pointJson.optString("street", ""));
+		result.setHousing(pointJson.optString("housing", ""));
 		result.setIndexNumber(index);
-		result.setEntrance(entrance);
-		result.setDescription(description);
+		result.setEntrance(pointJson.optString("entrance", ""));
+		result.setDescription(pointJson.optString("description", ""));
 
 		return result;
 	}
