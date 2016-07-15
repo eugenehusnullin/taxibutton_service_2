@@ -14,6 +14,7 @@ public class FlightStatsServiceTest {
 	@Test
 	public void testCheckNow() throws ParseException {
 		ZonedDateTime zdtNow = ZonedDateTime.now();
+		System.out.println(zdtNow);
 		int sec = zdtNow.getOffset().getTotalSeconds();
 
 		// System.out.println(zdtNow.toInstant());
@@ -22,6 +23,9 @@ public class FlightStatsServiceTest {
 		// System.out.println(zdtNow);
 
 		Date d1 = new Date();
+		System.out.println(d1);
+		System.out.println(d1.toInstant());
+		
 		ZonedDateTime zdt = ZonedDateTime.ofInstant(d1.toInstant(), ZoneId.of("UTC"))
 				.minusMinutes(15);
 		System.out.println(zdt);

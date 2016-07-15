@@ -3,6 +3,7 @@ package tb.flightstats;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import tb.flightstats.domain.FlightStatusTask;
 import tb.flightstats.dto.FlightStatus;
 import tb.flightstats.dto.FlightStatusDto;
 import tb.flightstats.retrofit2.FlightstatusV2Api;
+import tb.utils.DatetimeUtils;
 
 @Service
 @EnableScheduling
@@ -54,18 +56,17 @@ public class FlightStatsService {
 	public void main() {
 		logger.debug("Starting FlightstatusV2Api scheduled method.");
 
-		ZonedDateTime zdtNow = ZonedDateTime.now();
+		Date now = new Date();
 		List<FlightStatusTask> list = flightStatusDao.getUnfinishedFlightStatusTasks();
 		logger.debug("FlightstatusV2Api найдено %s UnfinishedFlightStatusTasks", list.size());
 
 		for (FlightStatusTask fst : list) {
 			logger.debug("UnfinishedFlightStatusTask id=%s arrivalScheduledUtc=%s", fst.getId(),
 					fst.getArrivalScheduledUtc());
-			ZonedDateTime zdtArrivalScheduledUtc = ZonedDateTime
-					.ofInstant(fst.getArrivalScheduledUtc().toInstant(), ZoneId.of("UTC"))
-					.minusMinutes(15);
+			Calendar arrivalScheduledUtc = DatetimeUtils.getUtcCalendar(fst.getArrivalScheduledUtc());
+			arrivalScheduledUtc.add(Calendar.MINUTE, -15);
 
-			if (zdtNow.isAfter(zdtArrivalScheduledUtc)) {
+			if (now.after(arrivalScheduledUtc.getTime())) {
 				logger.debug("UnfinishedFlightStatusTask id=%s arrivalScheduledUtc=%s it is time to process",
 						fst.getId(),
 						fst.getArrivalScheduledUtc());
@@ -175,7 +176,7 @@ public class FlightStatsService {
 	}
 
 	private boolean checkValidCreateOrderStatus(FlightStatus flightStatus) {
-		return flightStatus.getStatus().equals("S") || flightStatus.getStatus().equals("L");
+		return flightStatus.getStatus().equals("S") || flightStatus.getStatus().equals("A");
 	}
 
 	public FlightStatusDto getFlightStatusDto(String carrier, String flight, int depYear, int depMonth,
@@ -193,6 +194,7 @@ public class FlightStatsService {
 		}
 	}
 
+	@Transactional
 	public void createFlightStatusTask(FlightStatusTask fst) {
 		flightStatusDao.saveFlightStatusTask(fst);
 	}

@@ -62,6 +62,10 @@ public class SheduledProcessing {
 	}
 
 	private boolean checkDelta(Date bookingDateUtc) {
+		if (bookingDateUtc == null) {
+			return false;
+		}
+		
 		Calendar bookingCalendar = DatetimeUtils.getUtcCalendar(bookingDateUtc);
 		Calendar localCalendar = Calendar.getInstance();
 		localCalendar.add(Calendar.MINUTE, deltaMinutes);

@@ -170,6 +170,13 @@ public class OrderService {
 		Order order = OrderJsonParser.Json2OrderWithBookingDate(createOrderObject.getJSONObject("order"), device,
 				partnerDao, partnerService, brandingService);
 		order.setDevice(device);
+		order.setCreatedDate(new Date());
+
+		// check booking date
+		if (DatetimeUtils.checkTimeout(order.getBookingDate(), createOrderDeltaMinutes * 60 * 1000,
+				order.getCreatedDate())) {
+			throw new ParseOrderException("bookingdate is out");
+		}
 		return order;
 	}
 
@@ -185,18 +192,12 @@ public class OrderService {
 		Order order = OrderJsonParser.Json2OrderWithAirport(flightOrderJSON.getJSONObject("order"), device,
 				partnerDao, partnerService, brandingService);
 		order.setDevice(device);
+		order.setCreatedDate(new Date());
 		return order;
 	}
 
 	@Transactional
 	public void create(Order order) throws ParseOrderException {
-		order.setCreatedDate(new Date());
-
-		// check booking date
-		if (DatetimeUtils.checkTimeout(order.getBookingDate(), createOrderDeltaMinutes * 60 * 1000,
-				order.getCreatedDate())) {
-			throw new ParseOrderException("bookingdate is out");
-		}
 
 		order.setUuid(UUID.randomUUID().toString().replace("-", ""));
 		orderDao.save(order);
