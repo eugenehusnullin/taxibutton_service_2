@@ -112,7 +112,7 @@ public class OrderController {
 			JSONObject createOrderObject = (JSONObject) new JSONTokener(str).nextValue();
 
 			try {
-				Order order = orderService.initOrder(createOrderObject);
+				Order order = orderService.initFlightOrder(createOrderObject);
 				FlightStatusTask fst = flightStatsService.initFlightStatsService(createOrderObject);
 				
 				orderService.create(order);

@@ -174,6 +174,21 @@ public class OrderService {
 	}
 
 	@Transactional
+	public Order initFlightOrder(JSONObject flightOrderJSON)
+			throws DeviceNotFoundException, ParseOrderException, JSONException, IOException {
+		String deviceApiid = flightOrderJSON.optString("apiId");
+		Device device = deviceDao.get(deviceApiid);
+		if (device == null) {
+			throw new DeviceNotFoundException(deviceApiid);
+		}
+
+		Order order = OrderJsonParser.Json2OrderWithAirport(flightOrderJSON.getJSONObject("order"), device,
+				partnerDao, partnerService, brandingService);
+		order.setDevice(device);
+		return order;
+	}
+
+	@Transactional
 	public void create(Order order) throws ParseOrderException {
 		order.setCreatedDate(new Date());
 
