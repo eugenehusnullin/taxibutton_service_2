@@ -114,7 +114,7 @@ public class OrderController {
 			try {
 				Order order = orderService.initFlightOrder(createOrderObject);
 				FlightStatusTask fst = flightStatsService.initFlightStatsService(createOrderObject);
-				
+
 				orderService.create(order);
 				fst.setOrderId(order.getId());
 				flightStatsService.createFlightStatusTask(fst);
@@ -123,6 +123,8 @@ public class OrderController {
 				JSONObject responseJson = new JSONObject();
 				responseJson.put("status", "ok");
 				responseJson.put("orderId", orderUuid);
+				responseJson.put("flightinfo", createFlightInfo(fst));
+
 				response.setStatus(200);
 				IOUtils.write(responseJson.toString(), response.getOutputStream(), "UTF-8");
 			} catch (DeviceNotFoundException dnfe) {
@@ -142,6 +144,19 @@ public class OrderController {
 			logger.error("apiDeviceOrderController.create", e);
 			response.setStatus(500);
 		}
+	}
+
+	private JSONObject createFlightInfo(FlightStatusTask fst) {
+		JSONObject flightInfo = new JSONObject();
+		flightInfo.put("departureDateLocal", fst.getDepartureDateLocal());
+		flightInfo.put("departureDateUtc", fst.getDepartureDateUtc());
+		flightInfo.put("arrivalDateLocal", fst.getArrivalDateLocal());
+		flightInfo.put("arrivalDateUtc", fst.getArrivalDateUtc());
+		flightInfo.put("departureAirport", fst.getDepartureAirport());
+		flightInfo.put("arrivalAirport", fst.getArrivalAirport());
+		flightInfo.put("departureCity", fst.getDepartureCity());
+		flightInfo.put("arrivalCity", fst.getArrivalCity());
+		return flightInfo;
 	}
 
 	@RequestMapping(value = "/cancel", method = RequestMethod.POST)

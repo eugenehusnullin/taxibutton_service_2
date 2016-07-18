@@ -18,6 +18,16 @@
 		<property name="flight" length="20" />
 		<property name="depYear" />
 		<property name="depMonth" />
-		<property name="depDay" />		
+		<property name="depDay" />
+		
+		<property name="departureDateLocal" length="25" />
+		<property name="departureDateUtc" length="25" />
+		<property name="arrivalDateLocal" length="25" />
+		<property name="arrivalDateUtc" length="25" />
+		<property name="departureAirport" length="5" />
+		<property name="arrivalAirport" length="5" />
+		<property name="departureCity" length="40" />
+		<property name="arrivalCity" length="40" />
+		
 	</class>
 </hibernate-mapping>

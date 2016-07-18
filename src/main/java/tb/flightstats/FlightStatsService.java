@@ -1,7 +1,6 @@
 package tb.flightstats;
 
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,6 +26,7 @@ import tb.dao.IFlightStatusDao;
 import tb.dao.IOrderDao;
 import tb.domain.order.Order;
 import tb.flightstats.domain.FlightStatusTask;
+import tb.flightstats.dto.Airport_;
 import tb.flightstats.dto.FlightStatus;
 import tb.flightstats.dto.FlightStatusDto;
 import tb.flightstats.retrofit2.FlightstatusV2Api;
@@ -169,6 +169,21 @@ public class FlightStatsService {
 			fst.setArrivalScheduledUtc(arrivalScheduledUtc);
 
 			fst.setLastStatus(flightStatus.getStatus());
+
+			fst.setDepartureAirport(flightStatus.getDepartureAirportFsCode());
+			fst.setArrivalAirport(flightStatus.getArrivalAirportFsCode());
+			fst.setDepartureDateLocal(flightStatus.getDepartureDate().getDateLocal());
+			fst.setDepartureDateUtc(flightStatus.getDepartureDate().getDateUtc());
+			fst.setArrivalDateLocal(flightStatus.getArrivalDate().getDateLocal());
+			fst.setArrivalDateUtc(flightStatus.getArrivalDate().getDateUtc());
+
+			for (Airport_ airport : dto.getAppendix().getAirports()) {
+				if (airport.getFs().equals(fst.getDepartureAirport())) {
+					fst.setDepartureCity(airport.getCity());
+				} else if (airport.getFs().equals(fst.getArrivalAirport())) {
+					fst.setArrivalCity(airport.getCity());
+				}
+			}
 			return fst;
 		} else {
 			throw new Exception("Not valid status: " + flightStatus.getStatus());
