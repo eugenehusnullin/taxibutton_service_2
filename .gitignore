@@ -16,3 +16,5 @@ WebContent/resources/bootstrap/*
 WebContent/resources/css/*
 WebContent/resources/jquery/*
 WebContent/resources/dist
+/.gradle/
+/bin/
